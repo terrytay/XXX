@@ -1,54 +1,62 @@
-import DeployButton from "../components/DeployButton";
-import AuthButton from "../components/AuthButton";
+import { SubmitButton } from "../components/submit-button";
+import Image from "next/image";
+import { signIn } from "./auth/action";
 import { createClient } from "@/utils/supabase/server";
-import ConnectSupabaseSteps from "@/components/tutorial/ConnectSupabaseSteps";
-import SignUpUserSteps from "@/components/tutorial/SignUpUserSteps";
-import Header from "@/components/Header";
+import { redirect } from "next/navigation";
+import { UserResponse } from "@supabase/supabase-js";
 
-export default async function Index() {
-  const canInitSupabaseClient = () => {
-    // This function is just for the interactive tutorial.
-    // Feel free to remove it once you have Supabase connected.
-    try {
-      createClient();
-      return true;
-    } catch (e) {
-      return false;
-    }
-  };
+export default async function Login({
+  searchParams,
+}: {
+  searchParams: { message: string };
+}) {
+  const supabase = createClient();
 
-  const isSupabaseConnected = canInitSupabaseClient();
+  const user: UserResponse = await supabase.auth.getUser();
 
+  if (user.data.user) {
+    redirect("/clients");
+  }
   return (
-    <div className="flex-1 w-full flex flex-col gap-20 items-center">
-      <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16">
-        <div className="w-full max-w-4xl flex justify-between items-center p-3 text-sm">
-          <DeployButton />
-          {isSupabaseConnected && <AuthButton />}
-        </div>
-      </nav>
+    <div className="flex-1 flex flex-col w-full px-8 sm:max-w-md justify-center items-center gap-2 space-y-10">
+      {/* <Link
+        href="/"
+        className="absolute left-8 top-8 py-2 px-4 rounded-md no-underline text-foreground bg-btn-background hover:bg-btn-background-hover flex items-center group text-sm"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="mr-2 h-4 w-4 transition-transform group-hover:-translate-x-1"
+        >
+          <polyline points="15 18 9 12 15 6" />
+        </svg>{" "}
+        Back
+      </Link> */}
 
-      <div className="flex-1 flex flex-col gap-20 max-w-4xl px-3">
-        <Header />
-        <main className="flex-1 flex flex-col gap-6">
-          <h2 className="font-bold text-4xl mb-4">Next steps</h2>
-          {isSupabaseConnected ? <SignUpUserSteps /> : <ConnectSupabaseSteps />}
-        </main>
-      </div>
+      <Image
+        src="/logo.jpg"
+        width={128}
+        height={128}
+        alt="logo"
+        className="rounded-full"
+      />
 
-      <footer className="w-full border-t border-t-foreground/10 p-8 flex justify-center text-center text-xs">
-        <p>
-          Powered by{" "}
-          <a
-            href="https://supabase.com/?utm_source=create-next-app&utm_medium=template&utm_term=nextjs"
-            target="_blank"
-            className="font-bold hover:underline"
-            rel="noreferrer"
-          >
-            Supabase
-          </a>
-        </p>
-      </footer>
+      <form className="flex flex-col w-full justify-center gap-2 text-foreground">
+        <SubmitButton
+          formAction={signIn}
+          className="bg-green-700 rounded-md px-4 py-2 text-foreground mb-2"
+          pendingText="Signing In..."
+        >
+          Sign In
+        </SubmitButton>
+      </form>
     </div>
   );
 }
