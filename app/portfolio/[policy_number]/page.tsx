@@ -1,7 +1,232 @@
-import React from "react";
+import { getClient } from "../action";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableFooter,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { formatAmount, formatPercent, formatUnits } from "@/utils/formatters";
+import { createClient } from "@/utils/supabase/server";
+import { UserResponse } from "@supabase/supabase-js";
+import { bounceOut } from "@/app/auth/action";
+import { redirect } from "next/navigation";
+import { parseTransactions } from "@/utils/transactionsParser";
+import { getPrices } from "@/app/prices/action";
 
-const page = () => {
-  return <div>page</div>;
-};
+export default async function Page({
+  params,
+}: {
+  params: { policy_number: string };
+}) {
+  const supabase = createClient();
+  const user: UserResponse = await supabase.auth.getUser();
 
-export default page;
+  if (!user.data.user) {
+    return await bounceOut();
+  }
+  const data = await getClient(params.policy_number);
+
+  if (data?.agentId != user.data.user.id) {
+    return redirect("/");
+  }
+
+  const allocatedFunds = parseTransactions(data);
+  let cashFund = 0;
+
+  const dailyPrices = await getPrices();
+
+  return (
+    <section className="grid grid-cols-3 gap-4 mx-10">
+      <div className=" border border-gray-300 rounded-lg p-4">
+        <div>
+          Name:&nbsp;<span>{data?.profile.name}</span>
+        </div>
+        <div>
+          Commencement Date:&nbsp;
+          <span>{data?.profile.commencementDate}</span>
+        </div>
+        <div>
+          Policy Number:&nbsp;<span>{data?.policyNumber}</span>
+        </div>
+        <div>
+          Premium:&nbsp;<span>{data?.profile.premium}</span>
+        </div>
+        <div>
+          Premium Frequency:&nbsp;<span>{data?.profile.premiumFreq}</span>
+        </div>
+        <div>
+          Last Updated:&nbsp;<span>{data?.lastUpdated}</span>
+        </div>
+      </div>
+      <div className="border border-gray-300 rounded-lg p-4 col-span-2">
+        <Table>
+          <TableCaption>Portfolio Summary</TableCaption>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="">Fund Name</TableHead>
+              <TableHead>Total Fund Units</TableHead>
+              <TableHead>Unit Price, SGD (Fund Currency)</TableHead>
+              <TableHead>Total Fund Value</TableHead>
+              <TableHead className="text-right">Apportionment Rate</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {data?.policyDetails.funds
+              .filter(
+                (fund) => +fund.totalFundUnits.trim().split(",").join("") > 0.1
+              )
+              .map((fund) => (
+                <TableRow
+                  className={`${fund.name.includes("Cash") && "bg-yellow-300"}`}
+                >
+                  <TableCell className="font-medium">{fund.name}</TableCell>
+                  <TableCell>{fund.totalFundUnits}</TableCell>
+                  <TableCell>{fund.unitPrice}</TableCell>
+                  <TableCell>{fund.totalFundValue}</TableCell>
+                  <TableCell className="text-right">
+                    {fund.apportionmentRate}
+                  </TableCell>
+                </TableRow>
+              ))}
+          </TableBody>
+          <TableFooter>
+            <TableRow>
+              <TableCell className="font-medium">
+                Total Investment Value:
+              </TableCell>
+              <TableCell className="text-right" colSpan={4}>
+                {data?.policyDetails.tiv}
+              </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell className="font-medium">
+                Total Investment Amount:
+              </TableCell>
+              <TableCell className="text-right" colSpan={4}>
+                {formatUnits(data?.policyDetails.tia!)}
+              </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell className="font-medium">Gross Profit:</TableCell>
+              <TableCell className="text-right" colSpan={4}>
+                {formatPercent(+data?.policyDetails.grossProfit!)}
+              </TableCell>
+            </TableRow>
+          </TableFooter>
+        </Table>
+      </div>
+      <div className="border border-gray-300 rounded-lg p-4 col-span-3">
+        <Table>
+          <TableCaption>Transactions</TableCaption>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Funds</TableHead>
+              <TableHead colSpan={8}>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="w-[150px]">Date</TableHead>
+                      <TableHead className="w-[150px]">Price</TableHead>
+                      <TableHead className="w-[150px]">Units</TableHead>
+                      <TableHead className="w-[150px]">Value</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                </Table>
+              </TableHead>
+              <TableHead>Avg Price After Policy Fee</TableHead>
+              <TableHead>Current Fund Price</TableHead>
+              <TableHead>% Return</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {allocatedFunds.map((fund) => (
+              <TableRow>
+                <TableCell className="font-medium" width={100}>
+                  {
+                    dailyPrices.funds.find(
+                      (dp: { fundCode: any }) => dp.fundCode === fund.code
+                    ).fundName
+                  }
+                </TableCell>
+                <TableCell colSpan={8}>
+                  <Table>
+                    <TableBody>
+                      {fund.transactions.map((trx) => (
+                        <TableRow
+                          className={`${
+                            trx.units < 0 ? "text-red-500" : "text-greem-500"
+                          }`}
+                        >
+                          <TableCell className="w-[150px]">
+                            {trx.date}
+                          </TableCell>
+                          <TableCell className="w-[150px]">
+                            {trx.price}
+                          </TableCell>
+                          <TableCell className="w-[150px]">
+                            {formatUnits(trx.units)}
+                          </TableCell>
+                          <TableCell className="w-[150px]">
+                            {formatUnits(trx.value)}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                    <TableFooter>
+                      <TableRow>
+                        <TableCell>Total (After Fees):</TableCell>
+                        <TableCell></TableCell>
+                        <TableCell>
+                          {formatUnits(fund.totalUnitsAfterFees)}
+                        </TableCell>
+                        <TableCell>
+                          {formatUnits(fund.totalValueAfterFees)}
+                        </TableCell>
+                      </TableRow>
+                    </TableFooter>
+                  </Table>
+                </TableCell>
+                <TableCell>{formatUnits(fund.averagePrice!)}</TableCell>
+                <TableCell>
+                  {formatUnits(
+                    dailyPrices.funds.find(
+                      (dp: { fundCode: string }) => dp.fundCode === fund.code
+                    ).fundBidPrice
+                  )}
+                </TableCell>
+                <TableCell>
+                  {formatPercent(
+                    (+formatUnits(
+                      +dailyPrices.funds
+                        .find(
+                          (dp: { fundCode: string }) =>
+                            dp.fundCode === fund.code
+                        )
+                        .fundBidPrice.trim()
+                        .split(",")
+                        .join("")
+                    ) -
+                      +formatUnits(fund.averagePrice!)) /
+                      +formatUnits(fund.averagePrice!)
+                  )}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+          {/* <TableFooter>
+            <TableRow>
+              <TableCell className="font-medium">Cash Fund:</TableCell>
+              <TableCell className="text-right" colSpan={4}>
+                {formatUnits(cashFund)}
+              </TableCell>
+            </TableRow>
+          </TableFooter> */}
+        </Table>
+      </div>
+    </section>
+  );
+}

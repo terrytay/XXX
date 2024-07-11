@@ -80,7 +80,13 @@ export const columns: ColumnDef<Client>[] = [
       );
     },
     cell: ({ row }) => {
-      return <div>{row.getValue("policy_number")}</div>;
+      return (
+        <div>
+          <Link href={`portfolio/${row.getValue("policy_number")}`}>
+            {row.getValue("policy_number")}
+          </Link>
+        </div>
+      );
     },
   },
   {
