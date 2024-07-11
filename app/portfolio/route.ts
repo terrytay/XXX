@@ -11,7 +11,7 @@ export async function POST(request: Request) {
 
 const updateClient = async (data: FpmsData) => {
   const connection = await DBClient.connect();
-  const db = connection.db(process.env.DB_NAME);
+  const db = connection.db(process.env.DB_NAME!);
 
   try {
     const policies = db.collection("policies");
