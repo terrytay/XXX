@@ -16,6 +16,7 @@ import { bounceOut } from "@/app/auth/action";
 import { redirect } from "next/navigation";
 import { parseTransactions } from "@/utils/transactionsParser";
 import { getPrices } from "@/app/prices/action";
+import PolicyChart from "@/components/Chart";
 
 export default async function Page({
   params,
@@ -41,28 +42,45 @@ export default async function Page({
 
   return (
     <section className="grid grid-cols-3 gap-4 mx-10">
-      <div className=" border border-gray-300 rounded-lg p-4">
-        <div>
-          Name:&nbsp;<span>{data?.profile.name}</span>
-        </div>
-        <div>
-          Commencement Date:&nbsp;
-          <span>{data?.profile.commencementDate}</span>
-        </div>
-        <div>
-          Policy Number:&nbsp;<span>{data?.policyNumber}</span>
-        </div>
-        <div>
-          Premium:&nbsp;<span>{data?.profile.premium}</span>
-        </div>
-        <div>
-          Premium Frequency:&nbsp;<span>{data?.profile.premiumFreq}</span>
-        </div>
-        <div>
-          Last Updated:&nbsp;<span>{data?.lastUpdated}</span>
-        </div>
+      <div className=" border border-gray-300 rounded-lg p-4 space-y-2 text-lg">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead colSpan={2} className="text-center">
+                Client Profile
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            <TableRow>
+              <TableCell>Name</TableCell>
+              <TableCell>{data?.profile.name}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>Commencement Date</TableCell>
+              <TableCell>{data?.profile.commencementDate}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>Policy Number</TableCell>
+              <TableCell>{data?.policyNumber}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>Premium</TableCell>
+              <TableCell>{data?.profile.premium}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>Premium Frequency</TableCell>
+              <TableCell>{data?.profile.premiumFreq}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>Last Updated</TableCell>
+              <TableCell>{data?.lastUpdated}</TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
       </div>
-      <div className="border border-gray-300 rounded-lg p-4 col-span-2">
+      <PolicyChart stringData={JSON.stringify(data)} />
+      <div className="border border-gray-300 rounded-lg p-4 col-span-3">
         <Table>
           <TableCaption>Portfolio Summary</TableCaption>
           <TableHeader>
