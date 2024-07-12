@@ -32,7 +32,6 @@ export default async function Page({
     return await bounceOut();
   }
   const data = await getClient(params.policy_number);
-  const record = await getClient(params.policy_number);
 
   if (data?.agentId != user.data.user.id) {
     return redirect("/");
@@ -80,10 +79,10 @@ export default async function Page({
       </Card>
 
       <PolicyChart stringData={JSON.stringify(data)} />
-      <GainsChart
+      {/* <GainsChart
         stringData={JSON.stringify(record)}
         lastUpdated={data.lastUpdated}
-      />
+      /> */}
       <div className="border border-gray-300 rounded-lg p-4 col-span-3">
         <Table>
           <TableCaption>Portfolio Summary</TableCaption>
