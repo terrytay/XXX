@@ -1,4 +1,4 @@
-import { DBClient } from "@/utils/db";
+import { connectDB } from "@/utils/db";
 import { FpmsData } from "@/utils/types/fpms";
 import { NextResponse } from "next/server";
 
@@ -40,7 +40,7 @@ export async function POST(request: Request) {
 }
 
 const updateClient = async (data: FpmsData) => {
-  const connection = await DBClient.connect();
+  const connection = await connectDB();
   const db = connection.db(process.env.DB_NAME!);
 
   try {
@@ -59,7 +59,5 @@ const updateClient = async (data: FpmsData) => {
     return Response.json({ isSuccess: result.acknowledged });
   } catch (error) {
     throw error;
-  } finally {
-    await DBClient.close();
   }
 };

@@ -98,9 +98,10 @@ export default async function Page({
           <TableBody>
             {data?.policyDetails.funds
               .filter(
-                (fund) => +fund.totalFundUnits.trim().split(",").join("") > 0.1
+                (fund: { totalFundUnits: string }) =>
+                  +fund.totalFundUnits.trim().split(",").join("") > 0.1
               )
-              .map((fund) => (
+              .map((fund: any) => (
                 <TableRow
                   className={`${fund.name.includes("Cash") && "bg-yellow-300"}`}
                 >

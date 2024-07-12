@@ -1,8 +1,8 @@
-import { DBClient } from "@/utils/db";
+import { connectDB } from "@/utils/db";
 import { FpmsData, PolicyRecord } from "@/utils/types/fpms";
 
 export const getClient = async (policy_number: string) => {
-  const connection = await DBClient.connect();
+  const connection = await connectDB();
   const db = connection.db(process.env.DB_NAME);
 
   try {
@@ -14,13 +14,11 @@ export const getClient = async (policy_number: string) => {
     if (result != null) return result;
   } catch (error) {
     throw error;
-  } finally {
-    await DBClient.close();
   }
 };
 
 export const getRecord = async (policy_number: string) => {
-  const connection = await DBClient.connect();
+  const connection = await connectDB();
   const db = connection.db(process.env.DB_NAME);
 
   try {
@@ -32,7 +30,5 @@ export const getRecord = async (policy_number: string) => {
     if (result != null) return result;
   } catch (error) {
     throw error;
-  } finally {
-    await DBClient.close();
   }
 };
