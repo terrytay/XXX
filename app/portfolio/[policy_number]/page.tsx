@@ -16,7 +16,9 @@ import { bounceOut } from "@/app/auth/action";
 import { redirect } from "next/navigation";
 import { parseTransactions } from "@/utils/transactionsParser";
 import { getPrices } from "@/app/prices/action";
-import PolicyChart from "@/components/Chart";
+import PolicyChart from "@/components/FundHoldingChart";
+import { Card, CardDescription, CardHeader } from "@/components/ui/card";
+import GainsChart from "@/components/GainsChart";
 
 export default async function Page({
   params,
@@ -30,6 +32,7 @@ export default async function Page({
     return await bounceOut();
   }
   const data = await getClient(params.policy_number);
+  const record = await getClient(params.policy_number);
 
   if (data?.agentId != user.data.user.id) {
     return redirect("/");
@@ -42,15 +45,11 @@ export default async function Page({
 
   return (
     <section className="grid grid-cols-3 gap-4 mx-10">
-      <div className=" border border-gray-300 rounded-lg p-4 space-y-2 text-lg">
+      <Card className="flex flex-col">
+        <CardHeader className="items-center pb-0">
+          <CardDescription className="text-md">Client Profile</CardDescription>
+        </CardHeader>
         <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead colSpan={2} className="text-center">
-                Client Profile
-              </TableHead>
-            </TableRow>
-          </TableHeader>
           <TableBody>
             <TableRow>
               <TableCell>Name</TableCell>
@@ -78,8 +77,13 @@ export default async function Page({
             </TableRow>
           </TableBody>
         </Table>
-      </div>
+      </Card>
+
       <PolicyChart stringData={JSON.stringify(data)} />
+      <GainsChart
+        stringData={JSON.stringify(record)}
+        lastUpdated={data.lastUpdated}
+      />
       <div className="border border-gray-300 rounded-lg p-4 col-span-3">
         <Table>
           <TableCaption>Portfolio Summary</TableCaption>

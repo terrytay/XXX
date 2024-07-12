@@ -1,3 +1,13 @@
+export type PolicyRecord = {
+  agentId: string;
+  policyNumber: string;
+  data: {
+    date: string;
+    tiv: number;
+    tia: number;
+  }[];
+};
+
 export type PolicyFund = {
   name: string;
   totalFundUnits: string;

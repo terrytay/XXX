@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { TrendingUp } from "lucide-react";
-import { Label, Pie, PieChart } from "recharts";
+import { Cell, Label, LabelList, Pie, PieChart } from "recharts";
 
 import {
   Card,
@@ -29,8 +29,11 @@ export default function PolicyChart({ stringData }: { stringData: string }) {
     .filter((fund) => +fund.totalFundUnits.trim().split(",").join("") > 0.1)
     .map((fund) => ({
       name: fund.name,
-      totalFundValue: +fund.totalFundValue.trim().split(",").join(""),
+      totalFundValue:
+        (100 * +fund.totalFundValue.trim().split(",").join("")) /
+        +data.policyDetails.tiv.trim().split(",").join(""),
     }));
+
   let chartConfig = {
     totalFundValue: {
       label: "Value",
@@ -44,7 +47,7 @@ export default function PolicyChart({ stringData }: { stringData: string }) {
       </CardHeader>
       <CardContent className="flex-1 pb-0">
         <ChartContainer
-          config={{}}
+          config={chartConfig}
           className="mx-auto aspect-square max-h-[280px]"
         >
           <PieChart>
@@ -52,6 +55,7 @@ export default function PolicyChart({ stringData }: { stringData: string }) {
               cursor={false}
               content={<ChartTooltipContent hideLabel />}
             />
+
             <Pie
               data={funds}
               dataKey="totalFundValue"
@@ -59,48 +63,24 @@ export default function PolicyChart({ stringData }: { stringData: string }) {
               innerRadius={60}
               strokeWidth={5}
             >
-              <Label
-                fill={COLORS[Math.random() % COLORS.length]}
-                content={({ viewBox }) => {
-                  if (viewBox && "cx" in viewBox && "cy" in viewBox) {
-                    return (
-                      <text
-                        x={viewBox.cx}
-                        y={viewBox.cy}
-                        textAnchor="middle"
-                        dominantBaseline="middle"
-                      >
-                        <tspan
-                          x={viewBox.cx}
-                          y={viewBox.cy}
-                          className="fill-foreground text-xl font-bold"
-                        >
-                          {data.policyDetails.tiv}
-                        </tspan>
-                        <tspan
-                          x={viewBox.cx}
-                          y={(viewBox.cy || 0) + 24}
-                          className="fill-muted-foreground"
-                        >
-                          Value
-                        </tspan>
-                      </text>
-                    );
-                  }
-                }}
-              />
+              {funds.map((entry, index) => (
+                <Cell
+                  key={`cell-${index}`}
+                  fill={COLORS[index % COLORS.length]}
+                />
+              ))}
             </Pie>
           </PieChart>
         </ChartContainer>
       </CardContent>
-      {/* <CardFooter className="flex-col gap-2 text-sm">
+      <CardFooter className="flex-col gap-2 text-sm">
         <div className="flex items-center gap-2 font-medium leading-none">
-          Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
+          <span>Allocation of current portfolio (%)</span>
         </div>
         <div className="leading-none text-muted-foreground">
-          Showing total visitors for the last 6 months
+          Updated as of {data.lastUpdated}
         </div>
-      </CardFooter> */}
+      </CardFooter>
     </Card>
   );
 }
