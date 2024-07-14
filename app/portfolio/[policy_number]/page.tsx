@@ -1,4 +1,4 @@
-import { getClient } from "../action";
+import { getClient, getDividends } from "../action";
 import {
   Table,
   TableBody,
@@ -9,7 +9,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { formatAmount, formatPercent, formatUnits } from "@/utils/formatters";
+import {
+  format2dp,
+  formatAmount,
+  formatPercent,
+  formatUnits,
+} from "@/utils/formatters";
 import { createClient } from "@/utils/supabase/server";
 import { UserResponse } from "@supabase/supabase-js";
 import { bounceOut } from "@/app/auth/action";
@@ -32,6 +37,7 @@ export default async function Page({
     return await bounceOut();
   }
   const data = await getClient(params.policy_number);
+  const dividends = await getDividends(params.policy_number);
 
   if (data?.agentId != user.data.user.id) {
     return redirect("/");
@@ -129,7 +135,7 @@ export default async function Page({
                 Total Investment Amount:
               </TableCell>
               <TableCell className="text-right" colSpan={4}>
-                {formatUnits(data?.policyDetails.tia!)}
+                {format2dp(data?.policyDetails.tia!)}
               </TableCell>
             </TableRow>
             <TableRow>
@@ -141,6 +147,67 @@ export default async function Page({
           </TableFooter>
         </Table>
       </div>
+      {dividends && (
+        <div className="border border-gray-300 rounded-lg p-4 col-span-3">
+          <Table>
+            <TableCaption>Dividends</TableCaption>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Fund Name</TableHead>
+                <TableHead>Payout Mode</TableHead>
+                <TableHead>Dividend Rate</TableHead>
+                <TableHead>Dividend Rate (Annualised)</TableHead>
+                <TableHead>Date</TableHead>
+                <TableHead>Payment Method</TableHead>
+                <TableHead className="text-right">Amount</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {dividends.dividends.map((dividend) => (
+                <TableRow>
+                  <TableCell>
+                    {
+                      dailyPrices.funds.find(
+                        (dp: { fundCode: any }) => dp.fundCode === dividend.code
+                      ).fundName
+                    }
+                  </TableCell>
+                  <TableCell>{dividend.payout}</TableCell>
+                  <TableCell>
+                    {formatUnits(
+                      +dividend.rate.split(",").join("").split("%").join("")
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    {formatUnits(
+                      +dividend.rate.split(",").join("").split("%").join("") *
+                        12
+                    )}
+                  </TableCell>
+
+                  <TableCell>{dividend.date}</TableCell>
+                  <TableCell>{dividend.method}</TableCell>
+                  <TableCell className="text-right">
+                    {dividend.amount}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+            <TableFooter>
+              <TableRow>
+                <TableCell>Total Dividend Amount:</TableCell>
+                <TableCell className="text-right" colSpan={6}>
+                  {format2dp(
+                    dividends.dividends.reduce(function (acc, obj) {
+                      return acc + +obj.amount.split(",").join("");
+                    }, 0)
+                  )}
+                </TableCell>
+              </TableRow>
+            </TableFooter>
+          </Table>
+        </div>
+      )}
       <div className="border border-gray-300 rounded-lg p-4 col-span-3">
         <Table>
           <TableCaption>Transactions</TableCaption>
@@ -190,10 +257,10 @@ export default async function Page({
                             {trx.price}
                           </TableCell>
                           <TableCell className="w-[150px]">
-                            {formatUnits(trx.units)}
+                            {format2dp(trx.units)}
                           </TableCell>
                           <TableCell className="w-[150px]">
-                            {formatUnits(trx.value)}
+                            {format2dp(trx.value)}
                           </TableCell>
                         </TableRow>
                       ))}
@@ -203,10 +270,10 @@ export default async function Page({
                         <TableCell>Total (After Fees):</TableCell>
                         <TableCell></TableCell>
                         <TableCell>
-                          {formatUnits(fund.totalUnitsAfterFees)}
+                          {format2dp(fund.totalUnitsAfterFees)}
                         </TableCell>
                         <TableCell>
-                          {formatUnits(fund.totalValueAfterFees)}
+                          {format2dp(fund.totalValueAfterFees)}
                         </TableCell>
                       </TableRow>
                     </TableFooter>

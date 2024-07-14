@@ -1,5 +1,5 @@
 import client from "@/utils/db";
-import { FpmsData } from "@/utils/types/fpms";
+import { DividendData } from "@/utils/types/fpms";
 import { NextResponse } from "next/server";
 
 const allowedOrigins = ["https://fpms.greateasternlife.com"];
@@ -26,8 +26,8 @@ export async function OPTIONS(request: Request) {
 }
 
 export async function POST(request: Request) {
-  const data: FpmsData = await request.json();
-  await updateClient(data);
+  const data: DividendData = await request.json();
+  await updateDividend(data);
 
   return NextResponse.json("OK", {
     status: 200,
@@ -39,12 +39,12 @@ export async function POST(request: Request) {
   });
 }
 
-const updateClient = async (data: FpmsData) => {
+const updateDividend = async (data: DividendData) => {
   const connection = client;
   const db = connection.db(process.env.DB_NAME!);
 
   try {
-    const policies = db.collection("policies");
+    const policies = db.collection("dividends");
     const result = await policies.replaceOne(
       {
         policyNumber: data.policyNumber,

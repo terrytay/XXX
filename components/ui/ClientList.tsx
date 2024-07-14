@@ -110,11 +110,14 @@ export const columns: ColumnDef<Client>[] = [
     accessorKey: "policy_link",
     header: "Link",
     cell: ({ row }) => {
+      const link: string = row.getValue("policy_link");
       return (
-        <div>
-          <Link href={row.getValue("policy_link")}>
-            {row.getValue("policy_link")}
-          </Link>
+        <div className="flex flex-col space-y-2 w-[200px]">
+          {link.split(" ").map((link: string) => (
+            <Link href={link} key={link} className="truncate">
+              {link}
+            </Link>
+          ))}
         </div>
       );
     },

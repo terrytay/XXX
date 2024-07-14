@@ -1,3 +1,16 @@
+export type DividendData = {
+  agentId: string;
+  policyNumber: string;
+  dividends: {
+    amount: string;
+    payout: string;
+    code: string;
+    date: string;
+    method: string;
+    rate: string;
+  }[];
+};
+
 export type PolicyRecord = {
   agentId: string;
   policyNumber: string;

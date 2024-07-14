@@ -1,8 +1,24 @@
-import { connectDB } from "@/utils/db";
-import { FpmsData, PolicyRecord } from "@/utils/types/fpms";
+import client from "@/utils/db";
+import { DividendData, FpmsData, PolicyRecord } from "@/utils/types/fpms";
+
+export const getDividends = async (policy_number: string) => {
+  const connection = client;
+  const db = connection.db(process.env.DB_NAME);
+
+  try {
+    const policies = db.collection("dividends");
+    const result = await policies.findOne<DividendData>({
+      policyNumber: policy_number,
+    });
+
+    if (result != null) return result;
+  } catch (error) {
+    throw error;
+  }
+};
 
 export const getClient = async (policy_number: string) => {
-  const connection = await connectDB();
+  const connection = client;
   const db = connection.db(process.env.DB_NAME);
 
   try {
@@ -18,7 +34,7 @@ export const getClient = async (policy_number: string) => {
 };
 
 export const getRecord = async (policy_number: string) => {
-  const connection = await connectDB();
+  const connection = client;
   const db = connection.db(process.env.DB_NAME);
 
   try {
