@@ -79,7 +79,8 @@ export default async function Page({
               alt="copy"
               className="inline"
             />
-            &nbsp; icon TWICE.
+            &nbsp; icon TWICE. (You can also to the ILP dividend page and do the
+            same thing.)
             <Image
               src="/fpms.png"
               width={800}
