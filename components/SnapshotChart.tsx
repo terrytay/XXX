@@ -21,7 +21,6 @@ import { TrendingUp } from "lucide-react";
 export default function SnapshotChart({ stringData }: { stringData: string }) {
   const data: FpmsData = JSON.parse(stringData);
   const result = getTransactionsSnapshotByMonth(data);
-  console.log(result);
 
   return (
     <Card className="flex flex-col">
@@ -69,7 +68,8 @@ export default function SnapshotChart({ stringData }: { stringData: string }) {
           <span>TIV/TIA growth by month</span>
         </div>
         <div className="leading-none text-muted-foreground">
-          Updated as of {data.lastUpdated}
+          Updated as of{" "}
+          {data.transactions[data.transactions.length - 1].runDate}
         </div>
       </CardFooter>
     </Card>
