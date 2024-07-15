@@ -31,7 +31,6 @@ import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Toaster } from "./ui/sonner";
 import { toast } from "sonner";
-import { usePathname } from "next/navigation";
 import {
   Card,
   CardContent,
@@ -41,8 +40,15 @@ import {
 } from "./ui/card";
 const dayjs = require("dayjs");
 
-export function AllocationTimeline({ data }: { data: string }) {
-  const pathname = usePathname();
+export function AllocationTimeline({
+  data,
+  commencementMonth,
+  premiumFreq,
+}: {
+  data: string;
+  commencementMonth: string;
+  premiumFreq: string;
+}) {
   const currentYear = +dayjs().year();
   const [allocation, setAllocation] = useState<AgentClientAllocation>(
     JSON.parse(data)
@@ -150,7 +156,7 @@ export function AllocationTimeline({ data }: { data: string }) {
 
   function setTempDeleteDataFunction(year: number, key: number) {
     let tempAllocation: AgentClientAllocation = structuredClone(allocation);
-    tempAllocation[year].splice(key,1)
+    tempAllocation[year].splice(key, 1);
 
     setTempDeleteData(tempAllocation);
   }
@@ -234,18 +240,114 @@ export function AllocationTimeline({ data }: { data: string }) {
           </TableRow>
           <TableRow>
             <TableHead className="text-center">Fund</TableHead>
-            <TableHead className="text-center">Jan</TableHead>
-            <TableHead className="text-center">Feb</TableHead>
-            <TableHead className="text-center">Mar</TableHead>
-            <TableHead className="text-center">Apr</TableHead>
-            <TableHead className="text-center">May</TableHead>
-            <TableHead className="text-center">Jun</TableHead>
-            <TableHead className="text-center">Jul</TableHead>
-            <TableHead className="text-center">Aug</TableHead>
-            <TableHead className="text-center">Sep</TableHead>
-            <TableHead className="text-center">Oct</TableHead>
-            <TableHead className="text-center">Nov</TableHead>
-            <TableHead className="text-center">Dec</TableHead>
+            <TableHead
+              className={`${
+                commencementMonth === "01" && premiumFreq === "Yearly"
+                  ? "bg-yellow-300"
+                  : ""
+              } text-center`}
+            >
+              Jan
+            </TableHead>
+            <TableHead
+              className={`${
+                commencementMonth === "02" && premiumFreq === "Yearly"
+                  ? "bg-yellow-300"
+                  : ""
+              } text-center`}
+            >
+              Feb
+            </TableHead>
+            <TableHead
+              className={`${
+                commencementMonth === "03" && premiumFreq === "Yearly"
+                  ? "bg-yellow-300"
+                  : ""
+              } text-center`}
+            >
+              Mar
+            </TableHead>
+            <TableHead
+              className={`${
+                commencementMonth === "04" && premiumFreq === "Yearly"
+                  ? "bg-yellow-300"
+                  : ""
+              } text-center`}
+            >
+              Apr
+            </TableHead>
+            <TableHead
+              className={`${
+                commencementMonth === "05" && premiumFreq === "Yearly"
+                  ? "bg-yellow-300"
+                  : ""
+              } text-center`}
+            >
+              May
+            </TableHead>
+            <TableHead
+              className={`${
+                commencementMonth === "06" && premiumFreq === "Yearly"
+                  ? "bg-yellow-300"
+                  : ""
+              } text-center`}
+            >
+              Jun
+            </TableHead>
+            <TableHead
+              className={`${
+                commencementMonth === "07" && premiumFreq === "Yearly"
+                  ? "bg-yellow-300"
+                  : ""
+              } text-center`}
+            >
+              Jul
+            </TableHead>
+            <TableHead
+              className={`${
+                commencementMonth === "08" && premiumFreq === "Yearly"
+                  ? "bg-yellow-300"
+                  : ""
+              } text-center`}
+            >
+              Aug
+            </TableHead>
+            <TableHead
+              className={`${
+                commencementMonth === "09" && premiumFreq === "Yearly"
+                  ? "bg-yellow-300"
+                  : ""
+              } text-center`}
+            >
+              Sep
+            </TableHead>
+            <TableHead
+              className={`${
+                commencementMonth === "10" && premiumFreq === "Yearly"
+                  ? "bg-yellow-300"
+                  : ""
+              } text-center`}
+            >
+              Oct
+            </TableHead>
+            <TableHead
+              className={`${
+                commencementMonth === "11" && premiumFreq === "Yearly"
+                  ? "bg-yellow-300"
+                  : ""
+              } text-center`}
+            >
+              Nov
+            </TableHead>
+            <TableHead
+              className={`${
+                commencementMonth === "12" && premiumFreq === "Yearly"
+                  ? "bg-yellow-300"
+                  : ""
+              } text-center`}
+            >
+              Dec
+            </TableHead>
             <TableHead className="text-center"></TableHead>
           </TableRow>
         </TableHeader>

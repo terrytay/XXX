@@ -12,6 +12,9 @@ export const signIn = async () => {
     provider: "google",
     options: {
       redirectTo: `${origin}/auth/callback`,
+      queryParams: {
+        prompt: "consent",
+      },
     },
   });
 

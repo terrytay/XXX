@@ -71,6 +71,10 @@ export default async function Page({
               <TableCell>{data?.profile.name}</TableCell>
             </TableRow>
             <TableRow>
+              <TableCell>Product Name</TableCell>
+              <TableCell>{data?.policyDetails.productName}</TableCell>
+            </TableRow>
+            <TableRow>
               <TableCell>Commencement Date</TableCell>
               <TableCell>{data?.profile.commencementDate}</TableCell>
             </TableRow>
@@ -158,6 +162,8 @@ export default async function Page({
       <div className="border border-gray-300 rounded-lg p-4 col-span-3">
         <AllocationTimeline
           data={JSON.stringify(allocationData || templateAllocationData)}
+          commencementMonth={data.profile.commencementDate.split("/")[1]}
+          premiumFreq={data.profile.premiumFreq}
         />
       </div>
       {dividends && (

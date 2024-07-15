@@ -45,6 +45,7 @@ export type FpmsData = {
     tiv: string;
     tia: number;
     grossProfit: string;
+    productName: string;
   };
   transactions: {
     seq: string;
