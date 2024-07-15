@@ -150,7 +150,7 @@ export function AllocationTimeline({ data }: { data: string }) {
 
   function setTempDeleteDataFunction(year: number, key: number) {
     let tempAllocation: AgentClientAllocation = structuredClone(allocation);
-    delete tempAllocation[year][key];
+    tempAllocation[year].splice(key,1)
 
     setTempDeleteData(tempAllocation);
   }
