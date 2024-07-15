@@ -11,7 +11,7 @@ export async function POST(request: Request) {
   });
 }
 
-export const updateAllocations = async (data: AgentClientAllocation) => {
+const updateAllocations = async (data: AgentClientAllocation) => {
   const connection = client;
   const db = connection.db(process.env.DB_NAME);
 
