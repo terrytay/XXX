@@ -215,6 +215,12 @@ export function getTransactionsSnapshotByMonth(data: FpmsData): Snapshot[] {
     }
   });
 
+  finalResult[finalResult.length - 1].tia = data.policyDetails.tia;
+  finalResult[finalResult.length - 1].tiv = +data.policyDetails.tiv
+    .trim()
+    .split(",")
+    .join("");
+
   return finalResult;
 }
 

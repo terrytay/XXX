@@ -68,8 +68,7 @@ export default function SnapshotChart({ stringData }: { stringData: string }) {
           <span>TIV/TIA growth by month</span>
         </div>
         <div className="leading-none text-muted-foreground">
-          Updated as of{" "}
-          {data.transactions[data.transactions.length - 1].runDate}
+          Updated as of {data.lastUpdated}
         </div>
       </CardFooter>
     </Card>
