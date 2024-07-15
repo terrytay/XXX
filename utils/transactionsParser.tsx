@@ -23,8 +23,112 @@ type AllocatedFund = {
   averagePrice?: number;
 };
 
+type Snapshot = {
+  date: string;
+  tiv: number;
+  tia: number;
+};
+
 function convertStringToNumber(str: string) {
   return +str.trim().split(",").join("");
+}
+
+export function getTransactionsSnapshotByMonth(data: FpmsData): Snapshot[] {
+  const transactions = data.transactions;
+  let result: Snapshot[] = [];
+
+  transactions.forEach((transaction) => {
+    const [day, month, year] = transaction.runDate.split("/");
+    const runDate = month.concat("/").concat(year);
+    const index = result.findIndex((snapshot) => snapshot.date === runDate);
+    if (index === -1) {
+      if (transaction.type.includes(ApplicationType.Inflow)) {
+        console.log(transaction.transactionAmount);
+        result.push({
+          date: runDate,
+          tia: +transaction.transactionAmount.trim().split(",").join(""),
+          tiv: +transaction.transactionAmount.trim().split(",").join(""),
+        });
+      } else if (transaction.type.includes(ApplicationType.WelcomeBonus)) {
+        result.push({
+          date: runDate,
+          tia: 0,
+          tiv: +transaction.transactionAmount.trim().split(",").join(""),
+        });
+      } else if (transaction.type.includes(ApplicationType.SwitchOut)) {
+        result.push({
+          date: runDate,
+          tia: 0,
+          tiv: +transaction.transactionAmount.trim().split(",").join(""),
+        });
+      } else if (transaction.type.includes(ApplicationType.Fee)) {
+        result.push({
+          date: runDate,
+          tia: 0,
+          tiv: -1 * +transaction.transactionAmount.trim().split(",").join(""),
+        });
+      } else if (transaction.type.includes(ApplicationType.SwitchIn)) {
+        result.push({
+          date: runDate,
+          tia: 0,
+          tiv: +transaction.transactionAmount.trim().split(",").join(""),
+        });
+      }
+    } else {
+      if (transaction.type.includes(ApplicationType.Inflow)) {
+        result[index].tia += +transaction.transactionAmount
+          .trim()
+          .split(",")
+          .join("");
+        result[index].tiv += +transaction.transactionAmount
+          .trim()
+          .split(",")
+          .join("");
+      } else if (transaction.type.includes(ApplicationType.WelcomeBonus)) {
+        result[index].tia += 0;
+        result[index].tiv += +transaction.transactionAmount
+          .trim()
+          .split(",")
+          .join("");
+      } else if (transaction.type.includes(ApplicationType.SwitchOut)) {
+        result[index].tia += 0;
+        result[index].tiv += +transaction.transactionAmount
+          .trim()
+          .split(",")
+          .join("");
+      } else if (transaction.type.includes(ApplicationType.Fee)) {
+        result[index].tia += 0;
+        result[index].tiv -= +transaction.transactionAmount
+          .trim()
+          .split(",")
+          .join("");
+      } else if (transaction.type.includes(ApplicationType.SwitchIn)) {
+        result[index].tia += 0;
+        result[index].tiv += +transaction.transactionAmount
+          .trim()
+          .split(",")
+          .join("");
+      } else {
+      }
+    }
+  });
+
+  let finalResult: Snapshot[] = [];
+  let first = true;
+  result.reverse().forEach((res) => {
+    if (first) {
+      finalResult.push(res);
+    } else {
+      finalResult.push({
+        date: res.date,
+        tia: res.tia + finalResult[finalResult.length - 1].tia,
+        tiv: res.tiv + finalResult[finalResult.length - 1].tiv,
+      });
+    }
+    first = false;
+  });
+
+  return finalResult;
 }
 
 export function parseTransactions(data: FpmsData) {

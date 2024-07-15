@@ -23,10 +23,10 @@ import { parseTransactions } from "@/utils/transactionsParser";
 import { getPrices } from "@/app/prices/action";
 import PolicyChart from "@/components/FundHoldingChart";
 import { Card, CardDescription, CardHeader } from "@/components/ui/card";
-import GainsChart from "@/components/GainsChart";
 import { AllocationTimeline } from "@/components/AllocationTimeline";
 import { AgentClientAllocation } from "@/utils/types/allocation";
 import { Toaster } from "@/components/ui/sonner";
+import SnapshotChart from "@/components/SnapshotChart";
 
 export default async function Page({
   params,
@@ -99,10 +99,7 @@ export default async function Page({
       </Card>
 
       <PolicyChart stringData={JSON.stringify(data)} />
-      {/* <GainsChart
-        stringData={JSON.stringify(record)}
-        lastUpdated={data.lastUpdated}
-      /> */}
+      <SnapshotChart stringData={JSON.stringify(data)} />
       <div className="border border-gray-300 rounded-lg p-4 col-span-3">
         <Table>
           <TableCaption>Portfolio Summary</TableCaption>
