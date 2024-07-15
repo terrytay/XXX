@@ -1,5 +1,22 @@
 import client from "@/utils/db";
+import { AgentClientAllocation } from "@/utils/types/allocation";
 import { DividendData, FpmsData, PolicyRecord } from "@/utils/types/fpms";
+
+export const getAllocations = async (policy_number: string) => {
+  const connection = client;
+  const db = connection.db(process.env.DB_NAME);
+
+  try {
+    const allocations = db.collection("allocations");
+    const result = await allocations.findOne<AgentClientAllocation>({
+      policyNumber: policy_number,
+    });
+
+    if (result != null) return result;
+  } catch (error) {
+    throw error;
+  }
+};
 
 export const getDividends = async (policy_number: string) => {
   const connection = client;

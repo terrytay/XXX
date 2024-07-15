@@ -1,4 +1,4 @@
-import { getClient, getDividends } from "../action";
+import { getAllocations, getClient, getDividends } from "../action";
 import {
   Table,
   TableBody,
@@ -24,6 +24,9 @@ import { getPrices } from "@/app/prices/action";
 import PolicyChart from "@/components/FundHoldingChart";
 import { Card, CardDescription, CardHeader } from "@/components/ui/card";
 import GainsChart from "@/components/GainsChart";
+import { AllocationTimeline } from "@/components/AllocationTimeline";
+import { AgentClientAllocation } from "@/utils/types/allocation";
+import { Toaster } from "@/components/ui/sonner";
 
 export default async function Page({
   params,
@@ -38,6 +41,13 @@ export default async function Page({
   }
   const data = await getClient(params.policy_number);
   const dividends = await getDividends(params.policy_number);
+
+  const templateAllocationData: AgentClientAllocation = {
+    agentId: user.data.user.id,
+    policyNumber: params.policy_number,
+  };
+
+  const allocationData = await getAllocations(params.policy_number);
 
   if (data?.agentId != user.data.user.id) {
     return redirect("/");
@@ -108,9 +118,7 @@ export default async function Page({
                   +fund.totalFundUnits.trim().split(",").join("") > 0.1
               )
               .map((fund: any) => (
-                <TableRow
-                  className={`${fund.name.includes("Cash") && "bg-yellow-300"}`}
-                >
+                <TableRow>
                   <TableCell className="font-medium">{fund.name}</TableCell>
                   <TableCell>{fund.totalFundUnits}</TableCell>
                   <TableCell>{fund.unitPrice}</TableCell>
@@ -146,6 +154,11 @@ export default async function Page({
             </TableRow>
           </TableFooter>
         </Table>
+      </div>
+      <div className="border border-gray-300 rounded-lg p-4 col-span-3">
+        <AllocationTimeline
+          data={JSON.stringify(allocationData || templateAllocationData)}
+        />
       </div>
       {dividends && (
         <div className="border border-gray-300 rounded-lg p-4 col-span-3">
@@ -316,6 +329,7 @@ export default async function Page({
           </TableFooter> */}
         </Table>
       </div>
+      <Toaster />
     </section>
   );
 }
