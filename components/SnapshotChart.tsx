@@ -27,8 +27,8 @@ export default function SnapshotChart({ stringData }: { stringData: string }) {
       <CardHeader className="items-center pb-0">
         <CardDescription className="text-md">Investment Growth</CardDescription>
       </CardHeader>
-      <CardContent className="pt-4">
-        <ChartContainer config={{}}>
+      <CardContent className="flex-1 pb-4 pt-4">
+        <ChartContainer config={{}} className="mx-auto max-h-[280px]">
           <LineChart
             accessibilityLayer
             data={result}
