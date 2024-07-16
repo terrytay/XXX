@@ -69,13 +69,10 @@ export default async function Page({
   duration = duration
     .replace("Y", " Years")
     .replace("1 Years", "1 Year")
-    .replace("0 Years", "")
     .replace("M", " Months")
     .replace("1 Months", "1 Month")
-    .replace("0 Months", "")
     .replace("D", " Days")
-    .replace("1 Days", "1 Day")
-    .replace("0 Days", "");
+    .replace("1 Days", "1 Day");
   return (
     <section className="grid grid-cols-3 gap-4 mx-10">
       <Card className="flex flex-col">
