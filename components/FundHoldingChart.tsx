@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { TrendingUp } from "lucide-react";
-import { Cell, Label, LabelList, Pie, PieChart } from "recharts";
+import { Cell, Label, LabelList, Legend, Pie, PieChart } from "recharts";
 
 import {
   Card,
@@ -70,6 +70,7 @@ export default function PolicyChart({ stringData }: { stringData: string }) {
                 />
               ))}
             </Pie>
+            <Legend verticalAlign="bottom" height={5} />
           </PieChart>
         </ChartContainer>
       </CardContent>

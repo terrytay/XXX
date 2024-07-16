@@ -15,12 +15,59 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "./ui/chart";
-import { CartesianGrid, Line, LineChart, XAxis } from "recharts";
-import { TrendingUp } from "lucide-react";
+import { CartesianGrid, Legend, Line, LineChart, XAxis } from "recharts";
+import { ArrowDown, ArrowUp, TrendingUp } from "lucide-react";
+import { useEffect, useState } from "react";
 
 export default function SnapshotChart({ stringData }: { stringData: string }) {
   const data: FpmsData = JSON.parse(stringData);
   const result = getTransactionsSnapshotByMonth(data);
+
+  const [benchmark, editBenchmark] = useState(6.0);
+  const [toggleEdit, setToggleEdit] = useState(false);
+
+  let displayData: {
+    date: string;
+    tia: number;
+    tiv: number;
+    benchPrice: number;
+  }[] = [];
+
+  let isFirst = true;
+
+  result.forEach((res) => {
+    if (isFirst) {
+      const date = res.date;
+      const tiv = res.tiv;
+      const tia = res.tia;
+      const benchPrice = res.tia * (1 + benchmark / 1200);
+      displayData.push({
+        date: date,
+        tiv: tiv,
+        tia: tia,
+        benchPrice: benchPrice,
+      });
+      isFirst = false;
+    } else {
+      const date = res.date;
+      const tiv = res.tiv;
+      const tia = res.tia;
+      const benchPrice =
+        (res.tia -
+          displayData[displayData.length - 1].tia +
+          displayData[displayData.length - 1].benchPrice) *
+        (1 + benchmark / 1200);
+
+      displayData.push({
+        date: date,
+        tiv: tiv,
+        tia: tia,
+        benchPrice: benchPrice,
+      });
+    }
+  });
+
+  console.log(displayData);
 
   return (
     <Card className="flex flex-col">
@@ -31,7 +78,7 @@ export default function SnapshotChart({ stringData }: { stringData: string }) {
         <ChartContainer config={{}} className="mx-auto max-h-[280px]">
           <LineChart
             accessibilityLayer
-            data={result}
+            data={displayData}
             margin={{
               left: 12,
               right: 12,
@@ -48,6 +95,7 @@ export default function SnapshotChart({ stringData }: { stringData: string }) {
             <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
             <Line
               dataKey="tiv"
+              name="Total Investment Value"
               type="monotone"
               stroke="#000000"
               strokeWidth={2}
@@ -55,17 +103,51 @@ export default function SnapshotChart({ stringData }: { stringData: string }) {
             />
             <Line
               dataKey="tia"
+              name="Total Investment Amount"
               type="monotone"
               stroke="#FF0000"
               strokeWidth={2}
               dot={false}
             />
+            <Line
+              dataKey="benchPrice"
+              name="Benchmark"
+              type="monotone"
+              stroke="#0000FF"
+              strokeWidth={2}
+              dot={false}
+            />
+            <Legend verticalAlign="bottom" height={5} />
           </LineChart>
         </ChartContainer>
       </CardContent>
       <CardFooter className="flex-col gap-2 text-sm">
         <div className="flex items-center gap-2 font-medium leading-none">
-          <span>TIV/TIA growth by month</span>
+          <span>
+            Benchmark projected at&nbsp;
+            {!toggleEdit && (
+              <span onClick={() => setToggleEdit(true)}>{benchmark}</span>
+            )}
+            {toggleEdit && (
+              <form
+                className="inline"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  setToggleEdit(false);
+                }}
+              >
+                <input
+                  value={benchmark}
+                  type="number"
+                  step="0.01"
+                  className="w-8"
+                  onChange={(e) => editBenchmark(+e.target.value)}
+                />
+                <input type="submit" hidden />
+              </form>
+            )}
+            % p.a. growth
+          </span>
         </div>
         <div className="leading-none text-muted-foreground">
           Updated as of {data.lastUpdated}

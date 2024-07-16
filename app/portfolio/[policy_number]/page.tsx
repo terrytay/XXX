@@ -27,6 +27,8 @@ import { AllocationTimeline } from "@/components/AllocationTimeline";
 import { AgentClientAllocation } from "@/utils/types/allocation";
 import { Toaster } from "@/components/ui/sonner";
 import SnapshotChart from "@/components/SnapshotChart";
+import moment from "moment";
+import { dateDiff } from "@/utils/date";
 
 export default async function Page({
   params,
@@ -58,6 +60,22 @@ export default async function Page({
 
   const dailyPrices = await getPrices();
 
+  let today = new Date().toISOString().slice(0, 10);
+
+  let [day, month, year] = data.profile.commencementDate.split("/");
+  const startDate = year.concat("-").concat(month).concat("-").concat(day);
+
+  let duration = dateDiff(startDate, today);
+  duration = duration
+    .replace("Y", " Years")
+    .replace("1 Years", "1 Year")
+    .replace("0 Years", "")
+    .replace("M", " Months")
+    .replace("1 Months", "1 Month")
+    .replace("0 Months", "")
+    .replace("D", " Days")
+    .replace("1 Days", "1 Day")
+    .replace("0 Days", "");
   return (
     <section className="grid grid-cols-3 gap-4 mx-10">
       <Card className="flex flex-col">
@@ -77,6 +95,10 @@ export default async function Page({
             <TableRow>
               <TableCell>Commencement Date</TableCell>
               <TableCell>{data?.profile.commencementDate}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>Policy Duration</TableCell>
+              <TableCell>{duration}</TableCell>
             </TableRow>
             <TableRow>
               <TableCell>Policy Number</TableCell>
@@ -106,8 +128,8 @@ export default async function Page({
           <TableHeader>
             <TableRow>
               <TableHead className="">Fund Name</TableHead>
-              <TableHead>Total Fund Units</TableHead>
-              <TableHead>Unit Price, SGD (Fund Currency)</TableHead>
+              <TableHead>Total Units</TableHead>
+              <TableHead>Current Price</TableHead>
               <TableHead>Total Fund Value</TableHead>
               <TableHead className="text-right">Apportionment Rate</TableHead>
             </TableRow>
