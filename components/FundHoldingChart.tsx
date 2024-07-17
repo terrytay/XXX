@@ -48,7 +48,7 @@ export default function PolicyChart({ stringData }: { stringData: string }) {
       <CardContent className="flex-1 pb-0">
         <ChartContainer
           config={chartConfig}
-          className="mx-auto aspect-square max-h-[280px]"
+          className="mx-auto aspect-square max-h-[300px]"
         >
           <PieChart>
             <ChartTooltip
@@ -70,7 +70,7 @@ export default function PolicyChart({ stringData }: { stringData: string }) {
                 />
               ))}
             </Pie>
-            <Legend verticalAlign="bottom" height={5} />
+            <Legend verticalAlign="bottom" className="" />
           </PieChart>
         </ChartContainer>
       </CardContent>

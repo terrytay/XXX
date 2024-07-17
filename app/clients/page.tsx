@@ -2,7 +2,7 @@ import DataTable, { Client, columns } from "@/components/ui/ClientList";
 import { createClient } from "@/utils/supabase/server";
 import { bounceOut } from "../auth/action";
 import { UserResponse } from "@supabase/supabase-js";
-import { getClient, getClients } from "../portfolio/action";
+import { getAllDividends, getClient, getClients } from "../portfolio/action";
 import moment from "moment";
 import { formatPercent } from "@/utils/formatters";
 
@@ -31,17 +31,36 @@ export default async function ClientList() {
 
   const data = await getData();
   const clients = (await getClients(data.map((d) => d.policy_number))) || [];
+  const allDividends =
+    (await getAllDividends(data.map((d) => d.policy_number))) || [];
+
   let res: Client[] = [];
   data.forEach((d) => {
     const policies = clients.find(
       (val) => val.policyNumber === d.policy_number
     );
+    const dividends = allDividends.find(
+      (val) => val.policyNumber === d.policy_number
+    );
+
     if (policies != null) {
       const { policyDetails, profile } = policies;
       d.tiv = policyDetails.tiv;
       d.tia = policyDetails.tia;
-      d.grossProfit = formatPercent(+policyDetails.grossProfit);
       d.productName = policyDetails.productName;
+
+      let totalDividendsPaidout = 0;
+      dividends?.dividends.forEach((div) => {
+        if (div.method !== "Reinvest") {
+          totalDividendsPaidout += +div.amount.trim().split(",").join();
+        }
+      });
+      d.grossProfit = formatPercent(
+        (+policyDetails.tiv.trim().split(",").join("") +
+          totalDividendsPaidout -
+          policyDetails.tia) /
+          policyDetails.tia
+      );
 
       d.commencementDate = moment(profile.commencementDate, "DD/MM/YYYY")
         .toString()

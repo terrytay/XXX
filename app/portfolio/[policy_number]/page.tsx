@@ -43,6 +43,12 @@ export default async function Page({
   }
   const data = await getClient(params.policy_number);
   const dividends = await getDividends(params.policy_number);
+  let totalDividendsPaidout = 0;
+  dividends?.dividends.forEach((div) => {
+    if (div.method !== "Reinvest") {
+      totalDividendsPaidout += +div.amount.trim().split(",").join();
+    }
+  });
 
   const templateAllocationData: AgentClientAllocation = {
     agentId: user.data.user.id,
@@ -55,14 +61,14 @@ export default async function Page({
     return redirect("/");
   }
 
-  const allocatedFunds = parseTransactions(data);
+  const allocatedFunds = parseTransactions(data!);
   let cashFund = 0;
 
   const dailyPrices = await getPrices();
 
   let today = new Date().toISOString().slice(0, 10);
 
-  let [day, month, year] = data.profile.commencementDate.split("/");
+  let [day, month, year] = data!.profile.commencementDate.split("/");
   const startDate = year.concat("-").concat(month).concat("-").concat(day);
 
   let duration = dateDiff(startDate, today);
@@ -192,6 +198,17 @@ export default async function Page({
                 {data?.policyDetails.tiv}
               </TableCell>
             </TableRow>
+            {totalDividendsPaidout > 0 && (
+              <TableRow>
+                <TableCell className="font-medium">
+                  Total Dividends Received:
+                </TableCell>
+                <TableCell className="text-right" colSpan={6}>
+                  {format2dp(totalDividendsPaidout)}
+                </TableCell>
+              </TableRow>
+            )}
+
             <TableRow>
               <TableCell className="font-medium">
                 Total Investment Amount:
@@ -205,7 +222,10 @@ export default async function Page({
                 Return on Investment (ROI):
               </TableCell>
               <TableCell className="text-right" colSpan={6}>
-                {formatPercent(+data?.policyDetails.grossProfit!)}
+                {formatPercent(
+                  +data?.policyDetails.grossProfit! +
+                    totalDividendsPaidout / data?.policyDetails.tia!
+                )}
               </TableCell>
             </TableRow>
           </TableFooter>
@@ -214,8 +234,8 @@ export default async function Page({
       <div className="border border-gray-300 rounded-lg p-4 col-span-3">
         <AllocationTimeline
           data={JSON.stringify(allocationData || templateAllocationData)}
-          commencementMonth={data.profile.commencementDate.split("/")[1]}
-          premiumFreq={data.profile.premiumFreq}
+          commencementMonth={data!.profile.commencementDate.split("/")[1]}
+          premiumFreq={data!.profile.premiumFreq}
         />
       </div>
       {dividends && (

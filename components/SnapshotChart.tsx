@@ -20,6 +20,8 @@ import { ArrowDown, ArrowUp, TrendingUp } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export default function SnapshotChart({ stringData }: { stringData: string }) {
+  const [enableBenchmark, setEnableBenchmark] = useState(false);
+
   const data: FpmsData = JSON.parse(stringData);
   const result = getTransactionsSnapshotByMonth(data);
 
@@ -67,7 +69,7 @@ export default function SnapshotChart({ stringData }: { stringData: string }) {
     }
   });
 
-  console.log(displayData);
+  // console.log(displayData);
 
   return (
     <Card className="flex flex-col">
@@ -109,47 +111,54 @@ export default function SnapshotChart({ stringData }: { stringData: string }) {
               strokeWidth={2}
               dot={false}
             />
-            <Line
-              dataKey="benchPrice"
-              name="Benchmark"
-              type="monotone"
-              stroke="#0000FF"
-              strokeWidth={2}
-              dot={false}
-            />
+            {enableBenchmark && (
+              <Line
+                dataKey="benchPrice"
+                name="Benchmark"
+                type="monotone"
+                stroke="#0000FF"
+                strokeWidth={2}
+                dot={false}
+              />
+            )}
             <Legend verticalAlign="bottom" height={5} />
           </LineChart>
         </ChartContainer>
       </CardContent>
       <CardFooter className="flex-col gap-2 text-sm">
         <div className="flex items-center gap-2 font-medium leading-none">
-          <span>
-            Benchmark projected at&nbsp;
-            {!toggleEdit && (
-              <span onClick={() => setToggleEdit(true)}>{benchmark}</span>
-            )}
-            {toggleEdit && (
-              <form
-                className="inline"
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  setToggleEdit(false);
-                }}
-              >
-                <input
-                  value={benchmark}
-                  type="number"
-                  step="0.01"
-                  className="w-8"
-                  onChange={(e) => editBenchmark(+e.target.value)}
-                />
-                <input type="submit" hidden />
-              </form>
-            )}
-            % p.a. growth
-          </span>
+          {enableBenchmark && (
+            <span>
+              Benchmark projected at&nbsp;
+              {!toggleEdit && (
+                <span onClick={() => setToggleEdit(true)}>{benchmark}</span>
+              )}
+              {toggleEdit && (
+                <form
+                  className="inline"
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    setToggleEdit(false);
+                  }}
+                >
+                  <input
+                    value={benchmark}
+                    type="number"
+                    step="0.01"
+                    className="w-8"
+                    onChange={(e) => editBenchmark(+e.target.value)}
+                  />
+                  <input type="submit" hidden />
+                </form>
+              )}
+              % p.a. growth
+            </span>
+          )}
         </div>
-        <div className="leading-none text-muted-foreground">
+        <div
+          className="leading-none text-muted-foreground cursor-pointer"
+          onClick={() => setEnableBenchmark(!enableBenchmark)}
+        >
           Updated as of {data.lastUpdated}
         </div>
       </CardFooter>

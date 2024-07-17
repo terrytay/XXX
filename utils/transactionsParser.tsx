@@ -6,6 +6,7 @@ enum ApplicationType {
   SwitchOut = "Switch Out",
   Inflow = "Net Investment Premium",
   WelcomeBonus = "Welcome Bonus",
+  Reinvest = "Reinvest",
 }
 
 type AllocatedTransaction = {
@@ -62,7 +63,10 @@ export function getTransactionsSnapshotByMonth(data: FpmsData): Snapshot[] {
           tiv: 0,
           tia: +transaction.transactionAmount.trim().split(",").join(""),
         });
-      } else if (transaction.type.includes(ApplicationType.WelcomeBonus)) {
+      } else if (
+        transaction.type.includes(ApplicationType.WelcomeBonus) ||
+        transaction.type.includes(ApplicationType.Reinvest)
+      ) {
         result.push({
           date: runDate,
           funds: [
@@ -233,7 +237,8 @@ export function parseTransactions(data: FpmsData) {
     if (
       transaction.type.includes(ApplicationType.SwitchIn) ||
       transaction.type.includes(ApplicationType.WelcomeBonus) ||
-      transaction.type.includes(ApplicationType.Inflow)
+      transaction.type.includes(ApplicationType.Inflow) ||
+      transaction.type.includes(ApplicationType.Reinvest)
     ) {
       const index = allocatedFunds.findIndex(
         (value) => value.code === transaction.code

@@ -34,6 +34,28 @@ export const getDividends = async (policy_number: string) => {
   }
 };
 
+export const getAllDividends = async (policy_numbers: string[]) => {
+  const connection = client;
+  const db = connection.db(process.env.DB_NAME);
+  try {
+    const dividends = db.collection("dividends");
+
+    const res = await dividends.find<DividendData>({
+      policyNumber: { $in: policy_numbers },
+    });
+
+    let result: DividendData[] = [];
+
+    while (await res.hasNext()) {
+      const data = await res.next();
+      if (data != null) result.push(data);
+    }
+    if (result != null) return result;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const getClient = async (policy_number: string) => {
   const connection = client;
   const db = connection.db(process.env.DB_NAME);

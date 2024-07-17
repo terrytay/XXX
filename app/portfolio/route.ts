@@ -10,7 +10,6 @@ const corsOptions = {
 };
 
 export async function OPTIONS(request: Request) {
-  console.log("here");
   const origin = request.headers.get("origin") ?? "";
   const isAllowedOrigin = allowedOrigins.includes(origin);
 
