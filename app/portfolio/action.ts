@@ -50,6 +50,28 @@ export const getClient = async (policy_number: string) => {
   }
 };
 
+export const getClients = async (policy_numbers: string[]) => {
+  const connection = client;
+  const db = connection.db(process.env.DB_NAME);
+  try {
+    const policies = db.collection("policies");
+
+    const res = await policies.find<FpmsData>({
+      policyNumber: { $in: policy_numbers },
+    });
+
+    let result: FpmsData[] = [];
+
+    while (await res.hasNext()) {
+      const data = await res.next();
+      if (data != null) result.push(data);
+    }
+    if (result != null) return result;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const getRecord = async (policy_number: string) => {
   const connection = client;
   const db = connection.db(process.env.DB_NAME);

@@ -128,6 +128,9 @@ export default async function Page({
               <TableHead>Total Units</TableHead>
               <TableHead>Current Price</TableHead>
               <TableHead>Total Fund Value</TableHead>
+              <TableHead>Average Price</TableHead>
+              <TableHead>ROI</TableHead>
+
               <TableHead className="text-right">Apportionment Rate</TableHead>
             </TableRow>
           </TableHeader>
@@ -143,6 +146,37 @@ export default async function Page({
                   <TableCell>{fund.totalFundUnits}</TableCell>
                   <TableCell>{fund.unitPrice}</TableCell>
                   <TableCell>{fund.totalFundValue}</TableCell>
+                  <TableCell>
+                    {formatUnits(
+                      allocatedFunds.find(
+                        (aF) => aF.code === fund.name.split(":")[0]
+                      )?.averagePrice!
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    {formatPercent(
+                      (+formatUnits(
+                        +dailyPrices.funds
+                          .find(
+                            (dp: { fundCode: string }) =>
+                              dp.fundCode === fund.name.split(":")[0]
+                          )
+                          .fundBidPrice.trim()
+                          .split(",")
+                          .join("")
+                      ) -
+                        +formatUnits(
+                          allocatedFunds.find(
+                            (aF) => aF.code === fund.name.split(":")[0]
+                          )?.averagePrice!
+                        )) /
+                        +formatUnits(
+                          allocatedFunds.find(
+                            (aF) => aF.code === fund.name.split(":")[0]
+                          )?.averagePrice!
+                        )
+                    )}
+                  </TableCell>
                   <TableCell className="text-right">
                     {fund.apportionmentRate}
                   </TableCell>
@@ -154,7 +188,7 @@ export default async function Page({
               <TableCell className="font-medium">
                 Total Investment Value:
               </TableCell>
-              <TableCell className="text-right" colSpan={4}>
+              <TableCell className="text-right" colSpan={6}>
                 {data?.policyDetails.tiv}
               </TableCell>
             </TableRow>
@@ -162,13 +196,15 @@ export default async function Page({
               <TableCell className="font-medium">
                 Total Investment Amount:
               </TableCell>
-              <TableCell className="text-right" colSpan={4}>
+              <TableCell className="text-right" colSpan={6}>
                 {format2dp(data?.policyDetails.tia!)}
               </TableCell>
             </TableRow>
             <TableRow>
-              <TableCell className="font-medium">Gross Profit:</TableCell>
-              <TableCell className="text-right" colSpan={4}>
+              <TableCell className="font-medium">
+                Return on Investment (ROI):
+              </TableCell>
+              <TableCell className="text-right" colSpan={6}>
                 {formatPercent(+data?.policyDetails.grossProfit!)}
               </TableCell>
             </TableRow>
@@ -282,7 +318,7 @@ export default async function Page({
                       {fund.transactions.map((trx) => (
                         <TableRow
                           className={`${
-                            trx.units < 0 ? "text-red-500" : "text-greem-500"
+                            trx.units < 0 ? "text-red-500" : "text-black"
                           }`}
                         >
                           <TableCell className="w-[150px]">

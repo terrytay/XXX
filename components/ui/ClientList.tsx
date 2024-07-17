@@ -20,7 +20,13 @@ import {
 } from "./table";
 import Link from "next/link";
 
-import { ArrowUpDown, CircleMinus, CirclePlus, Pencil } from "lucide-react";
+import {
+  ArrowUpDown,
+  CircleMinus,
+  CirclePlus,
+  LucideLink,
+  Pencil,
+} from "lucide-react";
 import { Button } from "./button";
 import { useState } from "react";
 import { Input } from "./input";
@@ -50,6 +56,8 @@ import {
   FormLabel,
   FormMessage,
 } from "./form";
+import { FpmsData, PolicyFund } from "@/utils/types/fpms";
+import { format2dp, formatUnits } from "@/utils/formatters";
 
 export type Client = {
   id: string;
@@ -58,6 +66,12 @@ export type Client = {
   nickname: string;
   policy_number: string;
   policy_link: string;
+  commencementDate: string;
+  premium: string;
+  tiv: string;
+  tia: number;
+  grossProfit: string;
+  productName: string;
 };
 
 interface DataTableProps<TData, TValue> {
@@ -103,42 +117,161 @@ export const columns: ColumnDef<Client>[] = [
       );
     },
     cell: ({ row }) => {
-      return <div>{row.getValue("nickname")}</div>;
-    },
-  },
-  {
-    accessorKey: "policy_link",
-    header: "Link",
-    cell: ({ row }) => {
-      const link: string = row.getValue("policy_link");
+      const [hide, setHide] = useState(true);
       return (
-        <div className="flex flex-col space-y-2 w-[200px]">
-          {link.split(" ").map((link: string) => (
-            <Link href={link} key={link} className="truncate">
-              {link}
-            </Link>
-          ))}
+        <div className="cursor-pointer" onClick={() => setHide(!hide)}>
+          {hide ? <div>********</div> : <div>{row.getValue("nickname")}</div>}
         </div>
       );
     },
   },
   {
-    accessorKey: "created_at",
+    accessorKey: "productName",
     header: ({ column }) => {
       return (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Created At
+          Product
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
     },
     cell: ({ row }) => {
-      return <div>{row.getValue("created_at")}</div>;
+      return <div>{row.getValue("productName")} </div>;
     },
   },
+  {
+    sortingFn: "datetime",
+    accessorKey: "commencementDate",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Commencement Date
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => {
+      return <div>{row.getValue("commencementDate")}</div>;
+    },
+  },
+  {
+    accessorKey: "premium",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Premium
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => {
+      return <div>{row.getValue("premium")}</div>;
+    },
+  },
+  {
+    accessorKey: "tia",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Total Invested
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => {
+      return <div>{format2dp(row.getValue("tia"))}</div>;
+    },
+  },
+
+  {
+    accessorKey: "tiv",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          AUM
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => {
+      return <div>{row.getValue("tiv")}</div>;
+    },
+  },
+  {
+    accessorKey: "grossProfit",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          ROI (%)
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => {
+      return (
+        <div
+          className={`${
+            +row.getValue<string>("grossProfit").split("%")[0] > 0
+              ? "text-green-500"
+              : "text-red-500"
+          }`}
+        >
+          {row.getValue<string>("grossProfit").split("%")[0]}
+        </div>
+      );
+    },
+  },
+  // {
+  //   accessorKey: "policy_link",
+  //   header: "Link",
+  //   cell: ({ row }) => {
+  //     const link: string = row.getValue("policy_link");
+  //     return (
+  //       <div className="flex flex-col space-y-2 w-[200px]">
+  //         {link.split(" ").map((link: string) => (
+  //           <Link href={link} key={link} className="truncate">
+  //             {link}
+  //           </Link>
+  //         ))}
+  //       </div>
+  //     );
+  //   },
+  // },
+  // {
+  //   accessorKey: "created_at",
+  //   header: ({ column }) => {
+  //     return (
+  //       <Button
+  //         variant="ghost"
+  //         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+  //       >
+  //         Created At
+  //         <ArrowUpDown className="ml-2 h-4 w-4" />
+  //       </Button>
+  //     );
+  //   },
+  //   cell: ({ row }) => {
+  //     return <div>{row.getValue("created_at")}</div>;
+  //   },
+  // },
   {
     id: "actions",
     cell: ({ row }) => {
@@ -169,6 +302,11 @@ export const columns: ColumnDef<Client>[] = [
 
       return (
         <div className="flex justify-end space-x-2">
+          {policy_link.split(" ").map((link) => (
+            <Link href={link}>
+              <LucideLink className="text-gray-500" size={18} />
+            </Link>
+          ))}
           <Dialog>
             <DialogTrigger>
               <Pencil className="text-gray-500" size={18} />
@@ -414,7 +552,7 @@ export default function DataTable<TData, TValue>({
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id}>
+                    <TableHead key={header.id} className="px-0">
                       {header.isPlaceholder
                         ? null
                         : flexRender(
