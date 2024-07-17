@@ -47,7 +47,8 @@ export default async function Page({
             <code className="relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold">
               {params.agentId}
             </code>
-            &nbsp;inside the quotation marks.
+            &nbsp;inside the quotation marks. TAKE NOTE THERE ARE TWO OCCURENCES
+            IN THIS FILE. SO DO TWO TIMES.
           </p>
           <Image
             className="pb-2"
