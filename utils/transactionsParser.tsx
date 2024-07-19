@@ -363,5 +363,7 @@ export function parseTransactions(data: FpmsData) {
         : 0;
   });
 
-  return allocatedFunds.filter((fund) => fund.totalUnitsAfterFees > 0.1);
+  return allocatedFunds.filter(
+    (fund) => fund.totalUnitsAfterFees > 0.1 && fund.totalValueAfterFees >= 0
+  );
 }

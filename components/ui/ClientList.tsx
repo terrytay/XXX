@@ -119,8 +119,16 @@ export const columns: ColumnDef<Client>[] = [
     cell: ({ row }) => {
       const [hide, setHide] = useState(true);
       return (
-        <div className="cursor-pointer" onClick={() => setHide(!hide)}>
-          {hide ? <div>********</div> : <div>{row.getValue("nickname")}</div>}
+        <div
+          className="cursor-pointer"
+          onMouseEnter={() => setHide(false)}
+          onMouseLeave={() => setHide(true)}
+        >
+          {!row.getIsSelected() ? (
+            <div>{hide ? "********" : row.getValue("nickname")}</div>
+          ) : (
+            <div>{row.getValue("nickname")}</div>
+          )}
         </div>
       );
     },
@@ -302,8 +310,8 @@ export const columns: ColumnDef<Client>[] = [
 
       return (
         <div className="flex justify-end space-x-2">
-          {policy_link.split(" ").map((link) => (
-            <Link href={link}>
+          {policy_link.split(" ").map((link, key) => (
+            <Link href={link} key={key}>
               <LucideLink className="text-gray-500" size={18} />
             </Link>
           ))}
@@ -473,6 +481,9 @@ export default function DataTable<TData, TValue>({
             }
             className="max-w-sm"
           />
+          <Button onClick={() => table.toggleAllPageRowsSelected()}>
+            {table.getIsAllPageRowsSelected() ? "Hide" : "Show"} all Nickname
+          </Button>
         </div>
         <div className="py-4 pr-4">
           <Dialog>
