@@ -13,7 +13,22 @@ export default async function ClientList() {
   if (!user.data.user) {
     return await bounceOut();
   }
+
   const getData = async (): Promise<Client[]> => {
+    // Admin
+    // if (user.data.user?.id === "364c9a6d-ba68-49d7-a227-3692346722c1") {
+    //   const { data, error } = await supabase.from("clients").select();
+    //   if (error) {
+    //     return [];
+    //   }
+
+    //   if (data) {
+    //     return data;
+    //   }
+    //   return [];
+    // }
+
+    // Standard users
     const { data, error } = await supabase
       .from("clients")
       .select()
@@ -52,7 +67,7 @@ export default async function ClientList() {
       let totalDividendsPaidout = 0;
       dividends?.dividends.forEach((div) => {
         if (div.method !== "Reinvest") {
-          totalDividendsPaidout += +div.amount.trim().split(",").join();
+          totalDividendsPaidout += +div.amount.trim().split(",").join("");
         }
       });
       d.grossProfit = formatPercent(

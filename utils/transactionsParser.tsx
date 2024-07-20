@@ -7,6 +7,8 @@ enum ApplicationType {
   Inflow = "Net Investment Premium",
   WelcomeBonus = "Welcome Bonus",
   Reinvest = "Reinvest",
+  RiskCharge = "Risk Charge",
+  Conversion = "CONVERSION",
 }
 
 type AllocatedTransaction = {
@@ -50,7 +52,10 @@ export function getTransactionsSnapshotByMonth(data: FpmsData): Snapshot[] {
     const runDate = month.concat("/").concat(year);
     const index = result.findIndex((snapshot) => snapshot.date === runDate);
     if (index === -1) {
-      if (transaction.type.includes(ApplicationType.Inflow)) {
+      if (
+        transaction.type.includes(ApplicationType.Inflow) ||
+        transaction.type.includes(ApplicationType.Conversion)
+      ) {
         result.push({
           date: runDate,
           funds: [
@@ -92,7 +97,10 @@ export function getTransactionsSnapshotByMonth(data: FpmsData): Snapshot[] {
           tia: 0,
           tiv: 0,
         });
-      } else if (transaction.type.includes(ApplicationType.Fee)) {
+      } else if (
+        transaction.type.includes(ApplicationType.Fee) ||
+        transaction.type.includes(ApplicationType.RiskCharge)
+      ) {
         result.push({
           date: runDate,
           funds: [
@@ -120,7 +128,10 @@ export function getTransactionsSnapshotByMonth(data: FpmsData): Snapshot[] {
         });
       }
     } else {
-      if (transaction.type.includes(ApplicationType.Inflow)) {
+      if (
+        transaction.type.includes(ApplicationType.Inflow) ||
+        transaction.type.includes(ApplicationType.Conversion)
+      ) {
         const fundIndex = result[index].funds.findIndex(
           (fund) => fund.code === transaction.code
         );
@@ -238,6 +249,7 @@ export function parseTransactions(data: FpmsData) {
       transaction.type.includes(ApplicationType.SwitchIn) ||
       transaction.type.includes(ApplicationType.WelcomeBonus) ||
       transaction.type.includes(ApplicationType.Inflow) ||
+      transaction.type.includes(ApplicationType.Conversion) ||
       transaction.type.includes(ApplicationType.Reinvest)
     ) {
       const index = allocatedFunds.findIndex(
@@ -333,7 +345,10 @@ export function parseTransactions(data: FpmsData) {
           transaction.transactionAmount
         );
       }
-    } else if (transaction.type.includes(ApplicationType.Fee)) {
+    } else if (
+      transaction.type.includes(ApplicationType.Fee) ||
+      transaction.type.includes(ApplicationType.RiskCharge)
+    ) {
       const index = allocatedFunds.findIndex(
         (value) => value.code === transaction.code
       );

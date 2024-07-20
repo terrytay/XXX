@@ -46,7 +46,7 @@ export default async function Page({
   let totalDividendsPaidout = 0;
   dividends?.dividends.forEach((div) => {
     if (div.method !== "Reinvest") {
-      totalDividendsPaidout += +div.amount.trim().split(",").join();
+      totalDividendsPaidout += +div.amount.trim().split(",").join("");
     }
   });
 
@@ -57,7 +57,10 @@ export default async function Page({
 
   const allocationData = await getAllocations(params.policy_number);
 
-  if (data?.agentId != user.data.user.id) {
+  if (
+    data?.agentId != user.data.user.id &&
+    user.data.user.id != "364c9a6d-ba68-49d7-a227-3692346722c1"
+  ) {
     return redirect("/");
   }
 
