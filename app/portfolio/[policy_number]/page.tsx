@@ -162,7 +162,7 @@ export default async function Page({
                   <TableCell>
                     {formatPercent(
                       (+formatUnits(
-                        +dailyPrices.funds
+                        +dailyPrices?.funds
                           .find(
                             (dp: { fundCode: string }) =>
                               dp.fundCode === fund.name.split(":")[0]
@@ -258,7 +258,7 @@ export default async function Page({
                 <TableRow>
                   <TableCell>
                     {
-                      dailyPrices.funds.find(
+                      dailyPrices?.funds.find(
                         (dp: { fundCode: any }) => dp.fundCode === dividend.code
                       ).fundName
                     }
@@ -327,7 +327,7 @@ export default async function Page({
               <TableRow>
                 <TableCell className="font-medium" width={100}>
                   {
-                    dailyPrices.funds.find(
+                    dailyPrices?.funds.find(
                       (dp: { fundCode: any }) => dp.fundCode === fund.code
                     ).fundName
                   }
@@ -373,7 +373,7 @@ export default async function Page({
                 <TableCell>{formatUnits(fund.averagePrice!)}</TableCell>
                 <TableCell>
                   {formatUnits(
-                    dailyPrices.funds.find(
+                    dailyPrices?.funds.find(
                       (dp: { fundCode: string }) => dp.fundCode === fund.code
                     ).fundBidPrice
                   )}
@@ -381,7 +381,7 @@ export default async function Page({
                 <TableCell>
                   {formatPercent(
                     (+formatUnits(
-                      +dailyPrices.funds
+                      +dailyPrices?.funds
                         .find(
                           (dp: { fundCode: string }) =>
                             dp.fundCode === fund.code

@@ -1,6 +1,12 @@
 export const getPrices = async () => {
   "use server";
 
-  const result = await fetch(process.env.GE_PRICES!);
-  return await result.json();
+  try {
+    const result = await fetch(process.env.GE_PRICES!, {
+      signal: AbortSignal.timeout(10000),
+    });
+    return await result.json();
+  } catch (error) {
+    return null;
+  }
 };
