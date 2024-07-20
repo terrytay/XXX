@@ -134,7 +134,7 @@ export default async function Page({
             <div>Portfolio Summary</div>
             <div className="flex justify-center text-xs">
               Daily fund prices retrievable by server on&nbsp;
-              {dailyPrices.lastUpdated}
+              {new Date(dailyPrices.lastUpdated).toLocaleString("en-SG")}
             </div>
           </TableCaption>
           <TableHeader>
