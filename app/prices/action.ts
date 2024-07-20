@@ -6,7 +6,7 @@ export const getPrices = async () => {
 
   try {
     const result = await fetch(process.env.GE_PRICES!, {
-      signal: AbortSignal.timeout(10000),
+      signal: AbortSignal.timeout(6000),
     });
     console.log(result);
     return await result.json();
