@@ -134,7 +134,9 @@ export default async function Page({
             <div>Portfolio Summary</div>
             <div className="flex justify-center text-xs">
               Daily fund prices retrievable by server on&nbsp;
-              {new Date(dailyPrices.lastUpdated).toLocaleString("en-SG")}
+              {new Date(dailyPrices.lastUpdated).toLocaleString("en-SG", {
+                timeZone: "Asia/Singapore",
+              })}
             </div>
           </TableCaption>
           <TableHeader>
