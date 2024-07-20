@@ -1,13 +1,8 @@
-export const maxDuration = 12;
-export const dynamic = "force-dynamic";
-
 export const getPrices = async () => {
   "use server";
 
   try {
-    const result = await fetch(process.env.GE_PRICES!, {
-      signal: AbortSignal.timeout(6000),
-    });
+    const result = await fetch(process.env.GE_PRICES!);
     console.log(result);
     return await result.json();
   } catch (error) {
