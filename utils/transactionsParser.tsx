@@ -9,6 +9,7 @@ enum ApplicationType {
   Reinvest = "Reinvest",
   RiskCharge = "Risk Charge",
   Conversion = "CONVERSION",
+  CampaignBonus = "Campaign Bonus"
 }
 
 type AllocatedTransaction = {
@@ -69,7 +70,7 @@ export function getTransactionsSnapshotByMonth(data: FpmsData): Snapshot[] {
           tia: +transaction.transactionAmount.trim().split(",").join(""),
         });
       } else if (
-        transaction.type.includes(ApplicationType.WelcomeBonus) ||
+        transaction.type.includes(ApplicationType.WelcomeBonus) || transaction.type.includes(ApplicationType.CampaignBonus) ||
         transaction.type.includes(ApplicationType.Reinvest)
       ) {
         result.push({
@@ -248,7 +249,8 @@ export function parseTransactions(data: FpmsData) {
     if (
       transaction.type.includes(ApplicationType.SwitchIn) ||
       transaction.type.includes(ApplicationType.WelcomeBonus) ||
-      transaction.type.includes(ApplicationType.Inflow) ||
+
+    transaction.type.includes(ApplicationType.CampaignBonus) ||  transaction.type.includes(ApplicationType.Inflow) ||
       transaction.type.includes(ApplicationType.Conversion) ||
       transaction.type.includes(ApplicationType.Reinvest)
     ) {
