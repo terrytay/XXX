@@ -1,4 +1,5 @@
 export const maxDuration = 12;
+export const dynamic = "force-dynamic";
 
 export const getPrices = async () => {
   "use server";
