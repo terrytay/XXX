@@ -1,7 +1,7 @@
 import client from "@/utils/db";
 import { FundPrice } from "@/utils/types/ge";
 
-export const getPrices = async (policy_number: string) => {
+export const getPrices = async () => {
   const connection = client;
   const db = connection.db(process.env.DB_NAME);
 
