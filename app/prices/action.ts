@@ -14,11 +14,11 @@ export const getPrices = async () => {
     if (result != null) return result;
   } catch (error) {
     return {
-      funds: {
+      funds: [{
         fundName: "-1",
         fundCode: "-1",
         fundBidPrice: "-1",
-      },
+      }],
     };
   }
 };
