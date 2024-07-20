@@ -127,7 +127,13 @@ export default async function Page({
       <SnapshotChart stringData={JSON.stringify(data)} />
       <div className="border border-gray-300 rounded-lg p-4 col-span-3">
         <Table>
-          <TableCaption>Portfolio Summary</TableCaption>
+          <TableCaption>
+            <div>Portfolio Summary</div>
+            <div className="flex justify-center text-xs">
+              Daily fund prices retrievable by server on&nbsp;
+              {dailyPrices.lastUpdated}
+            </div>
+          </TableCaption>
           <TableHeader>
             <TableRow>
               <TableHead className="">Fund Name</TableHead>
@@ -162,11 +168,11 @@ export default async function Page({
                   <TableCell>
                     {formatPercent(
                       (+formatUnits(
-                        +dailyPrices?.funds
+                        +dailyPrices.funds
                           .find(
                             (dp: { fundCode: string }) =>
                               dp.fundCode === fund.name.split(":")[0]
-                          )
+                          )!
                           .fundBidPrice.trim()
                           .split(",")
                           .join("")
@@ -260,7 +266,7 @@ export default async function Page({
                     {
                       dailyPrices?.funds.find(
                         (dp: { fundCode: any }) => dp.fundCode === dividend.code
-                      ).fundName
+                      )!.fundName
                     }
                   </TableCell>
                   <TableCell>{dividend.payout}</TableCell>
@@ -329,7 +335,7 @@ export default async function Page({
                   {
                     dailyPrices?.funds.find(
                       (dp: { fundCode: any }) => dp.fundCode === fund.code
-                    ).fundName
+                    )!.fundName
                   }
                 </TableCell>
                 <TableCell colSpan={8}>
@@ -373,19 +379,19 @@ export default async function Page({
                 <TableCell>{formatUnits(fund.averagePrice!)}</TableCell>
                 <TableCell>
                   {formatUnits(
-                    dailyPrices?.funds.find(
+                    +dailyPrices.funds.find(
                       (dp: { fundCode: string }) => dp.fundCode === fund.code
-                    ).fundBidPrice
+                    )!.fundBidPrice
                   )}
                 </TableCell>
                 <TableCell>
                   {formatPercent(
                     (+formatUnits(
-                      +dailyPrices?.funds
+                      +dailyPrices.funds
                         .find(
                           (dp: { fundCode: string }) =>
                             dp.fundCode === fund.code
-                        )
+                        )!
                         .fundBidPrice.trim()
                         .split(",")
                         .join("")

@@ -1,5 +1,6 @@
 export type FundPrice = {
-  fixedId?: number;
+  fixedId: number;
+  lastUpdated: string;
   funds: {
     fundCode: string;
     fundBidPrice: string;

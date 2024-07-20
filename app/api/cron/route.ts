@@ -6,6 +6,7 @@ export async function GET(request: Request) {
     const result = await fetch(process.env.GE_PRICES!);
     let fundPrices: FundPrice = await result.json();
     fundPrices.fixedId = 1;
+    fundPrices.lastUpdated = new Date().toString();
     await updatePrices(fundPrices);
     return Response.json({ ok: true });
   } catch (error) {
