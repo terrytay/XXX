@@ -1,11 +1,24 @@
-export const getPrices = async () => {
-  "use server";
+import client from "@/utils/db";
+import { FundPrice } from "@/utils/types/ge";
+
+export const getPrices = async (policy_number: string) => {
+  const connection = client;
+  const db = connection.db(process.env.DB_NAME);
 
   try {
-    const result = await fetch(process.env.GE_PRICES!);
-    console.log(result);
-    return await result.json();
+    const prices = db.collection("prices");
+    const result = await prices.findOne<FundPrice>({
+      fixedId: 1,
+    });
+
+    if (result != null) return result;
   } catch (error) {
-    return null;
+    return {
+      funds: {
+        fundName: "-1",
+        fundCode: "-1",
+        fundBidPrice: "-1",
+      },
+    };
   }
 };
