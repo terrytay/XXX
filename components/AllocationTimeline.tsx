@@ -28,7 +28,7 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { Button } from "./ui/button";
-import { Input } from "./ui/input";
+
 import { Toaster } from "./ui/sonner";
 import { toast } from "sonner";
 import {
@@ -38,6 +38,7 @@ import {
   CardHeader,
   CardTitle,
 } from "./ui/card";
+import { Textarea } from "./ui/textarea";
 const dayjs = require("dayjs");
 
 export function AllocationTimeline({
@@ -68,6 +69,7 @@ export function AllocationTimeline({
       tempAllocation[displayedYear].push({});
     }
     setAllocation((prev) => tempAllocation);
+    setEditMode(true);
   }
 
   function saveData(year: number, key: number, field: string, value: string) {
@@ -354,10 +356,9 @@ export function AllocationTimeline({
         <TableBody>
           {allocation[displayedYear]?.map((fund, key) => (
             <TableRow key={key}>
-              <TableCell className="w-[150px]">
+              <TableCell className="w-[150px] p-0 m-0">
                 {editMode ? (
-                  <Input
-                    type="text"
+                  <Textarea
                     value={fund.fund || ""}
                     onChange={(e) => {
                       saveData(displayedYear, key, "fund", e.target.value);
@@ -367,14 +368,13 @@ export function AllocationTimeline({
                   fund.fund
                 )}
               </TableCell>
-              <TableCell>
+              <TableCell className="p-0">
                 <Table>
                   <TableBody>
-                    <TableRow>
-                      <TableCell>
+                    <TableRow className="border-none">
+                      <TableCell className="p-0">
                         {editMode ? (
-                          <Input
-                            type="text"
+                          <Textarea
                             value={fund.jan || ""}
                             onChange={(e) => {
                               saveData(
@@ -390,11 +390,10 @@ export function AllocationTimeline({
                         )}
                       </TableCell>
                     </TableRow>
-                    <TableRow>
-                      <TableCell className="text-xs">
+                    <TableRow className="border-none">
+                      <TableCell className="p-0 text-xs">
                         {editMode ? (
-                          <Input
-                            type="text"
+                          <Textarea
                             value={fund.janPrice || ""}
                             onChange={(e) => {
                               saveData(
@@ -413,14 +412,13 @@ export function AllocationTimeline({
                   </TableBody>
                 </Table>
               </TableCell>
-              <TableCell>
+              <TableCell className="p-0">
                 <Table>
                   <TableBody>
-                    <TableRow>
-                      <TableCell>
+                    <TableRow className="border-none">
+                      <TableCell className="p-0">
                         {editMode ? (
-                          <Input
-                            type="text"
+                          <Textarea
                             value={fund.feb || ""}
                             onChange={(e) => {
                               saveData(
@@ -436,11 +434,10 @@ export function AllocationTimeline({
                         )}
                       </TableCell>
                     </TableRow>
-                    <TableRow>
-                      <TableCell className="text-xs">
+                    <TableRow className="border-none">
+                      <TableCell className="p-0 text-xs">
                         {editMode ? (
-                          <Input
-                            type="text"
+                          <Textarea
                             value={fund.febPrice || ""}
                             onChange={(e) => {
                               saveData(
@@ -459,14 +456,13 @@ export function AllocationTimeline({
                   </TableBody>
                 </Table>
               </TableCell>
-              <TableCell>
+              <TableCell className="p-0">
                 <Table>
                   <TableBody>
-                    <TableRow>
-                      <TableCell>
+                    <TableRow className="border-none">
+                      <TableCell className="p-0">
                         {editMode ? (
-                          <Input
-                            type="text"
+                          <Textarea
                             value={fund.mar || ""}
                             onChange={(e) => {
                               saveData(
@@ -482,11 +478,10 @@ export function AllocationTimeline({
                         )}
                       </TableCell>
                     </TableRow>
-                    <TableRow>
-                      <TableCell className="text-xs">
+                    <TableRow className="border-none">
+                      <TableCell className="p-0 text-xs">
                         {editMode ? (
-                          <Input
-                            type="text"
+                          <Textarea
                             value={fund.marPrice || ""}
                             onChange={(e) => {
                               saveData(
@@ -505,14 +500,13 @@ export function AllocationTimeline({
                   </TableBody>
                 </Table>
               </TableCell>
-              <TableCell>
+              <TableCell className="p-0">
                 <Table>
                   <TableBody>
-                    <TableRow>
-                      <TableCell>
+                    <TableRow className="border-none">
+                      <TableCell className="p-0">
                         {editMode ? (
-                          <Input
-                            type="text"
+                          <Textarea
                             value={fund.apr || ""}
                             onChange={(e) => {
                               saveData(
@@ -528,11 +522,10 @@ export function AllocationTimeline({
                         )}
                       </TableCell>
                     </TableRow>
-                    <TableRow>
-                      <TableCell className="text-xs">
+                    <TableRow className="border-none">
+                      <TableCell className="p-0 text-xs">
                         {editMode ? (
-                          <Input
-                            type="text"
+                          <Textarea
                             value={fund.aprPrice || ""}
                             onChange={(e) => {
                               saveData(
@@ -551,14 +544,13 @@ export function AllocationTimeline({
                   </TableBody>
                 </Table>
               </TableCell>
-              <TableCell>
+              <TableCell className="p-0">
                 <Table>
                   <TableBody>
-                    <TableRow>
-                      <TableCell>
+                    <TableRow className="border-none">
+                      <TableCell className="p-0">
                         {editMode ? (
-                          <Input
-                            type="text"
+                          <Textarea
                             value={fund.may || ""}
                             onChange={(e) => {
                               saveData(
@@ -574,11 +566,10 @@ export function AllocationTimeline({
                         )}
                       </TableCell>
                     </TableRow>
-                    <TableRow>
-                      <TableCell className="text-xs">
+                    <TableRow className="border-none">
+                      <TableCell className="p-0 text-xs">
                         {editMode ? (
-                          <Input
-                            type="text"
+                          <Textarea
                             value={fund.mayPrice || ""}
                             onChange={(e) => {
                               saveData(
@@ -597,14 +588,13 @@ export function AllocationTimeline({
                   </TableBody>
                 </Table>
               </TableCell>
-              <TableCell>
+              <TableCell className="p-0">
                 <Table>
                   <TableBody>
-                    <TableRow>
-                      <TableCell>
+                    <TableRow className="border-none">
+                      <TableCell className="p-0">
                         {editMode ? (
-                          <Input
-                            type="text"
+                          <Textarea
                             value={fund.jun || ""}
                             onChange={(e) => {
                               saveData(
@@ -620,11 +610,10 @@ export function AllocationTimeline({
                         )}
                       </TableCell>
                     </TableRow>
-                    <TableRow>
-                      <TableCell className="text-xs">
+                    <TableRow className="border-none">
+                      <TableCell className="p-0 text-xs">
                         {editMode ? (
-                          <Input
-                            type="text"
+                          <Textarea
                             value={fund.junPrice || ""}
                             onChange={(e) => {
                               saveData(
@@ -643,14 +632,13 @@ export function AllocationTimeline({
                   </TableBody>
                 </Table>
               </TableCell>
-              <TableCell>
+              <TableCell className="p-0">
                 <Table>
                   <TableBody>
-                    <TableRow>
-                      <TableCell>
+                    <TableRow className="border-none">
+                      <TableCell className="p-0">
                         {editMode ? (
-                          <Input
-                            type="text"
+                          <Textarea
                             value={fund.jul || ""}
                             onChange={(e) => {
                               saveData(
@@ -666,11 +654,10 @@ export function AllocationTimeline({
                         )}
                       </TableCell>
                     </TableRow>
-                    <TableRow>
-                      <TableCell className="text-xs">
+                    <TableRow className="border-none">
+                      <TableCell className="p-0 text-xs">
                         {editMode ? (
-                          <Input
-                            type="text"
+                          <Textarea
                             value={fund.julPrice || ""}
                             onChange={(e) => {
                               saveData(
@@ -689,14 +676,13 @@ export function AllocationTimeline({
                   </TableBody>
                 </Table>
               </TableCell>
-              <TableCell>
+              <TableCell className="p-0">
                 <Table>
                   <TableBody>
-                    <TableRow>
-                      <TableCell>
+                    <TableRow className="border-none">
+                      <TableCell className="p-0">
                         {editMode ? (
-                          <Input
-                            type="text"
+                          <Textarea
                             value={fund.aug || ""}
                             onChange={(e) => {
                               saveData(
@@ -712,11 +698,10 @@ export function AllocationTimeline({
                         )}
                       </TableCell>
                     </TableRow>
-                    <TableRow>
-                      <TableCell className="text-xs">
+                    <TableRow className="border-none">
+                      <TableCell className="p-0 text-xs">
                         {editMode ? (
-                          <Input
-                            type="text"
+                          <Textarea
                             value={fund.augPrice || ""}
                             onChange={(e) => {
                               saveData(
@@ -735,14 +720,13 @@ export function AllocationTimeline({
                   </TableBody>
                 </Table>
               </TableCell>
-              <TableCell>
+              <TableCell className="p-0">
                 <Table>
                   <TableBody>
-                    <TableRow>
-                      <TableCell>
+                    <TableRow className="border-none">
+                      <TableCell className="p-0">
                         {editMode ? (
-                          <Input
-                            type="text"
+                          <Textarea
                             value={fund.sep || ""}
                             onChange={(e) => {
                               saveData(
@@ -758,11 +742,10 @@ export function AllocationTimeline({
                         )}
                       </TableCell>
                     </TableRow>
-                    <TableRow>
-                      <TableCell className="text-xs">
+                    <TableRow className="border-none">
+                      <TableCell className="p-0 text-xs">
                         {editMode ? (
-                          <Input
-                            type="text"
+                          <Textarea
                             value={fund.sepPrice || ""}
                             onChange={(e) => {
                               saveData(
@@ -781,14 +764,13 @@ export function AllocationTimeline({
                   </TableBody>
                 </Table>
               </TableCell>
-              <TableCell>
+              <TableCell className="p-0">
                 <Table>
                   <TableBody>
-                    <TableRow>
-                      <TableCell>
+                    <TableRow className="border-none">
+                      <TableCell className="p-0">
                         {editMode ? (
-                          <Input
-                            type="text"
+                          <Textarea
                             value={fund.oct || ""}
                             onChange={(e) => {
                               saveData(
@@ -804,11 +786,10 @@ export function AllocationTimeline({
                         )}
                       </TableCell>
                     </TableRow>
-                    <TableRow>
-                      <TableCell className="text-xs">
+                    <TableRow className="border-none">
+                      <TableCell className="p-0 text-xs">
                         {editMode ? (
-                          <Input
-                            type="text"
+                          <Textarea
                             value={fund.octPrice || ""}
                             onChange={(e) => {
                               saveData(
@@ -827,14 +808,13 @@ export function AllocationTimeline({
                   </TableBody>
                 </Table>
               </TableCell>
-              <TableCell>
+              <TableCell className="p-0">
                 <Table>
                   <TableBody>
-                    <TableRow>
-                      <TableCell>
+                    <TableRow className="border-none">
+                      <TableCell className="p-0">
                         {editMode ? (
-                          <Input
-                            type="text"
+                          <Textarea
                             value={fund.nov || ""}
                             onChange={(e) => {
                               saveData(
@@ -850,11 +830,10 @@ export function AllocationTimeline({
                         )}
                       </TableCell>
                     </TableRow>
-                    <TableRow>
-                      <TableCell className="text-xs">
+                    <TableRow className="border-none">
+                      <TableCell className="p-0 text-xs">
                         {editMode ? (
-                          <Input
-                            type="text"
+                          <Textarea
                             value={fund.novPrice || ""}
                             onChange={(e) => {
                               saveData(
@@ -873,14 +852,13 @@ export function AllocationTimeline({
                   </TableBody>
                 </Table>
               </TableCell>
-              <TableCell>
+              <TableCell className="p-0">
                 <Table>
                   <TableBody>
-                    <TableRow>
-                      <TableCell>
+                    <TableRow className="border-none">
+                      <TableCell className="p-0">
                         {editMode ? (
-                          <Input
-                            type="text"
+                          <Textarea
                             value={fund.dec || ""}
                             onChange={(e) => {
                               saveData(
@@ -896,11 +874,10 @@ export function AllocationTimeline({
                         )}
                       </TableCell>
                     </TableRow>
-                    <TableRow>
-                      <TableCell className="text-xs">
+                    <TableRow className="border-none">
+                      <TableCell className="p-0 text-xs">
                         {editMode ? (
-                          <Input
-                            type="text"
+                          <Textarea
                             value={fund.decPrice || ""}
                             onChange={(e) => {
                               saveData(
