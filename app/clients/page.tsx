@@ -50,6 +50,8 @@ export default async function ClientList() {
     (await getAllDividends(data.map((d) => d.policy_number))) || [];
 
   let res: Client[] = [];
+
+  // To populate each client's premium, aum, roi
   data.forEach((d) => {
     const policies = clients.find(
       (val) => val.policyNumber === d.policy_number
@@ -86,10 +88,28 @@ export default async function ClientList() {
       res.push(d);
     }
   });
+
+  // To agregate total premium, aum, roi
+  let totalPremium = 0;
+  let totalAum = 0;
+  let totalRoi = "";
+
+  data.forEach((client) => {
+    totalPremium += client.tia || 0;
+    totalAum += +client.tiv?.trim().split(",").join("") || 0;
+  });
+
+  if (totalAum != 0) {
+    totalRoi = formatPercent((totalAum - totalPremium) / totalAum);
+  } else {
+    totalRoi = "0";
+  }
+
+  const aggregatedData = { totalAum, totalPremium, totalRoi };
   return (
     <div className=" mx-auto py-10">
       <h2 className="text-xl pb-2 pl-1">List of Clients' Policies</h2>
-      <DataTable columns={columns} data={res} />
+      <DataTable columns={columns} data={res} aggregatedData={aggregatedData} />
     </div>
   );
 }

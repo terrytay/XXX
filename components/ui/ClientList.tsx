@@ -58,6 +58,7 @@ import {
 } from "./form";
 import { FpmsData, PolicyFund } from "@/utils/types/fpms";
 import { format2dp, formatUnits } from "@/utils/formatters";
+import { useRouter } from "next/navigation";
 
 export type Client = {
   id: string;
@@ -77,6 +78,11 @@ export type Client = {
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  aggregatedData: {
+    totalAum: number;
+    totalPremium: number;
+    totalRoi: string;
+  };
 }
 
 export const columns: ColumnDef<Client>[] = [
@@ -154,15 +160,7 @@ export const columns: ColumnDef<Client>[] = [
     sortingFn: "datetime",
     accessorKey: "commencementDate",
     header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Commencement Date
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
+      return <div>Commencement Date</div>;
     },
     cell: ({ row }) => {
       return <div>{row.getValue("commencementDate")}</div>;
@@ -285,6 +283,7 @@ export const columns: ColumnDef<Client>[] = [
     cell: ({ row }) => {
       const [modifyAction, setModifyAction] = useState("");
       const { nickname, policy_number, policy_link } = row.original;
+      const router = useRouter();
 
       const formSchema = z.object({
         nickname: z.string(),
@@ -306,6 +305,7 @@ export const columns: ColumnDef<Client>[] = [
         // ✅ This will be type-safe and validated.
         console.log(values);
         await updateClient({ ...values, id: row.original.id });
+        router.refresh();
       }
 
       return (
@@ -413,9 +413,12 @@ export const columns: ColumnDef<Client>[] = [
 export default function DataTable<TData, TValue>({
   columns,
   data,
+  aggregatedData,
 }: DataTableProps<TData, TValue>) {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [sorting, setSorting] = useState<SortingState>([]);
+
+  const router = useRouter();
 
   const table = useReactTable({
     data,
@@ -452,6 +455,7 @@ export default function DataTable<TData, TValue>({
     // ✅ This will be type-safe and validated.
     console.log(values);
     await newClient(values);
+    router.refresh();
   }
 
   return (
@@ -485,7 +489,26 @@ export default function DataTable<TData, TValue>({
             {table.getIsAllPageRowsSelected() ? "Hide" : "Show"} all Nickname
           </Button>
         </div>
-        <div className="py-4 pr-4">
+        <div className="py-4 pr-4 flex justify-between grow">
+          <div className="flex pl-8 space-x-6">
+            <span>
+              Total Invested:&nbsp;
+              <span className="text-lg">
+                {format2dp(aggregatedData.totalPremium)}
+              </span>
+            </span>
+
+            <span>
+              AUM:&nbsp;
+              <span className="text-lg">
+                {format2dp(aggregatedData.totalAum)}
+              </span>
+            </span>
+            <span>
+              ROI:&nbsp;
+              <span className="text-lg">{aggregatedData.totalRoi}</span>
+            </span>
+          </div>
           <Dialog>
             <DialogTrigger>
               <CirclePlus className="text-gray-500" size={18} />

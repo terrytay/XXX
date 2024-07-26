@@ -23,10 +23,16 @@ export const updateClient = async ({
 }) => {
   console.log(id, nickname, policy_number, policy_link);
   const supabase = createClient();
-
+  const user = await supabase.auth.getUser();
   const response = await supabase
     .from("clients")
-    .upsert({ id, nickname, policy_number, policy_link });
+    .upsert({
+      id,
+      nickname,
+      policy_number,
+      policy_link,
+      agent_id: user.data.user?.id,
+    });
 
   console.log("response", response);
 };
