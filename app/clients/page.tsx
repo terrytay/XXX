@@ -53,15 +53,13 @@ export default async function ClientList() {
 
   // To populate each client's premium, aum, roi
   data.forEach((d) => {
-    const policies = clients.find(
-      (val) => val.policyNumber === d.policy_number
-    );
+    const policy = clients.find((val) => val.policyNumber === d.policy_number);
     const dividends = allDividends.find(
       (val) => val.policyNumber === d.policy_number
     );
 
-    if (policies != null) {
-      const { policyDetails, profile } = policies;
+    if (policy != null) {
+      const { policyDetails, profile } = policy;
       d.tiv = policyDetails.tiv;
       d.tia = policyDetails.tia;
       d.productName = policyDetails.productName;
@@ -93,6 +91,12 @@ export default async function ClientList() {
   let totalPremium = 0;
   let totalAum = 0;
   let totalRoi = "";
+
+  allDividends.forEach((dividend) => {
+    dividend.dividends.forEach((div) => {
+      totalAum += +div.amount.trim().split(",").join("");
+    });
+  });
 
   data.forEach((client) => {
     totalPremium += client.tia || 0;
