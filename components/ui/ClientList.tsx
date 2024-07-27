@@ -424,7 +424,7 @@ export default function DataTable<TData, TValue>({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
+    // getPaginationRowModel: getPaginationRowModel(),
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
     onColumnFiltersChange: setColumnFilters,
@@ -628,7 +628,7 @@ export default function DataTable<TData, TValue>({
             )}
           </TableBody>
         </Table>
-        <div className="flex items-center justify-end space-x-2 py-4 pr-4 z-[100]">
+        {/* <div className="flex items-center justify-end space-x-2 py-4 pr-4 z-[100]">
           <Button
             variant="outline"
             size="sm"
@@ -645,7 +645,7 @@ export default function DataTable<TData, TValue>({
           >
             Next
           </Button>
-        </div>
+        </div> */}
       </div>
     </div>
   );
