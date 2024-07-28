@@ -128,7 +128,7 @@ export default async function Page({
 
       <PolicyChart stringData={JSON.stringify(data)} />
       <SnapshotChart stringData={JSON.stringify(data)} />
-      <div className="border border-gray-300 rounded-lg p-4 col-span-3">
+      <Card className="col-span-3 py-2">
         <Table>
           <TableCaption>
             <div>Portfolio Summary</div>
@@ -241,16 +241,16 @@ export default async function Page({
             </TableRow>
           </TableFooter>
         </Table>
-      </div>
-      <div className="border border-gray-300 rounded-lg p-4 col-span-3">
+      </Card>
+      <Card className="py-2 col-span-3">
         <AllocationTimeline
           data={JSON.stringify(allocationData || templateAllocationData)}
           commencementMonth={data!.profile.commencementDate.split("/")[1]}
           premiumFreq={data!.profile.premiumFreq}
         />
-      </div>
+      </Card>
       {dividends && (
-        <div className="border border-gray-300 rounded-lg p-4 col-span-3">
+        <Card className="py-2 col-span-3">
           <Table>
             <TableCaption>Dividends</TableCaption>
             <TableHeader>
@@ -308,9 +308,9 @@ export default async function Page({
               </TableRow>
             </TableFooter>
           </Table>
-        </div>
+        </Card>
       )}
-      <div className="border border-gray-300 rounded-lg p-4 col-span-3">
+      <Card className="py-2 col-span-3">
         <Table>
           <TableCaption>Transactions</TableCaption>
           <TableHeader>
@@ -348,9 +348,7 @@ export default async function Page({
                     <TableBody>
                       {fund.transactions.map((trx) => (
                         <TableRow
-                          className={`${
-                            trx.units < 0 ? "text-red-500" : "text-black"
-                          }`}
+                          className={`${trx.units < 0 ? "text-red-500" : ""}`}
                         >
                           <TableCell className="w-[150px]">
                             {trx.date}
@@ -417,7 +415,7 @@ export default async function Page({
             </TableRow>
           </TableFooter> */}
         </Table>
-      </div>
+      </Card>
       <Toaster />
     </section>
   );

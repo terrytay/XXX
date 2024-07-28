@@ -99,7 +99,7 @@ export default function SnapshotChart({ stringData }: { stringData: string }) {
               dataKey="tiv"
               name="Total Investment Value"
               type="monotone"
-              stroke="#000000"
+              stroke="#008000"
               strokeWidth={2}
               dot={false}
             />
