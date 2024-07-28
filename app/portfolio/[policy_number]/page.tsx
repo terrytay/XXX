@@ -9,12 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  format2dp,
-  formatAmount,
-  formatPercent,
-  formatUnits,
-} from "@/utils/formatters";
+import { format2dp, formatPercent, formatUnits } from "@/utils/formatters";
 import { createClient } from "@/utils/supabase/server";
 import { UserResponse } from "@supabase/supabase-js";
 import { bounceOut } from "@/app/auth/action";
@@ -27,8 +22,24 @@ import { AllocationTimeline } from "@/components/AllocationTimeline";
 import { AgentClientAllocation } from "@/utils/types/allocation";
 import { Toaster } from "@/components/ui/sonner";
 import SnapshotChart from "@/components/SnapshotChart";
-import moment from "moment";
 import { dateDiff } from "@/utils/date";
+import { Metadata, ResolvingMetadata } from "next";
+
+type Props = {
+  params: { policy_number: string };
+};
+
+export async function generateMetadata(
+  { params }: Props,
+  parent: ResolvingMetadata
+): Promise<Metadata> {
+  // read route params
+  const id = params.policy_number;
+
+  return {
+    title: `Portfolio - ${id}`,
+  };
+}
 
 export default async function Page({
   params,
