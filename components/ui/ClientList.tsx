@@ -312,7 +312,7 @@ export const columns: ColumnDef<Client>[] = [
       }
 
       return (
-        <div className="flex justify-end space-x-2">
+        <div className="flex justify-end space-x-2 print:hidden">
           {policy_link.split(" ").map((link, key) => (
             <div
               onClick={() => window.open(link)}
@@ -502,7 +502,10 @@ export default function DataTable<TData, TValue>({
             }
             className="max-w-sm"
           />
-          <Button onClick={() => table.toggleAllPageRowsSelected()}>
+          <Button
+            onClick={() => table.toggleAllPageRowsSelected()}
+            className="print:hidden"
+          >
             {table.getIsAllPageRowsSelected() ? "Hide" : "Show"} all Nickname
           </Button>
         </div>

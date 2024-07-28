@@ -14,7 +14,7 @@ const Navbar = async () => {
     return bounceOut();
   }
   return (
-    <div className="w-full">
+    <div className="w-full print:hidden">
       <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16">
         <div className="w-full  flex justify-between items-center p-3 text-sm">
           <div className="flex items-center space-x-4">

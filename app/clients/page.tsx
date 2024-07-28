@@ -111,7 +111,7 @@ export default async function ClientList() {
 
   const aggregatedData = { totalAum, totalPremium, totalRoi };
   return (
-    <div className=" mx-auto pb-10">
+    <div className=" mx-auto pb-10 print:mt-10">
       <h2 className="text-xl pb-2 pl-1">Portfolios Overview</h2>
       <DataTable columns={columns} data={res} aggregatedData={aggregatedData} />
     </div>

@@ -94,7 +94,7 @@ export default async function Page({
     .replace("D", " Days")
     .replace("1 Days", "1 Day");
   return (
-    <section className="grid grid-cols-3 gap-4 mx-10">
+    <section className="grid grid-cols-3 gap-4 mx-10 print:mt-10">
       <Card className="flex flex-col col-span-3 md:col-span-1">
         <CardHeader className="items-center pb-0">
           <CardDescription className="text-md">Client Profile</CardDescription>
@@ -142,9 +142,9 @@ export default async function Page({
       <Card className="col-span-3 py-2">
         <Table>
           <TableCaption>
-            <div>Portfolio Summary</div>
-            <div className="flex justify-center text-xs">
-              Daily fund prices retrievable by server on&nbsp;
+            <div className="pb-1">Portfolio Summary</div>
+            <div className="flex justify-center text-xs print:hidden">
+              Daily fund prices last updated by server on&nbsp;
               {new Date(dailyPrices.lastUpdated).toLocaleString("en-SG", {
                 timeZone: "Asia/Singapore",
               })}
