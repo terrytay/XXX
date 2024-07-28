@@ -314,9 +314,13 @@ export const columns: ColumnDef<Client>[] = [
       return (
         <div className="flex justify-end space-x-2">
           {policy_link.split(" ").map((link, key) => (
-            <Link href={link} key={key}>
+            <div
+              onClick={() => window.open(link)}
+              key={key}
+              className="cursor-pointer"
+            >
               <LucideLink className="text-gray-500" size={18} />
-            </Link>
+            </div>
           ))}
           <Dialog>
             <DialogTrigger>
