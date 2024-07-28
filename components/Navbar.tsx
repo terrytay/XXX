@@ -19,7 +19,9 @@ const Navbar = async () => {
         <div className="w-full  flex justify-between items-center p-3 text-sm">
           <div className="flex items-center space-x-4">
             <Image src="/logo.jpg" width={34} height={34} alt="logo" />
-            <div>Hey, {user?.user_metadata.name}!</div>
+            <div className="text-xs md:text-sm">
+              Hey, {user?.user_metadata.name}!
+            </div>
           </div>
           <AuthButton />
         </div>

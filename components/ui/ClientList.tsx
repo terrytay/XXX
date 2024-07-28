@@ -459,8 +459,8 @@ export default function DataTable<TData, TValue>({
   }
 
   return (
-    <div className="rounded-md border">
-      <div className="flex justify-between items-center">
+    <div className="rounded-md border w-screen md:w-full">
+      <div className="flex flex-col md:flex-row md:justify-between md:items-center">
         <div className="flex items-center py-4 pl-4 space-x-2">
           <Input
             placeholder="Filter by number..."
@@ -493,20 +493,22 @@ export default function DataTable<TData, TValue>({
           <div className="flex pl-8 space-x-6">
             <span>
               Total Invested:&nbsp;
-              <span className="text-lg">
+              <span className="text-sm md:text-lg">
                 {format2dp(aggregatedData.totalPremium)}
               </span>
             </span>
 
             <span>
               AUM:&nbsp;
-              <span className="text-lg">
+              <span className="text-sm md:text-lg">
                 {format2dp(aggregatedData.totalAum)}
               </span>
             </span>
             <span>
               ROI:&nbsp;
-              <span className="text-lg">{aggregatedData.totalRoi}</span>
+              <span className="text-sm md:text-lg">
+                {aggregatedData.totalRoi}
+              </span>
             </span>
           </div>
           <Dialog>
@@ -580,7 +582,7 @@ export default function DataTable<TData, TValue>({
         </div>
       </div>
       <div>
-        <Table>
+        <Table className="text-xs md:text-sm">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>

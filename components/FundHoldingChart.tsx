@@ -20,7 +20,19 @@ import {
 } from "@/components/ui/chart";
 import { FpmsData } from "@/utils/types/fpms";
 
-const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
+const COLORS = [
+  "#B084CC",
+  "#665687",
+  "#FFA62B",
+  "#5DD9C1",
+  "#190933",
+  "#5FDD9D",
+  "#664C43",
+  "#DC758F",
+  "#FF0000",
+  "#314CB6",
+  "#ACFCD9",
+];
 
 export default function PolicyChart({ stringData }: { stringData: string }) {
   const data: FpmsData = JSON.parse(stringData);
@@ -41,14 +53,14 @@ export default function PolicyChart({ stringData }: { stringData: string }) {
   } satisfies ChartConfig;
 
   return (
-    <Card className="flex flex-col">
+    <Card className="flex flex-col col-span-3 md:col-span-1">
       <CardHeader className="items-center pb-0">
         <CardDescription className="text-md">Fund Holdings</CardDescription>
       </CardHeader>
       <CardContent className="flex-1 pb-0">
         <ChartContainer
           config={chartConfig}
-          className="mx-auto aspect-square max-h-[300px]"
+          className="mx-auto aspect-square max-h-full"
         >
           <PieChart>
             <ChartTooltip

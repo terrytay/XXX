@@ -72,12 +72,15 @@ export default function SnapshotChart({ stringData }: { stringData: string }) {
   // console.log(displayData);
 
   return (
-    <Card className="flex flex-col">
+    <Card className="flex flex-col col-span-3 md:col-span-1">
       <CardHeader className="items-center pb-0">
         <CardDescription className="text-md">Investment Growth</CardDescription>
       </CardHeader>
       <CardContent className="flex-1 pb-4 pt-4">
-        <ChartContainer config={{}} className="mx-auto max-h-[280px]">
+        <ChartContainer
+          config={{}}
+          className="mx-auto aspect-square max-h-full"
+        >
           <LineChart
             accessibilityLayer
             data={displayData}

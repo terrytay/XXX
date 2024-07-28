@@ -21,7 +21,7 @@ export default async function AuthButton() {
   const dark: boolean = data?.at(0).dark || false;
 
   return (
-    <div className="flex items-center gap-4">
+    <div className="flex items-center gap-2 md:gap-4">
       <Link href="/">Home</Link>
       <Link href={`/guide/${user?.id}`}>Guide</Link>
       <ToggleThemeComponent

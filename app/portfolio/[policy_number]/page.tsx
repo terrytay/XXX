@@ -84,7 +84,7 @@ export default async function Page({
     .replace("1 Days", "1 Day");
   return (
     <section className="grid grid-cols-3 gap-4 mx-10">
-      <Card className="flex flex-col">
+      <Card className="flex flex-col col-span-3 md:col-span-1">
         <CardHeader className="items-center pb-0">
           <CardDescription className="text-md">Client Profile</CardDescription>
         </CardHeader>
