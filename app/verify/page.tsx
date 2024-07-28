@@ -1,10 +1,17 @@
+import { createClient } from "@/utils/supabase/server";
 import React from "react";
 
-const Verify = () => {
+const Verify = async () => {
+  const supabase = createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   return (
     <section className="flex min-h-screen justify-center items-center">
-      <div className="text-gray-400">
-        Account created, please notify Terry for access.
+      <div className="">
+        Welcome {user?.user_metadata.name.split(" ")[0]}, please notify admin
+        for access.
       </div>
     </section>
   );
