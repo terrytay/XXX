@@ -21,11 +21,13 @@ import {
 import Link from "next/link";
 
 import {
+  AppWindowMac,
   ArrowUpDown,
   CircleMinus,
   CirclePlus,
   LucideLink,
   Pencil,
+  RotateCcw,
 } from "lucide-react";
 import { Button } from "./button";
 import { useState } from "react";
@@ -420,6 +422,16 @@ export default function DataTable<TData, TValue>({
 
   const router = useRouter();
 
+  async function popPages() {
+    const pages = data as Client[];
+    pages.forEach((page) => {
+      const policylinks = page.policy_link.split(" ");
+      policylinks.forEach((link) => {
+        window.open(link);
+      });
+    });
+  }
+
   const table = useReactTable({
     data,
     columns,
@@ -511,74 +523,81 @@ export default function DataTable<TData, TValue>({
               </span>
             </span>
           </div>
-          <Dialog>
-            <DialogTrigger>
-              <CirclePlus className="text-gray-500" size={18} />
-            </DialogTrigger>
-            <DialogContent>
-              <Form {...form}>
-                <form
-                  onSubmit={form.handleSubmit(onSubmit)}
-                  className="space-y-8"
-                >
-                  <DialogHeader>
-                    <DialogTitle>Add New Client</DialogTitle>
-                    <DialogDescription>
-                      Fill in client details
-                    </DialogDescription>
+          <div className="flex justify-center items-center space-x-2">
+            <AppWindowMac
+              className="text-gray-500 cursor-pointer"
+              size={18}
+              onClick={() => popPages()}
+            />
+            <Dialog>
+              <DialogTrigger>
+                <CirclePlus className="text-gray-500" size={18} />
+              </DialogTrigger>
+              <DialogContent>
+                <Form {...form}>
+                  <form
+                    onSubmit={form.handleSubmit(onSubmit)}
+                    className="space-y-8"
+                  >
+                    <DialogHeader>
+                      <DialogTitle>Add New Client</DialogTitle>
+                      <DialogDescription>
+                        Fill in client details
+                      </DialogDescription>
 
-                    <FormField
-                      control={form.control}
-                      name="policy_number"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Policy Number</FormLabel>
-                          <FormControl>
-                            <Input placeholder="01234567" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="nickname"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Nickname</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Pupu Tay" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="policy_link"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Link</FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder="https://fpms.greateasternlife.com/...."
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </DialogHeader>
-                  <DialogFooter>
-                    <DialogClose asChild>
-                      <Button type="submit">Confirm</Button>
-                    </DialogClose>
-                  </DialogFooter>
-                </form>
-              </Form>
-            </DialogContent>
-          </Dialog>
+                      <FormField
+                        control={form.control}
+                        name="policy_number"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Policy Number</FormLabel>
+                            <FormControl>
+                              <Input placeholder="01234567" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="nickname"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Nickname</FormLabel>
+                            <FormControl>
+                              <Input placeholder="Pupu Tay" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="policy_link"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Link</FormLabel>
+                            <FormControl>
+                              <Input
+                                placeholder="https://fpms.greateasternlife.com/...."
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </DialogHeader>
+                    <DialogFooter>
+                      <DialogClose asChild>
+                        <Button type="submit">Confirm</Button>
+                      </DialogClose>
+                    </DialogFooter>
+                  </form>
+                </Form>
+              </DialogContent>
+            </Dialog>
+          </div>
         </div>
       </div>
       <div>
