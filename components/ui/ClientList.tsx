@@ -61,6 +61,7 @@ import {
 import { FpmsData, PolicyFund } from "@/utils/types/fpms";
 import { format2dp, formatUnits } from "@/utils/formatters";
 import { useRouter } from "next/navigation";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "./hover-card";
 
 export type Client = {
   id: string;
@@ -524,11 +525,20 @@ export default function DataTable<TData, TValue>({
             </span>
           </div>
           <div className="flex justify-center items-center space-x-2">
-            <AppWindowMac
-              className="text-gray-500 cursor-pointer"
-              size={18}
-              onClick={() => popPages()}
-            />
+            <HoverCard>
+              <HoverCardTrigger>
+                <AppWindowMac
+                  className="text-gray-500 cursor-pointer"
+                  size={18}
+                  onClick={() => popPages()}
+                />
+              </HoverCardTrigger>
+              <HoverCardContent>
+                Opens all FPMS pages at once. Note: Please login to FPMS
+                beforehand.
+              </HoverCardContent>
+            </HoverCard>
+
             <Dialog>
               <DialogTrigger>
                 <CirclePlus className="text-gray-500" size={18} />
