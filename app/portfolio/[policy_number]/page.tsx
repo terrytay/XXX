@@ -117,7 +117,7 @@ export default async function Page({
   let tia = data?.policyDetails.tia! + welcomeBonusToAdd;
   let withdrawedAmount = 0;
   data?.transactions.forEach((trx) => {
-    if (trx.type === ApplicationType.SurrenderWithdrawal) {
+    if (trx.type.includes(ApplicationType.SurrenderWithdrawal)) {
       withdrawedAmount += +trx.transactionAmount.trim().split(",").join("");
     }
   });

@@ -64,12 +64,8 @@ export function getTransactionsSnapshotByMonth(
   data: FpmsData,
   welcomeBonusAsPremium: boolean
 ): Snapshot[] {
-  let transactions = data.transactions.slice().reverse();
+  const transactions = data.transactions.slice().reverse();
   let result: Snapshot[] = [];
-
-  transactions = transactions.filter(
-    (trx) => trx.type != ApplicationType.SurrenderWithdrawal
-  );
 
   transactions.forEach((transaction) => {
     const [day, month, year] = transaction.runDate.split("/");
@@ -150,6 +146,21 @@ export function getTransactionsSnapshotByMonth(
           tiv: 0,
         });
       } else if (
+        transaction.type.includes(ApplicationType.SurrenderWithdrawal)
+      ) {
+        result.push({
+          date: runDate,
+          funds: [
+            {
+              code: transaction.code,
+              units: transaction.balanceUnits,
+              price: transaction.transactionPrice,
+            },
+          ],
+          tia: -1 * +transaction.transactionAmount.trim().split(",").join(""),
+          tiv: -1 * +transaction.transactionAmount.trim().split(",").join(""),
+        });
+      } else if (
         transaction.type.includes(ApplicationType.Fee) ||
         transaction.type.includes(ApplicationType.RiskCharge)
       ) {
@@ -208,6 +219,33 @@ export function getTransactionsSnapshotByMonth(
             .split(",")
             .join("");
         }
+      } else if (
+        transaction.type.includes(ApplicationType.SurrenderWithdrawal)
+      ) {
+        console.log("meow");
+        const fundIndex = result[index].funds.findIndex(
+          (fund) => fund.code === transaction.code
+        );
+        if (fundIndex === -1) {
+          result[index].funds.push({
+            code: transaction.code,
+            units: transaction.balanceUnits,
+            price: transaction.transactionPrice,
+          });
+          result[index].tia -= +transaction.transactionAmount
+            .trim()
+            .split(",")
+            .join("");
+          console.log(result[index]);
+        } else {
+          result[index].funds[fundIndex].price = transaction.transactionPrice;
+          result[index].funds[fundIndex].units = transaction.balanceUnits;
+          result[index].tia -= +transaction.transactionAmount
+            .trim()
+            .split(",")
+            .join("");
+          console.log(result[index]);
+        }
       } else {
         const fundIndex = result[index].funds.findIndex(
           (fund) => fund.code === transaction.code
@@ -238,6 +276,8 @@ export function getTransactionsSnapshotByMonth(
             +fund.price.trim().split(",").join("") *
             +fund.units.trim().split(",").join(""))
       );
+      console.log(res);
+
       finalResult.push({
         tia: res.tia,
         tiv: tiv,
@@ -246,6 +286,7 @@ export function getTransactionsSnapshotByMonth(
       });
       isFirst = false;
     } else {
+      console.log(res);
       let tia = finalResult[finalResult.length - 1].tia + res.tia;
 
       let fundsToAdd: SnapshotFund[] = [];
@@ -285,13 +326,13 @@ export function getTransactionsSnapshotByMonth(
     }
   });
 
-  finalResult[finalResult.length - 1].tia =
-    data.policyDetails.tia +
-    (welcomeBonusAsPremium ? getWelcomeBonus(data) : 0);
-  finalResult[finalResult.length - 1].tiv = +data.policyDetails.tiv
-    .trim()
-    .split(",")
-    .join("");
+  finalResult[finalResult.length - 1].tia += welcomeBonusAsPremium
+    ? getWelcomeBonus(data)
+    : 0;
+  // finalResult[finalResult.length - 1].tiv = +data.policyDetails.tiv
+  //   .trim()
+  //   .split(",")
+  //   .join("");
 
   return finalResult;
 }
@@ -415,6 +456,33 @@ export function parseTransactions(data: FpmsData) {
         allocatedFunds.push({
           code: transaction.code,
           transactions: [],
+          totalUnitsAfterFees:
+            -1 * convertStringToNumber(transaction.transactionUnits),
+          totalValueAfterFees:
+            -1 * convertStringToNumber(transaction.transactionAmount),
+        });
+      } else {
+        allocatedFunds[index].totalUnitsAfterFees +=
+          -1 * convertStringToNumber(transaction.transactionUnits);
+        allocatedFunds[index].totalValueAfterFees +=
+          -1 * convertStringToNumber(transaction.transactionAmount);
+      }
+    } else if (transaction.type.includes(ApplicationType.SurrenderWithdrawal)) {
+      const index = allocatedFunds.findIndex(
+        (value) => value.code === transaction.code
+      );
+
+      if (index === -1) {
+        allocatedFunds.push({
+          code: transaction.code,
+          transactions: [
+            {
+              units: -1 * convertStringToNumber(transaction.transactionUnits),
+              date: transaction.runDate,
+              price: convertStringToNumber(transaction.transactionPrice),
+              value: -1 * convertStringToNumber(transaction.transactionAmount),
+            },
+          ],
           totalUnitsAfterFees:
             -1 * convertStringToNumber(transaction.transactionUnits),
           totalValueAfterFees:

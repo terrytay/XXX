@@ -5,7 +5,7 @@ import { UserResponse } from "@supabase/supabase-js";
 import { getAllDividends, getClient, getClients } from "../portfolio/action";
 import moment from "moment";
 import { formatPercent } from "@/utils/formatters";
-import { getWelcomeBonus } from "@/utils/transactionsParser";
+import { ApplicationType, getWelcomeBonus } from "@/utils/transactionsParser";
 
 export default async function ClientList() {
   const supabase = createClient();
@@ -22,31 +22,32 @@ export default async function ClientList() {
 
   const getData = async (): Promise<Client[]> => {
     // Admin
-    // if (user.data.user?.id === "364c9a6d-ba68-49d7-a227-3692346722c1") {
-    //   const { data, error } = await supabase.from("clients").select();
-    //   if (error) {
-    //     return [];
-    //   }
+    if (user.data.user?.id === "364c9a6d-ba68-49d7-a227-3692346722c1") {
+      const { data, error } = await supabase.from("clients").select();
+      if (error) {
+        return [];
+      }
 
-    //   if (data) {
-    //     return data;
-    //   }
-    //   return [];
-    // }
-
-    // Standard users
-    const { data, error } = await supabase
-      .from("clients")
-      .select()
-      .eq("agent_id", user.data.user?.id);
-
-    if (error) {
+      if (data) {
+        return data;
+      }
       return [];
     }
 
-    if (data) {
-      return data;
-    }
+    // Standard users
+    // const { data, error } = await supabase
+    //   .from("clients")
+    //   .select()
+    //   .eq("agent_id", user.data.user?.id);
+
+    // if (error) {
+    //   return [];
+    // }
+
+    // if (data) {
+    //   return data;
+    // }
+
     return [];
   };
 
@@ -70,9 +71,19 @@ export default async function ClientList() {
     }
 
     if (policy != null) {
-      const { policyDetails, profile } = policy;
-      d.tiv = policyDetails.tiv;
-      d.tia = policyDetails.tia + additionalTia;
+      const { policyDetails, profile, transactions } = policy;
+
+      let withdrawedAmount = 0;
+      transactions.forEach((trx) => {
+        if (trx.type.includes(ApplicationType.SurrenderWithdrawal)) {
+          withdrawedAmount += +trx.transactionAmount.trim().split(",").join("");
+        }
+      });
+
+      d.tiv = (
+        +policyDetails.tiv.trim().split(",").join("") - withdrawedAmount
+      ).toString();
+      d.tia = policyDetails.tia + additionalTia - withdrawedAmount;
       d.productName = policyDetails.productName;
 
       let totalDividendsPaidout = 0;
