@@ -1,6 +1,6 @@
 import { FpmsData } from "./types/fpms";
 
-enum ApplicationType {
+export enum ApplicationType {
   Fee = "Policy Fee",
   SwitchIn = "Switch In",
   SwitchOut = "Switch Out",
@@ -10,6 +10,7 @@ enum ApplicationType {
   RiskCharge = "Risk Charge",
   Conversion = "CONVERSION",
   CampaignBonus = "Campaign Bonus",
+  SurrenderWithdrawal = "Surrender Withdrawal",
 }
 
 type AllocatedTransaction = {
@@ -63,8 +64,12 @@ export function getTransactionsSnapshotByMonth(
   data: FpmsData,
   welcomeBonusAsPremium: boolean
 ): Snapshot[] {
-  const transactions = data.transactions.slice().reverse();
+  let transactions = data.transactions.slice().reverse();
   let result: Snapshot[] = [];
+
+  transactions = transactions.filter(
+    (trx) => trx.type != ApplicationType.SurrenderWithdrawal
+  );
 
   transactions.forEach((transaction) => {
     const [day, month, year] = transaction.runDate.split("/");

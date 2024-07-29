@@ -14,7 +14,11 @@ import { createClient } from "@/utils/supabase/server";
 import { UserResponse } from "@supabase/supabase-js";
 import { bounceOut } from "@/app/auth/action";
 import { redirect } from "next/navigation";
-import { getWelcomeBonus, parseTransactions } from "@/utils/transactionsParser";
+import {
+  ApplicationType,
+  getWelcomeBonus,
+  parseTransactions,
+} from "@/utils/transactionsParser";
 import { getPrices } from "@/app/prices/action";
 import PolicyChart from "@/components/FundHoldingChart";
 import { Card, CardDescription, CardHeader } from "@/components/ui/card";
@@ -110,7 +114,14 @@ export default async function Page({
 
   // Shortener
   const tiv = +data?.policyDetails.tiv.trim().split(",").join("")!;
-  const tia = data?.policyDetails.tia! + welcomeBonusToAdd;
+  let tia = data?.policyDetails.tia! + welcomeBonusToAdd;
+  let withdrawedAmount = 0;
+  data?.transactions.forEach((trx) => {
+    if (trx.type === ApplicationType.SurrenderWithdrawal) {
+      withdrawedAmount += +trx.transactionAmount.trim().split(",").join("");
+    }
+  });
+  tia -= withdrawedAmount;
 
   return (
     <section className="grid grid-cols-3 gap-4 mx-10 print:mt-10">
