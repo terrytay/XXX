@@ -11,7 +11,7 @@ export const uploadFiles = async (files: File[]) => {
     return redirect("/upload?message=Please select a file");
   } else {
     if (user) {
-      console.log(files[0]);
+      // console.log(files[0]);
       const { data, error } = await supabase.storage
         .from(process.env.BUCKET_NAME!)
         .upload(user.id, files[0], {

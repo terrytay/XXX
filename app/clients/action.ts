@@ -6,8 +6,6 @@ export const deleteClient = async (policy_number: string) => {
     .from("clients")
     .delete()
     .eq("policy_number", policy_number);
-
-  console.log("response", response);
 };
 
 export const updateClient = async ({
@@ -21,20 +19,15 @@ export const updateClient = async ({
   policy_number: string;
   policy_link: string;
 }) => {
-  console.log(id, nickname, policy_number, policy_link);
   const supabase = createClient();
   const user = await supabase.auth.getUser();
-  const response = await supabase
-    .from("clients")
-    .upsert({
-      id,
-      nickname,
-      policy_number,
-      policy_link,
-      agent_id: user.data.user?.id,
-    });
-
-  console.log("response", response);
+  const response = await supabase.from("clients").upsert({
+    id,
+    nickname,
+    policy_number,
+    policy_link,
+    agent_id: user.data.user?.id,
+  });
 };
 
 export const newClient = async ({
@@ -54,6 +47,4 @@ export const newClient = async ({
   const response = await supabase
     .from("clients")
     .insert({ agent_id: id, nickname, policy_number, policy_link });
-
-  console.log("response", response);
 };

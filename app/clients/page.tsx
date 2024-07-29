@@ -5,6 +5,7 @@ import { UserResponse } from "@supabase/supabase-js";
 import { getAllDividends, getClient, getClients } from "../portfolio/action";
 import moment from "moment";
 import { formatPercent } from "@/utils/formatters";
+import { getWelcomeBonus } from "@/utils/transactionsParser";
 
 export default async function ClientList() {
   const supabase = createClient();
@@ -13,6 +14,11 @@ export default async function ClientList() {
   if (!user.data.user) {
     return await bounceOut();
   }
+
+  const preferences = await supabase
+    .from("agents")
+    .select()
+    .eq("agent_id", user?.data.user.id);
 
   const getData = async (): Promise<Client[]> => {
     // Admin
@@ -58,10 +64,15 @@ export default async function ClientList() {
       (val) => val.policyNumber === d.policy_number
     );
 
+    let additionalTia = 0;
+    if (preferences.data?.at(0).include && policy != null) {
+      additionalTia = getWelcomeBonus(policy!);
+    }
+
     if (policy != null) {
       const { policyDetails, profile } = policy;
       d.tiv = policyDetails.tiv;
-      d.tia = policyDetails.tia;
+      d.tia = policyDetails.tia + additionalTia;
       d.productName = policyDetails.productName;
 
       let totalDividendsPaidout = 0;
@@ -73,8 +84,8 @@ export default async function ClientList() {
       d.grossProfit = formatPercent(
         (+policyDetails.tiv.trim().split(",").join("") +
           totalDividendsPaidout -
-          policyDetails.tia) /
-          policyDetails.tia
+          d.tia) /
+          d.tia
       );
 
       d.commencementDate = moment(profile.commencementDate, "DD/MM/YYYY")
@@ -98,9 +109,14 @@ export default async function ClientList() {
     });
   });
 
-  data.forEach((client) => {
-    totalPremium += client.tia || 0;
-    totalAum += +client.tiv?.trim().split(",").join("") || 0;
+  // data.forEach((client) => {
+  //   totalPremium += client.tia || 0;
+  //   totalAum += +client.tiv?.trim().split(",").join("") || 0;
+  // });
+
+  res.forEach((r) => {
+    totalPremium += r.tia;
+    totalAum += +r.tiv.trim().split(",").join("");
   });
 
   if (totalAum != 0) {

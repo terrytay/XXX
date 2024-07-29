@@ -9,7 +9,7 @@ enum ApplicationType {
   Reinvest = "Reinvest",
   RiskCharge = "Risk Charge",
   Conversion = "CONVERSION",
-  CampaignBonus = "Campaign Bonus"
+  CampaignBonus = "Campaign Bonus",
 }
 
 type AllocatedTransaction = {
@@ -44,8 +44,26 @@ function convertStringToNumber(str: string) {
   return +str.trim().split(",").join("");
 }
 
-export function getTransactionsSnapshotByMonth(data: FpmsData): Snapshot[] {
-  const transactions = data.transactions.reverse();
+export function getWelcomeBonus(data: FpmsData) {
+  let result = 0;
+  const transactions = data.transactions.slice().reverse();
+  transactions.forEach((trx) => {
+    if (
+      trx.type.includes(ApplicationType.WelcomeBonus) ||
+      trx.type.includes(ApplicationType.CampaignBonus)
+    ) {
+      result += +trx.transactionAmount.trim().split(",").join("");
+    }
+  });
+
+  return result;
+}
+
+export function getTransactionsSnapshotByMonth(
+  data: FpmsData,
+  welcomeBonusAsPremium: boolean
+): Snapshot[] {
+  const transactions = data.transactions.slice().reverse();
   let result: Snapshot[] = [];
 
   transactions.forEach((transaction) => {
@@ -70,9 +88,37 @@ export function getTransactionsSnapshotByMonth(data: FpmsData): Snapshot[] {
           tia: +transaction.transactionAmount.trim().split(",").join(""),
         });
       } else if (
-        transaction.type.includes(ApplicationType.WelcomeBonus) || transaction.type.includes(ApplicationType.CampaignBonus) ||
-        transaction.type.includes(ApplicationType.Reinvest)
+        transaction.type.includes(ApplicationType.WelcomeBonus) ||
+        transaction.type.includes(ApplicationType.CampaignBonus)
       ) {
+        if (welcomeBonusAsPremium) {
+          result.push({
+            date: runDate,
+            funds: [
+              {
+                code: transaction.code,
+                units: transaction.balanceUnits,
+                price: transaction.transactionPrice,
+              },
+            ],
+            tiv: 0,
+            tia: +transaction.transactionAmount.trim().split(",").join(""),
+          });
+        } else {
+          result.push({
+            date: runDate,
+            funds: [
+              {
+                code: transaction.code,
+                units: transaction.balanceUnits,
+                price: transaction.transactionPrice,
+              },
+            ],
+            tiv: 0,
+            tia: 0,
+          });
+        }
+      } else if (transaction.type.includes(ApplicationType.Reinvest)) {
         result.push({
           date: runDate,
           funds: [
@@ -131,7 +177,10 @@ export function getTransactionsSnapshotByMonth(data: FpmsData): Snapshot[] {
     } else {
       if (
         transaction.type.includes(ApplicationType.Inflow) ||
-        transaction.type.includes(ApplicationType.Conversion)
+        transaction.type.includes(ApplicationType.Conversion) ||
+        ((transaction.type.includes(ApplicationType.CampaignBonus) ||
+          transaction.type.includes(ApplicationType.WelcomeBonus)) &&
+          welcomeBonusAsPremium)
       ) {
         const fundIndex = result[index].funds.findIndex(
           (fund) => fund.code === transaction.code
@@ -231,7 +280,9 @@ export function getTransactionsSnapshotByMonth(data: FpmsData): Snapshot[] {
     }
   });
 
-  finalResult[finalResult.length - 1].tia = data.policyDetails.tia;
+  finalResult[finalResult.length - 1].tia =
+    data.policyDetails.tia +
+    (welcomeBonusAsPremium ? getWelcomeBonus(data) : 0);
   finalResult[finalResult.length - 1].tiv = +data.policyDetails.tiv
     .trim()
     .split(",")
@@ -249,8 +300,8 @@ export function parseTransactions(data: FpmsData) {
     if (
       transaction.type.includes(ApplicationType.SwitchIn) ||
       transaction.type.includes(ApplicationType.WelcomeBonus) ||
-
-    transaction.type.includes(ApplicationType.CampaignBonus) ||  transaction.type.includes(ApplicationType.Inflow) ||
+      transaction.type.includes(ApplicationType.CampaignBonus) ||
+      transaction.type.includes(ApplicationType.Inflow) ||
       transaction.type.includes(ApplicationType.Conversion) ||
       transaction.type.includes(ApplicationType.Reinvest)
     ) {

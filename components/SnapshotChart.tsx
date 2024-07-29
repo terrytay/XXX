@@ -19,11 +19,17 @@ import { CartesianGrid, Legend, Line, LineChart, XAxis } from "recharts";
 import { ArrowDown, ArrowUp, TrendingUp } from "lucide-react";
 import { useEffect, useState } from "react";
 
-export default function SnapshotChart({ stringData }: { stringData: string }) {
+export default function SnapshotChart({
+  stringData,
+  welcomeBonusAsPremium,
+}: {
+  stringData: string;
+  welcomeBonusAsPremium: boolean;
+}) {
   const [enableBenchmark, setEnableBenchmark] = useState(false);
 
   const data: FpmsData = JSON.parse(stringData);
-  const result = getTransactionsSnapshotByMonth(data);
+  const result = getTransactionsSnapshotByMonth(data, welcomeBonusAsPremium);
 
   const [benchmark, editBenchmark] = useState(6.0);
   const [toggleEdit, setToggleEdit] = useState(false);
@@ -68,8 +74,6 @@ export default function SnapshotChart({ stringData }: { stringData: string }) {
       });
     }
   });
-
-  // console.log(displayData);
 
   return (
     <Card className="flex flex-col col-span-3 md:col-span-1">

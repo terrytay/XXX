@@ -16,7 +16,6 @@ export const updatePrices = async (data: FundPrice) => {
         upsert: true,
       }
     );
-    console.log(result.matchedCount);
 
     return Response.json({ isSuccess: result.acknowledged });
   } catch (error) {

@@ -1,4 +1,5 @@
 import { createClient } from "@/utils/supabase/server";
+import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 export const toggleTheme = async (formData: FormData) => {
@@ -8,7 +9,7 @@ export const toggleTheme = async (formData: FormData) => {
 
   const toSet = formData.get("switch") === "on" ? false : true;
   const id = formData.get("id");
-  console.log(id);
+
   if (id != "") {
     await supabase
       .from("agents")
@@ -17,6 +18,26 @@ export const toggleTheme = async (formData: FormData) => {
       })
       .eq("agent_id", id);
 
-    return redirect("/");
+    revalidatePath("/");
+  }
+};
+
+export const toggleBonus = async (formData: FormData) => {
+  "use server";
+
+  const supabase = createClient();
+
+  const toSet = formData.get("switch") === "on" ? false : true;
+  const id = formData.get("id");
+
+  if (id != "") {
+    await supabase
+      .from("agents")
+      .update({
+        include: toSet,
+      })
+      .eq("agent_id", id);
+
+    revalidatePath("/");
   }
 };

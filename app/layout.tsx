@@ -3,6 +3,8 @@ import "./globals.css";
 import Footer from "@/components/Footer";
 import LayoutWrapper from "@/components/LayoutWrapper";
 import { createClient } from "@/utils/supabase/server";
+import { Suspense } from "react";
+import { Progress } from "@/components/ui/progress";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -36,7 +38,16 @@ export default async function RootLayout({
     >
       <body className="">
         <main className="min-h-screen flex flex-col items-center">
-          <LayoutWrapper>{children}</LayoutWrapper>
+          <Suspense
+            key={Math.random()}
+            fallback={
+              <div className="absolute mt-0 h-full w-1/2 flex items-center justify-center">
+                <Progress value={80} />
+              </div>
+            }
+          >
+            <LayoutWrapper>{children}</LayoutWrapper>
+          </Suspense>
         </main>
       </body>
     </html>

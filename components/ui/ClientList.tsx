@@ -306,7 +306,7 @@ export const columns: ColumnDef<Client>[] = [
       async function onSubmit(values: z.infer<typeof formSchema>) {
         // Do something with the form values.
         // ✅ This will be type-safe and validated.
-        console.log(values);
+
         await updateClient({ ...values, id: row.original.id });
         router.refresh();
       }
@@ -470,7 +470,7 @@ export default function DataTable<TData, TValue>({
   async function onSubmit(values: z.infer<typeof formSchema>) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
-    console.log(values);
+
     await newClient(values);
     router.refresh();
   }

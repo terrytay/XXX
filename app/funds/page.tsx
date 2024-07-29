@@ -19,7 +19,7 @@ import {
 
 const page = async () => {
   const prices = await getPrices();
-  console.log(prices);
+
   return (
     <section className="grid grid-cols-3 gap-4 mx-10">
       <Card className="flex flex-col">

@@ -30,7 +30,6 @@ const updateAllocations = async (data: AgentClientAllocation) => {
       }
     );
 
-    console.log(result.matchedCount);
     return Response.json({ isSuccess: result.acknowledged });
   } catch (error) {
     throw error;

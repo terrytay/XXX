@@ -14,7 +14,7 @@ import { createClient } from "@/utils/supabase/server";
 import { UserResponse } from "@supabase/supabase-js";
 import { bounceOut } from "@/app/auth/action";
 import { redirect } from "next/navigation";
-import { parseTransactions } from "@/utils/transactionsParser";
+import { getWelcomeBonus, parseTransactions } from "@/utils/transactionsParser";
 import { getPrices } from "@/app/prices/action";
 import PolicyChart from "@/components/FundHoldingChart";
 import { Card, CardDescription, CardHeader } from "@/components/ui/card";
@@ -52,7 +52,23 @@ export default async function Page({
   if (!user.data.user) {
     return await bounceOut();
   }
+  // Get policy details
   const data = await getClient(params.policy_number);
+
+  // Get welcome bonus
+  let isWelcomeBonusPremium = false;
+  const preferences = await supabase
+    .from("agents")
+    .select()
+    .eq("agent_id", user?.data.user.id);
+  isWelcomeBonusPremium = preferences.data!.at(0).include;
+  let welcomeBonusToAdd = 0;
+  const welcomeBonusToDisplay = getWelcomeBonus(data!);
+  if (isWelcomeBonusPremium) {
+    welcomeBonusToAdd = welcomeBonusToDisplay;
+  }
+
+  // Get dividends
   const dividends = await getDividends(params.policy_number);
   let totalDividendsPaidout = 0;
   dividends?.dividends.forEach((div) => {
@@ -61,13 +77,14 @@ export default async function Page({
     }
   });
 
+  // Get allocation data
   const templateAllocationData: AgentClientAllocation = {
     agentId: user.data.user.id,
     policyNumber: params.policy_number,
   };
-
   const allocationData = await getAllocations(params.policy_number);
 
+  // Admin
   if (
     data?.agentId != user.data.user.id &&
     user.data.user.id != "364c9a6d-ba68-49d7-a227-3692346722c1"
@@ -75,16 +92,13 @@ export default async function Page({
     return redirect("/");
   }
 
+  // Get allocation
   const allocatedFunds = parseTransactions(data!);
   let cashFund = 0;
-
   const dailyPrices = await getPrices();
-
   let today = new Date().toISOString().slice(0, 10);
-
   let [day, month, year] = data!.profile.commencementDate.split("/");
   const startDate = year.concat("-").concat(month).concat("-").concat(day);
-
   let duration = dateDiff(startDate, today);
   duration = duration
     .replace("Y", " Years")
@@ -93,6 +107,11 @@ export default async function Page({
     .replace("1 Months", "1 Month")
     .replace("D", " Days")
     .replace("1 Days", "1 Day");
+
+  // Shortener
+  const tiv = +data?.policyDetails.tiv.trim().split(",").join("")!;
+  const tia = data?.policyDetails.tia! + welcomeBonusToAdd;
+
   return (
     <section className="grid grid-cols-3 gap-4 mx-10 print:mt-10">
       <Card className="flex flex-col col-span-3 md:col-span-1">
@@ -130,6 +149,10 @@ export default async function Page({
               <TableCell>{data?.profile.premiumFreq}</TableCell>
             </TableRow>
             <TableRow>
+              <TableCell>Welcome Bonus</TableCell>
+              <TableCell>{format2dp(welcomeBonusToDisplay)}</TableCell>
+            </TableRow>
+            <TableRow>
               <TableCell>Last Updated</TableCell>
               <TableCell>{data?.lastUpdated}</TableCell>
             </TableRow>
@@ -138,7 +161,10 @@ export default async function Page({
       </Card>
 
       <PolicyChart stringData={JSON.stringify(data)} />
-      <SnapshotChart stringData={JSON.stringify(data)} />
+      <SnapshotChart
+        stringData={JSON.stringify(data)}
+        welcomeBonusAsPremium={isWelcomeBonusPremium}
+      />
       <Card className="col-span-3 py-2">
         <Table>
           <TableCaption>
@@ -217,7 +243,7 @@ export default async function Page({
                 Total Investment Value:
               </TableCell>
               <TableCell className="text-right" colSpan={6}>
-                {data?.policyDetails.tiv}
+                {format2dp(tiv)}
               </TableCell>
             </TableRow>
             {totalDividendsPaidout > 0 && (
@@ -236,7 +262,7 @@ export default async function Page({
                 Total Investment Amount:
               </TableCell>
               <TableCell className="text-right" colSpan={6}>
-                {format2dp(data?.policyDetails.tia!)}
+                {format2dp(tia)}
               </TableCell>
             </TableRow>
             <TableRow>
@@ -244,10 +270,7 @@ export default async function Page({
                 Return on Investment (ROI):
               </TableCell>
               <TableCell className="text-right" colSpan={6}>
-                {formatPercent(
-                  +data?.policyDetails.grossProfit! +
-                    totalDividendsPaidout / data?.policyDetails.tia!
-                )}
+                {formatPercent((tiv + totalDividendsPaidout - tia) / tia)}
               </TableCell>
             </TableRow>
           </TableFooter>

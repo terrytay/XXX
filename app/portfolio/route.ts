@@ -53,7 +53,6 @@ const updateClient = async (data: FpmsData) => {
         upsert: true,
       }
     );
-    console.log(result.matchedCount);
 
     return Response.json({ isSuccess: result.acknowledged });
   } catch (error) {
