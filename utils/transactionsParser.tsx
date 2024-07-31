@@ -325,9 +325,6 @@ export function getTransactionsSnapshotByMonth(
     }
   });
 
-  finalResult[finalResult.length - 1].tia += welcomeBonusAsPremium
-    ? getWelcomeBonus(data)
-    : 0;
   // finalResult[finalResult.length - 1].tiv = +data.policyDetails.tiv
   //   .trim()
   //   .split(",")
