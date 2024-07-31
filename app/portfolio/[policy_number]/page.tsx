@@ -434,31 +434,38 @@ export default async function Page({
                         ))}
                     </TableBody>
                     <TableFooter>
-                      <TableRow>
-                        <TableCell>Total (Before Fees):</TableCell>
-                        <TableCell></TableCell>
-                        <TableCell></TableCell>
-                        <TableCell></TableCell>
+                      {fund.totalUnitsAfterFees > 0 && (
+                        <TableRow>
+                          <TableCell>Total (Before Fees):</TableCell>
+                          <TableCell></TableCell>
+                          <TableCell></TableCell>
+                          <TableCell></TableCell>
 
-                        <TableCell>
-                          {format2dp(
-                            fund.transactions.reduce(
-                              (prev, cur) => prev + cur.units,
-                              0
-                            )
-                          )}
-                        </TableCell>
-                        <TableCell>
-                          {format2dp(
-                            fund.transactions.reduce(
-                              (prev, cur) => prev + cur.value,
-                              0
-                            )
-                          )}
-                        </TableCell>
-                      </TableRow>
+                          <TableCell>
+                            {format2dp(
+                              fund.transactions.reduce(
+                                (prev, cur) => prev + cur.units,
+                                0
+                              )
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            {format2dp(
+                              fund.transactions.reduce(
+                                (prev, cur) => prev + cur.value,
+                                0
+                              )
+                            )}
+                          </TableCell>
+                        </TableRow>
+                      )}
                       <TableRow>
-                        <TableCell>Total (After Fees):</TableCell>
+                        <TableCell>
+                          Total
+                          {fund.totalUnitsAfterFees > 0 && (
+                            <span> (After Fees):</span>
+                          )}
+                        </TableCell>
                         <TableCell></TableCell>
                         <TableCell></TableCell>
                         <TableCell></TableCell>
