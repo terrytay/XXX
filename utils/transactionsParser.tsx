@@ -347,6 +347,7 @@ export function parseTransactions(data: FpmsData) {
   const allocatedFunds: AllocatedFund[] = [];
 
   transactions.forEach((transaction) => {
+    console.log(transaction);
     if (
       transaction.type.includes(ApplicationType.SwitchIn) ||
       transaction.type.includes(ApplicationType.WelcomeBonus) ||
@@ -437,7 +438,6 @@ export function parseTransactions(data: FpmsData) {
           allocatedFunds[allocatedFunds.length - 1].totalUnitsAfterFees = 0;
           allocatedFunds[allocatedFunds.length - 1].totalValueAfterFees = 0;
         }
-        console.log(allocatedFunds[allocatedFunds.length - 1]);
       } else {
         const dateIndex = allocatedFunds[index].transactions.findIndex(
           (trx) =>
@@ -458,6 +458,8 @@ export function parseTransactions(data: FpmsData) {
             convertStringToNumber(transaction.transactionAmount);
           allocatedFunds[index].transactions[dateIndex].units +=
             -1 * convertStringToNumber(transaction.transactionUnits);
+          allocatedFunds[index].transactions[dateIndex].balanceUnits =
+            convertStringToNumber(transaction.balanceUnits);
         }
 
         // Reset total units and value after fees if balance units goes to 0.
@@ -471,7 +473,6 @@ export function parseTransactions(data: FpmsData) {
             transaction.transactionAmount
           );
         }
-        console.log(allocatedFunds[index]);
       }
     } else if (
       transaction.type.includes(ApplicationType.Fee) ||
@@ -520,19 +521,30 @@ export function parseTransactions(data: FpmsData) {
           totalValueAfterFees:
             -1 * convertStringToNumber(transaction.transactionAmount),
         });
+        // Reset total units and value after fees if balance units goes to 0.
+        if (convertStringToNumber(transaction.balanceUnits) === 0) {
+          allocatedFunds[allocatedFunds.length - 1].totalUnitsAfterFees = 0;
+          allocatedFunds[allocatedFunds.length - 1].totalValueAfterFees = 0;
+        }
       } else {
         allocatedFunds[index].transactions.push({
           units: -1 * convertStringToNumber(transaction.transactionUnits),
           date: transaction.runDate,
-          price: -1 * convertStringToNumber(transaction.transactionPrice),
-          value: convertStringToNumber(transaction.transactionAmount),
+          price: convertStringToNumber(transaction.transactionPrice),
+          value: -1 * convertStringToNumber(transaction.transactionAmount),
           description: transaction.type,
           balanceUnits: convertStringToNumber(transaction.balanceUnits),
         });
-        allocatedFunds[index].totalUnitsAfterFees +=
-          -1 * convertStringToNumber(transaction.transactionUnits);
-        allocatedFunds[index].totalValueAfterFees +=
-          -1 * convertStringToNumber(transaction.transactionAmount);
+        // Reset total units and value after fees if balance units goes to 0.
+        if (convertStringToNumber(transaction.balanceUnits) === 0) {
+          allocatedFunds[index].totalUnitsAfterFees = 0;
+          allocatedFunds[index].totalValueAfterFees = 0;
+        } else {
+          allocatedFunds[index].totalUnitsAfterFees +=
+            -1 * convertStringToNumber(transaction.transactionUnits);
+          allocatedFunds[index].totalValueAfterFees +=
+            -1 * convertStringToNumber(transaction.transactionAmount);
+        }
       }
     }
   });
