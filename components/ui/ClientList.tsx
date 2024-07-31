@@ -441,7 +441,9 @@ export default function DataTable<TData, TValue>({
   aggregatedData,
 }: DataTableProps<TData, TValue>) {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [sorting, setSorting] = useState<SortingState>([]);
+  const [sorting, setSorting] = useState<SortingState>([
+    { id: "grossProfit", desc: true },
+  ]);
 
   const router = useRouter();
 
