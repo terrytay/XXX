@@ -55,7 +55,7 @@ export default async function Page({
           </div>
           {admin && (
             <div className="flex">
-              <div>Admin Mode:</div>
+              <div>Debug Mode:</div>
               <ToggleAdminViewComponent
                 adminView={adminView}
                 id={user?.data.user.id || ""}

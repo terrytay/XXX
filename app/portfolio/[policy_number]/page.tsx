@@ -131,10 +131,12 @@ export default async function Page({
         </CardHeader>
         <Table>
           <TableBody>
-            <TableRow>
-              <TableCell>Name</TableCell>
-              <TableCell>{data?.profile.name}</TableCell>
-            </TableRow>
+            {data?.agentId === user.data.user.id && (
+              <TableRow>
+                <TableCell>Name</TableCell>
+                <TableCell>{data?.profile.name}</TableCell>
+              </TableRow>
+            )}
             <TableRow>
               <TableCell>Product Name</TableCell>
               <TableCell>{data?.policyDetails.productName}</TableCell>
