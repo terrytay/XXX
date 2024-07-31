@@ -76,6 +76,7 @@ export type Client = {
   tia: number;
   grossProfit: string;
   productName: string;
+  dividendsPaidout: number;
 };
 
 interface DataTableProps<TData, TValue> {
@@ -219,6 +220,23 @@ export const columns: ColumnDef<Client>[] = [
     },
     cell: ({ row }) => {
       return <div>{format2dp(row.getValue("tiv"))}</div>;
+    },
+  },
+  {
+    accessorKey: "dividendsPaidout",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Dividends Paid
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => {
+      return <div>{format2dp(row.getValue("dividendsPaidout"))}</div>;
     },
   },
   {

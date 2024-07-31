@@ -226,7 +226,6 @@ export function getTransactionsSnapshotByMonth(
       } else if (
         transaction.type.includes(ApplicationType.SurrenderWithdrawal)
       ) {
-        console.log("meow");
         const fundIndex = result[index].funds.findIndex(
           (fund) => fund.code === transaction.code
         );
@@ -240,7 +239,6 @@ export function getTransactionsSnapshotByMonth(
             .trim()
             .split(",")
             .join("");
-          console.log(result[index]);
         } else {
           result[index].funds[fundIndex].price = transaction.transactionPrice;
           result[index].funds[fundIndex].units = transaction.balanceUnits;
@@ -248,7 +246,6 @@ export function getTransactionsSnapshotByMonth(
             .trim()
             .split(",")
             .join("");
-          console.log(result[index]);
         }
       } else {
         const fundIndex = result[index].funds.findIndex(
@@ -280,7 +277,6 @@ export function getTransactionsSnapshotByMonth(
             +fund.price.trim().split(",").join("") *
             +fund.units.trim().split(",").join(""))
       );
-      console.log(res);
 
       finalResult.push({
         tia: res.tia,
@@ -290,7 +286,6 @@ export function getTransactionsSnapshotByMonth(
       });
       isFirst = false;
     } else {
-      console.log(res);
       let tia = finalResult[finalResult.length - 1].tia + res.tia;
 
       let fundsToAdd: SnapshotFund[] = [];
@@ -347,7 +342,6 @@ export function parseTransactions(data: FpmsData) {
   const allocatedFunds: AllocatedFund[] = [];
 
   transactions.forEach((transaction) => {
-    console.log(transaction);
     if (
       transaction.type.includes(ApplicationType.SwitchIn) ||
       transaction.type.includes(ApplicationType.WelcomeBonus) ||

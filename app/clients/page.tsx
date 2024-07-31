@@ -80,9 +80,8 @@ export default async function ClientList() {
         }
       });
 
-      d.tiv = (
-        +policyDetails.tiv.trim().split(",").join("") - withdrawedAmount
-      ).toString();
+      d.tiv = (+policyDetails.tiv.trim().split(",").join("")).toString();
+
       d.tia = policyDetails.tia + additionalTia - withdrawedAmount;
       d.productName = policyDetails.productName;
 
@@ -92,6 +91,7 @@ export default async function ClientList() {
           totalDividendsPaidout += +div.amount.trim().split(",").join("");
         }
       });
+
       d.grossProfit = formatPercent(
         (+policyDetails.tiv.trim().split(",").join("") +
           totalDividendsPaidout -
@@ -104,6 +104,8 @@ export default async function ClientList() {
         .split(" 00:00:00 ")[0];
 
       d.premium = profile.premium;
+
+      d.dividendsPaidout = totalDividendsPaidout;
 
       res.push(d);
     }
