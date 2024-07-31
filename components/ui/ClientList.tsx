@@ -218,7 +218,7 @@ export const columns: ColumnDef<Client>[] = [
       );
     },
     cell: ({ row }) => {
-      return <div>{row.getValue("tiv")}</div>;
+      return <div>{format2dp(row.getValue("tiv"))}</div>;
     },
   },
   {
