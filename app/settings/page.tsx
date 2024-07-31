@@ -3,8 +3,9 @@ import { UserResponse } from "@supabase/supabase-js";
 import { bounceOut } from "../auth/action";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import ToggleThemeComponent from "@/components/ui/toggleThemeComponent";
-import { toggleBonus, toggleTheme } from "../action";
+import { toggleAdminView, toggleBonus, toggleTheme } from "../action";
 import ToggleWelcomeBonusComponent from "@/components/ui/toggleWelcomeBonusComponent";
+import ToggleAdminViewComponent from "@/components/ui/toggleAdminViewComponent";
 
 export default async function Page({
   params,
@@ -25,6 +26,9 @@ export default async function Page({
 
   const dark: boolean = data?.at(0).dark || false;
   const include: boolean = data?.at(0).include || false;
+
+  const admin: boolean = data?.at(0).admin || false;
+  const adminView: boolean = data?.at(0).adminView || false;
 
   return (
     <section className="mx-[10rem]">
@@ -49,6 +53,16 @@ export default async function Page({
               toggleBonus={toggleBonus}
             />
           </div>
+          {admin && (
+            <div className="flex">
+              <div>Admin Mode:</div>
+              <ToggleAdminViewComponent
+                adminView={adminView}
+                id={user?.data.user.id || ""}
+                toggleAdminView={toggleAdminView}
+              />
+            </div>
+          )}
         </CardContent>
       </Card>
     </section>

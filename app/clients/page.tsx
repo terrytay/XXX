@@ -22,33 +22,33 @@ export default async function ClientList() {
 
   const getData = async (): Promise<Client[]> => {
     // Admin
-    // if (user.data.user?.id === "364c9a6d-ba68-49d7-a227-3692346722c1") {
-    //   const { data, error } = await supabase.from("clients").select();
-    //   if (error) {
-    //     return [];
-    //   }
+    if (preferences.data?.at(0).admin && preferences.data.at(0).adminView) {
+      const { data, error } = await supabase.from("clients").select();
+      if (error) {
+        return [];
+      }
 
-    //   if (data) {
-    //     return data;
-    //   }
-    //   return [];
-    // }
+      if (data) {
+        return data;
+      }
+      return [];
+    } else {
+      // Standard users
+      const { data, error } = await supabase
+        .from("clients")
+        .select()
+        .eq("agent_id", user.data.user?.id);
 
-    // Standard users
-    const { data, error } = await supabase
-      .from("clients")
-      .select()
-      .eq("agent_id", user.data.user?.id);
+      if (error) {
+        return [];
+      }
 
-    if (error) {
+      if (data) {
+        return data;
+      }
+
       return [];
     }
-
-    if (data) {
-      return data;
-    }
-
-    return [];
   };
 
   const data = await getData();
