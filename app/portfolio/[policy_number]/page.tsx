@@ -361,12 +361,16 @@ export default async function Page({
           <TableHeader>
             <TableRow>
               <TableHead>Funds</TableHead>
-              <TableHead colSpan={8}>
+              <TableHead colSpan={10}>
                 <Table>
                   <TableHeader>
                     <TableRow>
                       <TableHead className="w-[150px]">Date</TableHead>
+                      <TableHead className="w-[150px] overflow-hidden">
+                        Description
+                      </TableHead>
                       <TableHead className="w-[150px]">Price</TableHead>
+                      <TableHead className="w-[150px]">Bal Units</TableHead>
                       <TableHead className="w-[150px]">Units</TableHead>
                       <TableHead className="w-[150px]">Value</TableHead>
                     </TableRow>
@@ -388,32 +392,77 @@ export default async function Page({
                     )!.fundName
                   }
                 </TableCell>
-                <TableCell colSpan={8}>
+                <TableCell colSpan={10}>
                   <Table>
                     <TableBody>
-                      {fund.transactions.map((trx) => (
-                        <TableRow
-                          className={`${trx.units < 0 ? "text-red-500" : ""}`}
-                        >
-                          <TableCell className="w-[150px]">
-                            {trx.date}
-                          </TableCell>
-                          <TableCell className="w-[150px]">
-                            {trx.price}
-                          </TableCell>
-                          <TableCell className="w-[150px]">
-                            {format2dp(trx.units)}
-                          </TableCell>
-                          <TableCell className="w-[150px]">
-                            {format2dp(trx.value)}
-                          </TableCell>
-                        </TableRow>
-                      ))}
+                      {fund.transactions
+                        .slice()
+                        .reverse()
+                        .map((trx) => (
+                          <TableRow>
+                            <TableCell className="w-[150px]">
+                              {trx.date}
+                            </TableCell>
+                            <TableCell
+                              className={`w-[150px] ${
+                                trx.units < 0 ? "text-red-500" : ""
+                              }`}
+                            >
+                              {trx.description.split("-")[1]}
+                            </TableCell>
+                            <TableCell className="w-[150px]">
+                              {trx.price}
+                            </TableCell>
+                            <TableCell className={`w-[150px]`}>
+                              {format2dp(trx.balanceUnits)}
+                            </TableCell>
+                            <TableCell
+                              className={`w-[150px] ${
+                                trx.units < 0 ? "text-red-500" : ""
+                              }`}
+                            >
+                              {format2dp(trx.units)}
+                            </TableCell>
+                            <TableCell
+                              className={`w-[150px] ${
+                                trx.units < 0 ? "text-red-500" : ""
+                              }`}
+                            >
+                              {format2dp(trx.value)}
+                            </TableCell>
+                          </TableRow>
+                        ))}
                     </TableBody>
                     <TableFooter>
                       <TableRow>
+                        <TableCell>Total (Before Fees):</TableCell>
+                        <TableCell></TableCell>
+                        <TableCell></TableCell>
+                        <TableCell></TableCell>
+
+                        <TableCell>
+                          {format2dp(
+                            fund.transactions.reduce(
+                              (prev, cur) => prev + cur.units,
+                              0
+                            )
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          {format2dp(
+                            fund.transactions.reduce(
+                              (prev, cur) => prev + cur.value,
+                              0
+                            )
+                          )}
+                        </TableCell>
+                      </TableRow>
+                      <TableRow>
                         <TableCell>Total (After Fees):</TableCell>
                         <TableCell></TableCell>
+                        <TableCell></TableCell>
+                        <TableCell></TableCell>
+
                         <TableCell>
                           {format2dp(fund.totalUnitsAfterFees)}
                         </TableCell>
@@ -433,20 +482,22 @@ export default async function Page({
                   )}
                 </TableCell>
                 <TableCell>
-                  {formatPercent(
-                    (+formatUnits(
-                      +dailyPrices.funds
-                        .find(
-                          (dp: { fundCode: string }) =>
-                            dp.fundCode === fund.code
-                        )!
-                        .fundBidPrice.trim()
-                        .split(",")
-                        .join("")
-                    ) -
-                      +formatUnits(fund.averagePrice!)) /
-                      +formatUnits(fund.averagePrice!)
-                  )}
+                  {fund.averagePrice! > 0
+                    ? formatPercent(
+                        (+formatUnits(
+                          +dailyPrices.funds
+                            .find(
+                              (dp: { fundCode: string }) =>
+                                dp.fundCode === fund.code
+                            )!
+                            .fundBidPrice.trim()
+                            .split(",")
+                            .join("")
+                        ) -
+                          +formatUnits(fund.averagePrice!)) /
+                          +formatUnits(fund.averagePrice!)
+                      )
+                    : "NA"}
                 </TableCell>
               </TableRow>
             ))}
@@ -457,7 +508,7 @@ export default async function Page({
               <TableCell className="text-right" colSpan={4}>
                 {formatUnits(cashFund)}
               </TableCell>
-            </TableRow>
+            </TableRow> 
           </TableFooter> */}
         </Table>
       </Card>
