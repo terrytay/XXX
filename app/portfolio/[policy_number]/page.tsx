@@ -211,7 +211,20 @@ export default async function Page({
                 <TableRow>
                   <TableCell className="font-medium">{fund.name}</TableCell>
                   <TableCell>{fund.totalFundUnits}</TableCell>
-                  <TableCell>{fund.unitPrice}</TableCell>
+                  <TableCell>
+                    {
+                      +formatUnits(
+                        +dailyPrices.funds
+                          .find(
+                            (dp: { fundCode: string }) =>
+                              dp.fundCode === fund.name.split(":")[0]
+                          )!
+                          .fundBidPrice.trim()
+                          .split(",")
+                          .join("")
+                      )
+                    }
+                  </TableCell>
                   <TableCell>{fund.totalFundValue}</TableCell>
                   <TableCell>
                     {formatUnits(
