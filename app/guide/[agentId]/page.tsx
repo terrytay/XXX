@@ -8,12 +8,21 @@ import {
 } from "@/components/ui/card";
 import Link from "next/link";
 import Image from "next/image";
+import { createClient } from "@/utils/supabase/server";
+import { UserResponse } from "@supabase/supabase-js";
+import { bounceOut } from "@/app/auth/action";
 
 export default async function Page({
   params,
 }: {
   params: { agentId: string };
 }) {
+  const supabase = createClient();
+  const user: UserResponse = await supabase.auth.getUser();
+
+  if (!user.data.user) {
+    return await bounceOut();
+  }
   return (
     <section className="flex flex-col gap-4 mx-20">
       <Card>
