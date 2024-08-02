@@ -1,6 +1,7 @@
 import { createClient } from "@/utils/supabase/server";
 import Navbar from "./Navbar";
 import Verify from "@/app/verify/page";
+import { redirect } from "next/navigation";
 
 const LayoutWrapper = async ({ children }: { children: React.ReactNode }) => {
   const supabase = createClient();
@@ -14,15 +15,17 @@ const LayoutWrapper = async ({ children }: { children: React.ReactNode }) => {
     .select()
     .eq("agent_id", user?.id);
 
+  if (user && data!.length === 0) {
+    redirect(
+      "https://www.google.com/search?q=cats&rlz=1C5CHFA_enSG1092SG1092&oq=cats&gs_lcrp=EgZjaHJvbWUqGAgAEAAYQxiDARjjAhixAxjJAxiABBiKBTIYCAAQABhDGIMBGOMCGLEDGMkDGIAEGIoFMhUIARAuGEMYgwEYsQMYyQMYgAQYigUyCggCEAAYsQMYgAQyBwgDEAAYgAQyDQgEEAAYkgMYgAQYigUyBwgFEC4YgAQyBwgGEC4YgAQyBggHEEUYPdIBCDEwMTNqMGo3qAIAsAIA&sourceid=chrome&ie=UTF-8"
+    );
+  }
+
   return user ? (
-    data!.length === 0 ? (
-      <Verify />
-    ) : (
-      <div className="flex-1 w-full flex flex-col gap-10 items-center">
-        <Navbar />
-        <div className="flex-1 w-full flex flex-col px-3">{children}</div>
-      </div>
-    )
+    <div className="flex-1 w-full flex flex-col gap-10 items-center">
+      <Navbar />
+      <div className="flex-1 w-full flex flex-col px-3">{children}</div>
+    </div>
   ) : (
     <>{children}</>
   );

@@ -42,7 +42,7 @@ export default async function Login({
 
       <Image
         src="/logo.jpg"
-        width={128}
+        width={512}
         height={128}
         alt="logo"
         className="rounded-full"
