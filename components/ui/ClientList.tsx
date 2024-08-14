@@ -158,7 +158,7 @@ export const columns: ColumnDef<Client>[] = [
       );
     },
     cell: ({ row }) => {
-      return <div>{row.getValue("productName")} </div>;
+      return <div>{row.getValue("productName")}</div>;
     },
   },
   {
@@ -239,7 +239,7 @@ export const columns: ColumnDef<Client>[] = [
     cell: ({ row }) => {
       const name: string = row.getValue('nickname')
 
-      return <div>{name.includes(`(AM)`) ? format2dp(row.getValue("cash")) : 0}</div>;
+      return <div>{format2dp(row.getValue("cash"))}</div>;
     },
   },
   {

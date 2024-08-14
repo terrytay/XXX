@@ -81,6 +81,8 @@ export default async function ClientList() {
         }
       })
 
+      if (!d.nickname.includes(`(AM)`)) cash = 0;
+
       d.cash = cash;
 
       let withdrawedAmount = 0;
