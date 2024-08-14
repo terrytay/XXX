@@ -5,7 +5,7 @@ import { UserResponse } from "@supabase/supabase-js";
 import { getAllDividends, getClient, getClients } from "../portfolio/action";
 import moment from "moment";
 import { formatPercent } from "@/utils/formatters";
-import { ApplicationType, getWelcomeBonus } from "@/utils/transactionsParser";
+import { ApplicationType, getWelcomeBonus, parseTransactions } from "@/utils/transactionsParser";
 
 export default async function ClientList() {
   const supabase = createClient();
@@ -72,6 +72,16 @@ export default async function ClientList() {
 
     if (policy != null) {
       const { policyDetails, profile, transactions } = policy;
+
+      let cash = 0
+      
+      policyDetails.funds.forEach(fund => {
+        if (fund.name === '01 GreatLink Cash Fund' || fund.name === '225: GreatLink US Income and Growth Fund (Dis)') {
+          cash += +fund.totalFundValue.trim().split(',').join('')
+        }
+      })
+
+      d.cash = cash;
 
       let withdrawedAmount = 0;
       transactions.forEach((trx) => {

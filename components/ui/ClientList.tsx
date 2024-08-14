@@ -77,6 +77,7 @@ export type Client = {
   grossProfit: string;
   productName: string;
   dividendsPaidout: number;
+  cash?: number;
 };
 
 interface DataTableProps<TData, TValue> {
@@ -220,6 +221,25 @@ export const columns: ColumnDef<Client>[] = [
     },
     cell: ({ row }) => {
       return <div>{format2dp(row.getValue("tiv"))}</div>;
+    },
+  },
+  {
+    accessorKey: "cash",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Cash Reserve
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => {
+      const name: string = row.getValue('nickname')
+
+      return <div>{name.includes(`(AM)`) ? format2dp(row.getValue("cash")) : 0}</div>;
     },
   },
   {
