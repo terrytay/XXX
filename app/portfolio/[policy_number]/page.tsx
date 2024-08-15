@@ -96,10 +96,11 @@ export default async function Page({
     return redirect("/");
   }
 
-  // Get allocation
-  const allocatedFunds = parseTransactions(data!);
-  let cashFund = 0;
   const dailyPrices = await getPrices();
+
+  // Get allocation
+  const allocatedFunds = parseTransactions(data!, dailyPrices);
+  let cashFund = 0;
   let today = new Date().toISOString().slice(0, 10);
   let [day, month, year] = data!.profile.commencementDate.split("/");
   const startDate = year.concat("-").concat(month).concat("-").concat(day);
@@ -177,6 +178,7 @@ export default async function Page({
       <SnapshotChart
         stringData={JSON.stringify(data)}
         welcomeBonusAsPremium={isWelcomeBonusPremium}
+        stringDailyPrices={JSON.stringify(dailyPrices)}
       />
       <Card className="col-span-3 py-2">
         <Table>
@@ -467,9 +469,11 @@ export default async function Page({
                           <TableCell>
                             {format2dp(
                               fund.transactions.reduce(
-                                (prev, cur) => prev + cur.value,
+                                (prev, cur) => prev + cur.units,
                                 0
-                              )
+                              ) * +dailyPrices.funds.find(
+                                (dp: { fundCode: string }) => dp.fundCode === fund.code
+                              )!.fundBidPrice
                             )}
                           </TableCell>
                         </TableRow>

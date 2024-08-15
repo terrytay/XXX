@@ -22,14 +22,18 @@ import { useEffect, useState } from "react";
 export default function SnapshotChart({
   stringData,
   welcomeBonusAsPremium,
+  stringDailyPrices,
 }: {
   stringData: string;
   welcomeBonusAsPremium: boolean;
+  stringDailyPrices: string
 }) {
   const [enableBenchmark, setEnableBenchmark] = useState(false);
 
   const data: FpmsData = JSON.parse(stringData);
-  const result = getTransactionsSnapshotByMonth(data, welcomeBonusAsPremium);
+  const dailyPrices = JSON.parse(stringDailyPrices);
+  
+  const result = getTransactionsSnapshotByMonth(data, welcomeBonusAsPremium, dailyPrices);
 
   const [benchmark, editBenchmark] = useState(6.0);
   const [toggleEdit, setToggleEdit] = useState(false);

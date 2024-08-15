@@ -1,3 +1,4 @@
+import { getPrices } from "@/app/prices/action";
 import { FpmsData } from "./types/fpms";
 
 export enum ApplicationType {
@@ -65,7 +66,8 @@ export function getWelcomeBonus(data: FpmsData) {
 
 export function getTransactionsSnapshotByMonth(
   data: FpmsData,
-  welcomeBonusAsPremium: boolean
+  welcomeBonusAsPremium: boolean,
+  dailyPrices: any
 ): Snapshot[] {
   const transactions = data.transactions.slice().reverse();
   let result: Snapshot[] = [];
@@ -325,15 +327,23 @@ export function getTransactionsSnapshotByMonth(
     }
   });
 
-  // finalResult[finalResult.length - 1].tiv = +data.policyDetails.tiv
-  //   .trim()
-  //   .split(",")
-  //   .join("");
+  let lastPositionTiv = 0
+  finalResult[finalResult.length -1].funds.forEach(fund => {
+    lastPositionTiv += +fund.units.trim().split(',').join('') * +dailyPrices.funds
+    .find(
+      (dp: { fundCode: string }) =>
+        dp.fundCode === fund.code
+    )!
+    .fundBidPrice.trim()
+    .split(",")
+    .join("")
+  })
+  finalResult[finalResult.length - 1].tiv = lastPositionTiv
 
   return finalResult;
 }
 
-export function parseTransactions(data: FpmsData) {
+export function parseTransactions(data: FpmsData, dailyPrices: any) {
   const transactions = data.transactions.slice().reverse();
 
   const allocatedFunds: AllocatedFund[] = [];
@@ -540,11 +550,19 @@ export function parseTransactions(data: FpmsData) {
     }
   });
 
+
+
   allocatedFunds.forEach((fund) => {
     fund.averagePrice =
       fund.totalUnitsAfterFees > 0.1
         ? fund.totalValueAfterFees / fund.totalUnitsAfterFees
         : 0;
+
+
+
+    fund.totalValueAfterFees = fund.totalUnitsAfterFees * +dailyPrices.funds.find(
+      (dp: { fundCode: string }) => dp.fundCode === fund.code
+    )!.fundBidPrice
 
     if (fund.totalUnitsAfterFees <= 0.1) {
       fund.totalValueAfterFees = 0;
