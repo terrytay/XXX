@@ -7,6 +7,8 @@ import moment from "moment";
 import { formatPercent } from "@/utils/formatters";
 import { ApplicationType, getWelcomeBonus, parseTransactions } from "@/utils/transactionsParser";
 
+export const maxDuration = 60;
+
 export default async function ClientList() {
   const supabase = createClient();
   const user: UserResponse = await supabase.auth.getUser();
