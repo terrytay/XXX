@@ -322,11 +322,11 @@ export function getTransactionsSnapshotByMonth(
         tia: tia,
         tiv: tiv,
         date: res.date,
-        funds: res.funds,
+        funds: [...res.funds, ...fundsToAdd],
       });
     }
   });
-
+  
   let lastPositionTiv = 0
   finalResult[finalResult.length -1].funds.forEach(fund => {
     lastPositionTiv += +fund.units.trim().split(',').join('') * +dailyPrices.funds
@@ -339,6 +339,8 @@ export function getTransactionsSnapshotByMonth(
     .join("")
   })
   finalResult[finalResult.length - 1].tiv = lastPositionTiv
+
+
 
   return finalResult;
 }
