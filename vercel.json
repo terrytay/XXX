@@ -6,6 +6,8 @@
     }
   ],
   "functions": {
-    "app/**/*": 60
+    "app/**/*": {
+      "maxDuration": 60
+    }
   }
 }
