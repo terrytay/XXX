@@ -1,4 +1,5 @@
 import { createClient } from "@/utils/supabase/client";
+
 export const deleteClient = async (policy_number: string) => {
   const supabase = createClient();
 
