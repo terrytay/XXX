@@ -49,6 +49,9 @@ export default async function Page({
               {params.agentId}
             </code>
           </p>
+
+          <h1>Watch this video for full tutorial:</h1>
+          <iframe width="560" height="315" src="https://www.youtube.com/embed/WTHxxgy3N40?si=_Een_eTh6waLVG_U" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen></iframe>
         </CardContent>
       </Card>
     </section>
