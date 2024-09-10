@@ -6,6 +6,7 @@ import { getAllDividends, getClient, getClients } from "../portfolio/action";
 import moment from "moment";
 import { formatPercent } from "@/utils/formatters";
 import { ApplicationType, getWelcomeBonus, parseTransactions } from "@/utils/transactionsParser";
+import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 export const maxDuration = 60;
 
@@ -55,6 +56,18 @@ export default async function ClientList() {
 
   const data = await getData();
   const clients = (await getClients(data.map((d) => d.policy_number))) || [];
+
+  const orphanedPolicies: Client[] = []
+  data.forEach(client => {
+    let isFound = false;
+    clients.forEach(foundClient => {
+      if (foundClient.policyNumber.match(client.policy_number)) {
+        isFound = true;
+      }
+    })
+    if (!isFound) orphanedPolicies.push(client)
+  })
+
   const allDividends =
     (await getAllDividends(data.map((d) => d.policy_number))) || [];
 
@@ -154,8 +167,26 @@ export default async function ClientList() {
 
   const aggregatedData = { totalAum, totalPremium, totalRoi };
   return (
-    <div className=" mx-auto pb-10 print:mt-10">
+    <div className=" mx-auto pb-10 print:mt-10 space-y-4">
       <h2 className="text-xl pb-2 pl-1">Portfolios Overview</h2>
+      {orphanedPolicies.length > 0 && <Table>
+          <TableCaption>A list of your recently added policies that has premiums not allocated by GE yet.</TableCaption>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-[100px]">PN</TableHead>
+              <TableHead className="text-right">Nickname</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+        {orphanedPolicies.map(policy => (
+        
+            <TableRow>
+              <TableCell className="font-medium">{policy.policy_number}</TableCell>
+              <TableCell className="text-right">{policy.nickname}</TableCell>
+            </TableRow>
+        ))}
+      </TableBody>
+      </Table>}
       <DataTable columns={columns} data={res} aggregatedData={aggregatedData} />
     </div>
   );
