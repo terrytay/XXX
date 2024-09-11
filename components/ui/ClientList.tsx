@@ -551,25 +551,25 @@ export default function DataTable<TData, TValue>({
         </div>
         <div className="py-4 pr-4 flex justify-between grow">
           <div className="flex pl-8 space-x-6">
-            <span>
+            {/* <span>
               Total Invested:&nbsp;
               <span className="text-sm md:text-lg">
                 {format2dp(aggregatedData.totalPremium)}
               </span>
-            </span>
+            </span> */}
 
-            <span>
+           <span className="text-sm md:text-2xl">
               AUM:&nbsp;
-              <span className="text-sm md:text-lg">
+              <span className="text-sm md:text-2xl">
                 {format2dp(aggregatedData.totalAum)}
               </span>
             </span>
-            <span>
+            {/* <span>
               ROI:&nbsp;
               <span className="text-sm md:text-lg">
                 {aggregatedData.totalRoi}
               </span>
-            </span>
+            </span> */}
           </div>
           <div className="flex justify-center items-center space-x-2">
             <HoverCard>
