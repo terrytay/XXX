@@ -135,7 +135,7 @@ export const columns: ColumnDef<Client>[] = [
           onMouseEnter={() => setHide(false)}
           onMouseLeave={() => setHide(true)}
         >
-          {!row.getIsSelected() ? (
+          {row.getIsSelected() ? (
             <div>{hide ? "********" : row.getValue("nickname")}</div>
           ) : (
             <div>{row.getValue("nickname")}</div>
@@ -546,7 +546,7 @@ export default function DataTable<TData, TValue>({
             onClick={() => table.toggleAllPageRowsSelected()}
             className="print:hidden"
           >
-            {table.getIsAllPageRowsSelected() ? "Hide" : "Show"} all Nickname
+            {!table.getIsAllPageRowsSelected() ? "Hide" : "Show"} all Nickname
           </Button>
         </div>
         <div className="py-4 pr-4 flex justify-between grow">
