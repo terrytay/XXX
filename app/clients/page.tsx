@@ -5,8 +5,20 @@ import { UserResponse } from "@supabase/supabase-js";
 import { getAllDividends, getClient, getClients } from "../portfolio/action";
 import moment from "moment";
 import { formatPercent } from "@/utils/formatters";
-import { ApplicationType, getWelcomeBonus, parseTransactions } from "@/utils/transactionsParser";
-import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  ApplicationType,
+  getWelcomeBonus,
+  parseTransactions,
+} from "@/utils/transactionsParser";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 export const maxDuration = 60;
 
@@ -57,16 +69,16 @@ export default async function ClientList() {
   const data = await getData();
   const clients = (await getClients(data.map((d) => d.policy_number))) || [];
 
-  const orphanedPolicies: Client[] = []
-  data.forEach(client => {
+  const orphanedPolicies: Client[] = [];
+  data.forEach((client) => {
     let isFound = false;
-    clients.forEach(foundClient => {
+    clients.forEach((foundClient) => {
       if (foundClient.policyNumber.match(client.policy_number)) {
         isFound = true;
       }
-    })
-    if (!isFound) orphanedPolicies.push(client)
-  })
+    });
+    if (!isFound) orphanedPolicies.push(client);
+  });
 
   const allDividends =
     (await getAllDividends(data.map((d) => d.policy_number))) || [];
@@ -88,13 +100,16 @@ export default async function ClientList() {
     if (policy != null) {
       const { policyDetails, profile, transactions } = policy;
 
-      let cash = 0
-      
-      policyDetails.funds.forEach(fund => {
-        if (fund.name === '01 GreatLink Cash Fund' || fund.name === '225: GreatLink US Income and Growth Fund (Dis)') {
-          cash += +fund.totalFundValue.trim().split(',').join('')
+      let cash = 0;
+
+      policyDetails.funds.forEach((fund) => {
+        if (
+          fund.name === "01: GreatLink Cash Fund" ||
+          fund.name === "225: GreatLink US Income and Growth Fund (Dis)"
+        ) {
+          cash += +fund.totalFundValue.trim().split(",").join("");
         }
-      })
+      });
 
       if (!d.nickname.includes(`(AM)`)) cash = 0;
 
@@ -169,8 +184,12 @@ export default async function ClientList() {
   return (
     <div className=" mx-auto pb-10 print:mt-10 space-y-4">
       <h2 className="text-xl pb-2 pl-1">Portfolios Overview</h2>
-      {orphanedPolicies.length > 0 && <Table>
-          <TableCaption>A list of your recently added policies that has premiums not allocated by GE yet.</TableCaption>
+      {orphanedPolicies.length > 0 && (
+        <Table>
+          <TableCaption>
+            A list of your recently added policies that has premiums not
+            allocated by GE yet.
+          </TableCaption>
           <TableHeader>
             <TableRow>
               <TableHead className="w-[100px]">PN</TableHead>
@@ -178,15 +197,17 @@ export default async function ClientList() {
             </TableRow>
           </TableHeader>
           <TableBody>
-        {orphanedPolicies.map(policy => (
-        
-            <TableRow>
-              <TableCell className="font-medium">{policy.policy_number}</TableCell>
-              <TableCell className="text-right">{policy.nickname}</TableCell>
-            </TableRow>
-        ))}
-      </TableBody>
-      </Table>}
+            {orphanedPolicies.map((policy) => (
+              <TableRow>
+                <TableCell className="font-medium">
+                  {policy.policy_number}
+                </TableCell>
+                <TableCell className="text-right">{policy.nickname}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      )}
       <DataTable columns={columns} data={res} aggregatedData={aggregatedData} />
     </div>
   );
