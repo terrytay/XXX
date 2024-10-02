@@ -149,6 +149,12 @@ export default async function ClientList() {
 
       d.dividendsPaidout = totalDividendsPaidout;
 
+      d.funds = JSON.stringify(
+        policy.policyDetails.funds.filter(
+          (fund) => +fund.totalFundUnits.trim().split(",").join("") > 0
+        )
+      );
+
       res.push(d);
     }
   });

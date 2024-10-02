@@ -59,9 +59,16 @@ import {
   FormMessage,
 } from "./form";
 import { FpmsData, PolicyFund } from "@/utils/types/fpms";
-import { format2dp, formatUnits } from "@/utils/formatters";
+import { format2dp, formatPercent, formatUnits } from "@/utils/formatters";
 import { useRouter } from "next/navigation";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "./hover-card";
+
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export type Client = {
   id: string;
@@ -78,6 +85,7 @@ export type Client = {
   productName: string;
   dividendsPaidout: number;
   cash?: number;
+  funds: string;
 };
 
 interface DataTableProps<TData, TValue> {
@@ -91,6 +99,11 @@ interface DataTableProps<TData, TValue> {
 }
 
 export const columns: ColumnDef<Client>[] = [
+  {
+    accessorKey: "funds",
+    header: ({ column }) => {},
+    cell: ({ row }) => {},
+  },
   {
     accessorKey: "policy_number",
     header: ({ column }) => {
@@ -107,9 +120,49 @@ export const columns: ColumnDef<Client>[] = [
     cell: ({ row }) => {
       return (
         <div>
-          <Link href={`portfolio/${row.getValue("policy_number")}`}>
-            {row.getValue("policy_number")}
-          </Link>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger>
+                <Link href={`portfolio/${row.getValue("policy_number")}`}>
+                  {row.getValue("policy_number")}
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Fund Name</TableHead>
+                      <TableHead>Amount</TableHead>
+                      <TableHead>Units</TableHead>
+                      <TableHead>Weightage</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {(
+                      JSON.parse(
+                        row.getValue("funds") as string
+                      ) as PolicyFund[]
+                    ).map((fund, key) => (
+                      <TableRow key={key}>
+                        <TableCell>{fund.name}</TableCell>
+                        <TableCell>${fund.totalFundValue}</TableCell>
+                        <TableCell>{fund.totalFundUnits}</TableCell>
+                        <TableCell>
+                          {formatPercent(
+                            +fund.totalFundValue.trim().split(",").join("") /
+                              +(row.getValue("tiv") as string)
+                                .trim()
+                                .split(",")
+                                .join("")
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
       );
     },
@@ -237,7 +290,7 @@ export const columns: ColumnDef<Client>[] = [
       );
     },
     cell: ({ row }) => {
-      const name: string = row.getValue('nickname')
+      const name: string = row.getValue("nickname");
 
       return <div>{format2dp(row.getValue("cash"))}</div>;
     },
@@ -460,6 +513,9 @@ export default function DataTable<TData, TValue>({
   data,
   aggregatedData,
 }: DataTableProps<TData, TValue>) {
+  const [columnVisibility, setColumnVisibility] = useState({
+    funds: false,
+  });
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [sorting, setSorting] = useState<SortingState>([
     { id: "grossProfit", desc: true },
@@ -489,6 +545,7 @@ export default function DataTable<TData, TValue>({
     state: {
       sorting,
       columnFilters,
+      columnVisibility,
     },
   });
 
@@ -540,6 +597,14 @@ export default function DataTable<TData, TValue>({
             onChange={(event) =>
               table.getColumn("nickname")?.setFilterValue(event.target.value)
             }
+            className="max-w-sm"
+          />
+          <Input
+            placeholder="Filter by fund..."
+            value={(table.getColumn("funds")?.getFilterValue() as string) ?? ""}
+            onChange={(event) => {
+              table.getColumn("funds")?.setFilterValue(event.target.value);
+            }}
             className="max-w-sm"
           />
           <Button
