@@ -61,3 +61,23 @@ export const toggleBonus = async (formData: FormData) => {
     revalidatePath("/");
   }
 };
+
+export const toggleBeta = async (formData: FormData) => {
+  "use server";
+
+  const supabase = createClient();
+
+  const toSet = formData.get("switch") === "on" ? false : true;
+  const id = formData.get("id");
+
+  if (id != "") {
+    await supabase
+      .from("agents")
+      .update({
+        beta: toSet,
+      })
+      .eq("agent_id", id);
+
+    revalidatePath("/");
+  }
+};

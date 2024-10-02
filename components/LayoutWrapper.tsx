@@ -24,7 +24,7 @@ const LayoutWrapper = async ({ children }: { children: React.ReactNode }) => {
   return user ? (
     <div className="flex-1 w-full flex flex-col gap-10 items-center">
       <Navbar />
-      <div className="flex-1 w-full flex flex-col px-3">{children}</div>
+      <div className="flex-1 w-full flex flex-col px-0">{children}</div>
     </div>
   ) : (
     <>{children}</>

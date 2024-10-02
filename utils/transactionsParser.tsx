@@ -45,6 +45,14 @@ type Snapshot = {
   tia: number;
 };
 
+export type FundSwitch = {
+  code: string;
+  direction: string;
+  amount: number;
+  date: string;
+  price: string;
+};
+
 function convertStringToNumber(str: string) {
   return +str.trim().split(",").join("");
 }
@@ -62,6 +70,51 @@ export function getWelcomeBonus(data: FpmsData) {
   });
 
   return result;
+}
+
+export function getFundSwitches(data: FpmsData): FundSwitch[] {
+  let fundsSwitch: FundSwitch[] = [];
+  for (let i = data.transactions.length - 1; i > 0; i--) {
+    let tempFundSwitchOut: FundSwitch = {
+      code: "",
+      direction: "",
+      date: "",
+      amount: 0,
+      price: "",
+    };
+    let tempFundSwitchIn: FundSwitch = {
+      code: "",
+      direction: "",
+      date: "",
+      amount: 0,
+      price: "",
+    };
+    if (data.transactions[i].type.includes(ApplicationType.SwitchOut)) {
+      tempFundSwitchOut.code = data.transactions[i].code;
+      tempFundSwitchOut.direction = "To " + data.transactions[i - 1].code;
+      tempFundSwitchOut.date = data.transactions[i].effectiveDate;
+      tempFundSwitchOut.amount = +data.transactions[i].transactionAmount
+        .trim()
+        .split(",")
+        .join("");
+      tempFundSwitchOut.price = data.transactions[i].transactionPrice;
+
+      tempFundSwitchIn.code = data.transactions[i - 1].code;
+      tempFundSwitchIn.direction = "From " + data.transactions[i].code;
+      tempFundSwitchIn.date = data.transactions[i - 1].effectiveDate;
+      tempFundSwitchIn.amount = +data.transactions[i - 1].transactionAmount
+        .trim()
+        .split(",")
+        .join("");
+      tempFundSwitchIn.price = data.transactions[i - 1].transactionPrice;
+
+      fundsSwitch.push(tempFundSwitchOut);
+      fundsSwitch.push(tempFundSwitchIn);
+
+      i--;
+    }
+  }
+  return fundsSwitch;
 }
 
 export function getTransactionsSnapshotByMonth(
@@ -326,21 +379,18 @@ export function getTransactionsSnapshotByMonth(
       });
     }
   });
-  
-  let lastPositionTiv = 0
-  finalResult[finalResult.length -1].funds.forEach(fund => {
-    lastPositionTiv += +fund.units.trim().split(',').join('') * +dailyPrices.funds
-    .find(
-      (dp: { fundCode: string }) =>
-        dp.fundCode === fund.code
-    )!
-    .fundBidPrice.trim()
-    .split(",")
-    .join("")
-  })
-  finalResult[finalResult.length - 1].tiv = lastPositionTiv
 
-
+  let lastPositionTiv = 0;
+  finalResult[finalResult.length - 1].funds.forEach((fund) => {
+    lastPositionTiv +=
+      +fund.units.trim().split(",").join("") *
+      +dailyPrices.funds
+        .find((dp: { fundCode: string }) => dp.fundCode === fund.code)!
+        .fundBidPrice.trim()
+        .split(",")
+        .join("");
+  });
+  finalResult[finalResult.length - 1].tiv = lastPositionTiv;
 
   return finalResult;
 }
@@ -552,19 +602,17 @@ export function parseTransactions(data: FpmsData, dailyPrices: any) {
     }
   });
 
-
-
   allocatedFunds.forEach((fund) => {
     fund.averagePrice =
       fund.totalUnitsAfterFees > 0.1
         ? fund.totalValueAfterFees / fund.totalUnitsAfterFees
         : 0;
 
-
-
-    fund.totalValueAfterFees = fund.totalUnitsAfterFees * +dailyPrices.funds.find(
-      (dp: { fundCode: string }) => dp.fundCode === fund.code
-    )!.fundBidPrice
+    fund.totalValueAfterFees =
+      fund.totalUnitsAfterFees *
+      +dailyPrices.funds.find(
+        (dp: { fundCode: string }) => dp.fundCode === fund.code
+      )!.fundBidPrice;
 
     if (fund.totalUnitsAfterFees <= 0.1) {
       fund.totalValueAfterFees = 0;

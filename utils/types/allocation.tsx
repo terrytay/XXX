@@ -32,3 +32,7 @@ export type AgentClientAllocation = {
   policyNumber: string;
   [x: number]: allocationColumns[];
 };
+
+export type NewAgentClientAllocation = {
+  [x: number]: allocationColumns[];
+};

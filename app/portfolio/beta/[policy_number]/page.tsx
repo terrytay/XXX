@@ -1,4 +1,4 @@
-import { getAllocations, getClient, getDividends } from "../action";
+import { getAllocations, getClient, getDividends } from "../../action";
 import {
   Table,
   TableBody,
@@ -16,6 +16,7 @@ import { bounceOut } from "@/app/auth/action";
 import { redirect } from "next/navigation";
 import {
   ApplicationType,
+  getFundSwitches,
   getWelcomeBonus,
   parseTransactions,
 } from "@/utils/transactionsParser";
@@ -28,6 +29,7 @@ import { Toaster } from "@/components/ui/sonner";
 import SnapshotChart from "@/components/SnapshotChart";
 import { dateDiff } from "@/utils/date";
 import { Metadata, ResolvingMetadata } from "next";
+import { AllocationTimelineBeta } from "@/components/AllocationTimelineBeta";
 
 type Props = {
   params: { policy_number: string };
@@ -56,21 +58,15 @@ export default async function Page({
   if (!user.data.user) {
     return await bounceOut();
   }
-  const preferences = await supabase
-    .from("agents")
-    .select()
-    .eq("agent_id", user?.data.user.id);
-
-  // redirect to beta
-  if (preferences.data!.at(0).beta) {
-    return redirect(`/portfolio/beta/${params.policy_number}`);
-  }
-
   // Get policy details
   const data = await getClient(params.policy_number);
 
   // Get welcome bonus
   let isWelcomeBonusPremium = false;
+  const preferences = await supabase
+    .from("agents")
+    .select()
+    .eq("agent_id", user?.data.user.id);
   isWelcomeBonusPremium = preferences.data!.at(0).include;
   let welcomeBonusToAdd = 0;
   const welcomeBonusToDisplay = getWelcomeBonus(data!);
@@ -119,8 +115,17 @@ export default async function Page({
     .replace("D", " Days")
     .replace("1 Days", "1 Day");
 
-  // Shortener
-  const tiv = +data?.policyDetails.tiv.trim().split(",").join("")!;
+  // START OF BETA
+  const tiv = allocatedFunds.reduce((accum, fund) => {
+    return (accum +=
+      fund.totalUnitsAfterFees *
+      +dailyPrices.funds
+        .find((dpFund) => dpFund.fundCode === fund.code)
+        ?.fundBidPrice.trim()
+        .split(",")
+        .join("")!);
+  }, 0);
+
   let tia = data?.policyDetails.tia! + welcomeBonusToAdd;
   let withdrawedAmount = 0;
   data?.transactions.forEach((trx) => {
@@ -129,6 +134,8 @@ export default async function Page({
     }
   });
   tia -= withdrawedAmount;
+
+  const fundswitches = getFundSwitches(data!);
 
   return (
     <section className="grid grid-cols-3 gap-4 mx-2 print:mt-10">
@@ -311,10 +318,11 @@ export default async function Page({
         </Table>
       </Card>
       <Card className="py-2 col-span-3">
-        <AllocationTimeline
-          data={JSON.stringify(allocationData || templateAllocationData)}
+        <AllocationTimelineBeta
+          data={JSON.stringify(fundswitches)}
           commencementMonth={data!.profile.commencementDate.split("/")[1]}
           premiumFreq={data!.profile.premiumFreq}
+          dailyPricesJSON={JSON.stringify(dailyPrices)}
         />
       </Card>
       {dividends && (

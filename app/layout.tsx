@@ -37,7 +37,7 @@ export default async function RootLayout({
       className={`scrollbar-hide ${data?.at(0)?.dark ? "dark" : ""}`}
     >
       <body className="">
-        <main className="min-h-screen flex flex-col items-center">
+        <main className="min-h-screen flex flex-col items-center m-0">
           <Suspense
             key={Math.random()}
             fallback={

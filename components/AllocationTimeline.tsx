@@ -218,7 +218,7 @@ export function AllocationTimeline({
           </Card>
         </div>
       )}
-      <Table className="text-center">
+      <Table className="text-center table-fixed">
         <TableCaption>Allocation History</TableCaption>
         <TableHeader>
           <TableRow>
@@ -356,7 +356,7 @@ export function AllocationTimeline({
         <TableBody>
           {allocation[displayedYear]?.map((fund, key) => (
             <TableRow key={key}>
-              <TableCell className="w-[150px] p-0 m-0">
+              <TableCell className="w-[150px] p-0 m-0 font-medium">
                 {editMode ? (
                   <Textarea
                     value={fund.fund || ""}

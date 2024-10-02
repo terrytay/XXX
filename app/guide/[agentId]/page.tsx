@@ -51,7 +51,23 @@ export default async function Page({
           </p>
 
           <h1>Watch this video for full tutorial:</h1>
-          <iframe width="560" height="315" src="https://www.youtube.com/embed/WTHxxgy3N40?si=_Een_eTh6waLVG_U" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen></iframe>
+          <iframe
+            width="560"
+            height="315"
+            src="https://www.youtube.com/embed/WTHxxgy3N40?si=_Een_eTh6waLVG_U"
+            title="YouTube video player"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            referrerPolicy="strict-origin-when-cross-origin"
+            allowFullScreen
+          ></iframe>
+
+          <h2 className="font-bold">Tips:</h2>
+          <p>
+            Put "(AM)" in client's name in order to indicate policy as active
+            management. This will trigger either cash fund or allianz fund as
+            cash reserve which may be able to help you out when doing fund
+            switches.
+          </p>
         </CardContent>
       </Card>
     </section>

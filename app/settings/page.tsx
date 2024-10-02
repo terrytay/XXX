@@ -3,9 +3,15 @@ import { UserResponse } from "@supabase/supabase-js";
 import { bounceOut } from "../auth/action";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import ToggleThemeComponent from "@/components/ui/toggleThemeComponent";
-import { toggleAdminView, toggleBonus, toggleTheme } from "../action";
+import {
+  toggleAdminView,
+  toggleBeta,
+  toggleBonus,
+  toggleTheme,
+} from "../action";
 import ToggleWelcomeBonusComponent from "@/components/ui/toggleWelcomeBonusComponent";
 import ToggleAdminViewComponent from "@/components/ui/toggleAdminViewComponent";
+import ToggleBetaComponent from "@/components/ui/toggleBetaComponent";
 
 export default async function Page({
   params,
@@ -26,7 +32,9 @@ export default async function Page({
 
   const dark: boolean = data?.at(0).dark || false;
   const include: boolean = data?.at(0).include || false;
+  const beta: boolean = data?.at(0).beta || false;
 
+  // admin
   const admin: boolean = data?.at(0).admin || false;
   const adminView: boolean = data?.at(0).adminView || false;
 
@@ -51,6 +59,14 @@ export default async function Page({
               include={include}
               id={user?.data.user.id || ""}
               toggleBonus={toggleBonus}
+            />
+          </div>
+          <div className="flex">
+            <div>Use beta:</div>
+            <ToggleBetaComponent
+              beta={beta}
+              id={user?.data.user.id || ""}
+              toggleBeta={toggleBeta}
             />
           </div>
           {admin && (
