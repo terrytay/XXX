@@ -1,7 +1,5 @@
 import { FundPrice } from "@/utils/types/ge";
 import { updateFunds, updatePrices } from "./action";
-import { Price } from "@/app/dividends/page";
-import { Dividend } from "../../dividends/page";
 
 export const revalidate = 0;
 export async function GET(request: Request) {
@@ -14,7 +12,7 @@ export async function GET(request: Request) {
 
     funds.forEach(async (fund) => {
       const prices = await fetch(fund.priceURL);
-      let fundPrices: Price = await prices.json();
+      let fundPrices = await prices.json();
       let fundDividends = null;
       if (fund.dividendURL) {
         const dividends = await fetch(fund.dividendURL);
