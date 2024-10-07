@@ -22,3 +22,24 @@ export const updatePrices = async (data: FundPrice) => {
     throw error;
   }
 };
+
+export const updateFunds = async (data: any) => {
+  const connection = client;
+  const db = connection.db(process.env.DB_NAME!);
+
+  try {
+    const funds = db.collection("funds");
+    const result = await funds.replaceOne(
+      {
+        name: data.name,
+      },
+      data,
+      {
+        upsert: true,
+      }
+    );
+    return Response.json({ isSuccess: result.acknowledged });
+  } catch (error) {
+    throw error;
+  }
+};
