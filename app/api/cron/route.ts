@@ -24,8 +24,9 @@ export async function GET(request: Request) {
         dividends: fundDividends,
       };
       await updateFunds(toSend);
-      return Response.json({ ok: true });
     });
+
+    return Response.json({ ok: true });
   } catch (error) {
     return Response.json({ ok: false });
   }
