@@ -10,23 +10,24 @@ export async function GET(request: Request) {
     fundPrices.lastUpdated = new Date(Date.now()).toUTCString();
     await updatePrices(fundPrices);
 
-    funds.forEach(async (fund) => {
-      const prices = await fetch(fund.priceURL);
-      let fundPrices = await prices.json();
-      let fundDividends = null;
-      if (fund.dividendURL) {
-        const dividends = await fetch(fund.dividendURL);
-        fundDividends = await dividends.json();
-      }
-      const toSend = {
-        name: fund.name,
-        prices: fundPrices,
-        dividends: fundDividends,
-      };
-      await updateFunds(toSend);
-    });
-
-    return Response.json({ ok: true });
+    const results = await Promise.all(
+      funds.map(async (fund) => {
+        const prices = await fetch(fund.priceURL);
+        let fundPrices = await prices.json();
+        let fundDividends = null;
+        if (fund.dividendURL) {
+          const dividends = await fetch(fund.dividendURL);
+          fundDividends = await dividends.json();
+        }
+        const toSend = {
+          name: fund.name,
+          prices: fundPrices,
+          dividends: fundDividends,
+        };
+        return await updateFunds(toSend);
+      })
+    );
+    return Response.json({ ok: true, results: results });
   } catch (error) {
     return Response.json({ ok: false });
   }
