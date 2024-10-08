@@ -5,9 +5,16 @@ export const revalidate = 0;
 export async function GET(request: Request) {
   try {
     const result = await fetch(process.env.GE_PRICES!);
+    const result2 = await fetch(process.env.GE_PRESTIGE_PRICES!);
     let fundPrices: FundPrice = await result.json();
+    let fundPrices2 = await result2.json();
+    fundPrices2.funds = fundPrices2.funds.filter(
+      (fund: any) => fund.fundCurrency === "SGD"
+    );
+
     fundPrices.fixedId = 1;
     fundPrices.lastUpdated = new Date(Date.now()).toUTCString();
+    fundPrices.funds.push(...fundPrices2.funds);
     await updatePrices(fundPrices);
 
     const results = await Promise.all(

@@ -5,5 +5,6 @@ export type FundPrice = {
     fundCode: string;
     fundBidPrice: string;
     fundName: string;
+    fundCurrency?: string;
   }[];
 };
