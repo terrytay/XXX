@@ -73,10 +73,10 @@ function formatChart(fund: Fund) {
       }
     }
 
-    // const startIndex = chartData.findIndex(
-    //   (data) => data.date === "2023-05-17"
-    // );
-    // chartData = chartData.slice(startIndex);
+    const startIndex = chartData.findIndex(
+      (data) => data.date === "2023-05-17"
+    );
+    chartData = chartData.slice(startIndex);
 
     return chartData;
   });
@@ -150,21 +150,26 @@ const FundChart = ({ fundString }: { fundString: string }) => {
               <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
               <YAxis
                 yAxisId="left"
-                tickCount={100}
+                tickCount={500}
                 tickLine={false}
                 axisLine={false}
+                label="Price"
+                domain={["dataMin", "dataMax"]}
               />
               <YAxis
                 yAxisId="right"
                 orientation="right"
-                tickCount={100}
+                tickCount={500}
                 tickLine={false}
                 axisLine={false}
+                label="Dividend (%)"
+                // domain={["dataMin", 10]}
               />
               <Line
                 dataKey="dividend"
                 type="monotone"
                 strokeWidth={2}
+                stroke="#FF0000"
                 dot={false}
                 yAxisId="right"
               />
