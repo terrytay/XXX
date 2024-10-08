@@ -453,6 +453,8 @@ export function parseTransactions(data: FpmsData, dailyPrices: any) {
             convertStringToNumber(transaction.transactionAmount);
           allocatedFunds[index].transactions[dateIndex].units +=
             convertStringToNumber(transaction.transactionUnits);
+          allocatedFunds[index].transactions[dateIndex].balanceUnits =
+            convertStringToNumber(transaction.balanceUnits);
         }
 
         allocatedFunds[index].totalUnitsAfterFees += convertStringToNumber(
