@@ -10,6 +10,9 @@ import {
 } from "@/components/ui/select";
 import { getFunds } from "./action";
 import { useState } from "react";
+import { createClient } from "@/utils/supabase/server";
+import { UserResponse } from "@supabase/supabase-js";
+import { bounceOut } from "../auth/action";
 
 export type Price = {
   DataList: {
@@ -44,6 +47,13 @@ export type Fund = {
 };
 
 export default async function Page() {
+  const supabase = createClient();
+  const user: UserResponse = await supabase.auth.getUser();
+
+  if (!user.data.user) {
+    return await bounceOut();
+  }
+
   const funds = await getFunds();
 
   return (

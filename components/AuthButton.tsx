@@ -13,6 +13,7 @@ export default async function AuthButton() {
   return (
     <div className="flex items-center gap-2 md:gap-4">
       <Link href="/">Clients</Link>
+      <Link href="/funds">Funds</Link>
       <Link href={`/guide/${user?.id}`}>Guide</Link>
       <Link href="/settings">Settings</Link>
 
