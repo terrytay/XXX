@@ -83,6 +83,7 @@ function formatChart(fund: Fund) {
 
   return chartData;
 }
+
 const FundChart = ({ fundString }: { fundString: string }) => {
   const funds: Fund[] = JSON.parse(fundString);
   const [selectedFund, setSelectedFund] =

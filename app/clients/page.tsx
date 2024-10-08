@@ -190,7 +190,7 @@ export default async function ClientList() {
   return (
     <div className=" mx-auto pb-10 print:mt-10 space-y-4">
       <h2 className="text-xl pb-2 pl-1">Portfolios Overview</h2>
-      {orphanedPolicies.length > 0 && (
+      {/* {orphanedPolicies.length > 0 && (
         <Table>
           <TableCaption>
             A list of your recently added policies that has premiums not
@@ -213,7 +213,7 @@ export default async function ClientList() {
             ))}
           </TableBody>
         </Table>
-      )}
+      )} */}
       <DataTable columns={columns} data={res} aggregatedData={aggregatedData} />
     </div>
   );
