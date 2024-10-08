@@ -23,6 +23,7 @@ export async function GET(request: Request) {
           name: fund.name,
           prices: fundPrices,
           dividends: fundDividends,
+          lastUpdated: new Date(Date.now()).toUTCString(),
         };
         return await updateFunds(toSend);
       })
