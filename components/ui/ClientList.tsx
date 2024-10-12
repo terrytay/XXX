@@ -103,6 +103,18 @@ export const columns: ColumnDef<Client>[] = [
     accessorKey: "funds",
     header: ({ column }) => {},
     cell: ({ row }) => {},
+    filterFn: (rows, columnIds, filterValue) => {
+      if ((filterValue as string).includes("!")) {
+        return !rows
+          .getValue<string>(columnIds)
+          .toLowerCase()
+          .includes(filterValue.slice(1));
+      }
+      return rows
+        .getValue<string>(columnIds)
+        .toLowerCase()
+        .includes(filterValue);
+    },
   },
   {
     accessorKey: "policy_number",
