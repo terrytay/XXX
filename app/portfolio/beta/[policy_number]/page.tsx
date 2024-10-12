@@ -211,7 +211,9 @@ export default async function Page({
               <TableHead>Current Price</TableHead>
               <TableHead>Total Fund Value</TableHead>
               <TableHead>Average Price</TableHead>
-              <TableHead>ROI</TableHead>
+              <TableHead>Average ROI</TableHead>
+              <TableHead>Fund Inflow</TableHead>
+              <TableHead>PNL</TableHead>
 
               <TableHead className="text-right">Apportionment Rate</TableHead>
             </TableRow>
@@ -272,6 +274,57 @@ export default async function Page({
                         )
                     )}
                   </TableCell>
+                  <TableCell>
+                    {format2dp(
+                      allocatedFunds!
+                        .find((aF) => aF.code === fund.name.split(":")[0])
+                        ?.transactions.reduce(
+                          (accum, cv) => (accum += cv.value),
+                          0
+                        )!
+                    )}
+                  </TableCell>
+                  <TableCell
+                    className={
+                      +fund.totalFundValue.split(",").join("") -
+                        allocatedFunds!
+                          .find((aF) => aF.code === fund.name.split(":")[0])
+                          ?.transactions.reduce(
+                            (accum, cv) => (accum += cv.value),
+                            0
+                          )! >
+                      0
+                        ? "text-green-500"
+                        : "text-red-500"
+                    }
+                  >
+                    {format2dp(
+                      +fund.totalFundValue.split(",").join("") -
+                        allocatedFunds!
+                          .find((aF) => aF.code === fund.name.split(":")[0])
+                          ?.transactions.reduce(
+                            (accum, cv) => (accum += cv.value),
+                            0
+                          )!
+                    )}
+                    &nbsp;(
+                    {formatPercent(
+                      (+fund.totalFundValue.split(",").join("") -
+                        allocatedFunds!
+                          .find((aF) => aF.code === fund.name.split(":")[0])
+                          ?.transactions.reduce(
+                            (accum, cv) => (accum += cv.value),
+                            0
+                          )!) /
+                        allocatedFunds!
+                          .find((aF) => aF.code === fund.name.split(":")[0])
+                          ?.transactions.reduce(
+                            (accum, cv) => (accum += cv.value),
+                            0
+                          )!
+                    )}
+                    )
+                  </TableCell>
                   <TableCell className="text-right">
                     {fund.apportionmentRate}
                   </TableCell>
@@ -283,7 +336,7 @@ export default async function Page({
               <TableCell className="font-medium">
                 Total Investment Value:
               </TableCell>
-              <TableCell className="text-right" colSpan={6}>
+              <TableCell className="text-right" colSpan={8}>
                 {format2dp(tiv)}
               </TableCell>
             </TableRow>
@@ -292,7 +345,7 @@ export default async function Page({
                 <TableCell className="font-medium">
                   Total Dividends Received:
                 </TableCell>
-                <TableCell className="text-right" colSpan={6}>
+                <TableCell className="text-right" colSpan={8}>
                   {format2dp(totalDividendsPaidout)}
                 </TableCell>
               </TableRow>
@@ -302,7 +355,7 @@ export default async function Page({
               <TableCell className="font-medium">
                 Total Investment Amount:
               </TableCell>
-              <TableCell className="text-right" colSpan={6}>
+              <TableCell className="text-right" colSpan={8}>
                 {format2dp(tia)}
               </TableCell>
             </TableRow>
@@ -310,7 +363,7 @@ export default async function Page({
               <TableCell className="font-medium">
                 Return on Investment (ROI):
               </TableCell>
-              <TableCell className="text-right" colSpan={6}>
+              <TableCell className="text-right" colSpan={8}>
                 {formatPercent((tiv + totalDividendsPaidout - tia) / tia)}
               </TableCell>
             </TableRow>
