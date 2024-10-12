@@ -212,8 +212,8 @@ export default async function Page({
               <TableHead>Total Fund Value</TableHead>
               <TableHead>Average Price</TableHead>
               <TableHead>Average ROI</TableHead>
-              <TableHead>Fund Inflow</TableHead>
-              <TableHead>PNL</TableHead>
+              <TableHead>Net Fund Inflow</TableHead>
+              <TableHead>Current PNL</TableHead>
 
               <TableHead className="text-right">Apportionment Rate</TableHead>
             </TableRow>
