@@ -27,6 +27,7 @@ type AllocatedTransaction = {
 type AllocatedFund = {
   code: string;
   transactions: AllocatedTransaction[];
+  totalValueBeforeFees: number;
   totalUnitsAfterFees: number;
   totalValueAfterFees: number;
   averagePrice?: number;
@@ -426,6 +427,9 @@ export function parseTransactions(data: FpmsData, dailyPrices: any) {
               balanceUnits: convertStringToNumber(transaction.balanceUnits),
             },
           ],
+          totalValueBeforeFees: convertStringToNumber(
+            transaction.transactionAmount
+          ),
           totalUnitsAfterFees: convertStringToNumber(
             transaction.transactionUnits
           ),
@@ -456,10 +460,12 @@ export function parseTransactions(data: FpmsData, dailyPrices: any) {
           allocatedFunds[index].transactions[dateIndex].balanceUnits =
             convertStringToNumber(transaction.balanceUnits);
         }
-
-        allocatedFunds[index].totalUnitsAfterFees += convertStringToNumber(
-          transaction.transactionUnits
-        );
+        (allocatedFunds[index].totalValueBeforeFees += convertStringToNumber(
+          transaction.transactionAmount
+        )),
+          (allocatedFunds[index].totalUnitsAfterFees += convertStringToNumber(
+            transaction.transactionUnits
+          ));
         allocatedFunds[index].totalValueAfterFees += convertStringToNumber(
           transaction.transactionAmount
         );
@@ -482,6 +488,9 @@ export function parseTransactions(data: FpmsData, dailyPrices: any) {
               balanceUnits: convertStringToNumber(transaction.balanceUnits),
             },
           ],
+          totalValueBeforeFees: convertStringToNumber(
+            transaction.transactionAmount
+          ),
           totalUnitsAfterFees:
             -1 * convertStringToNumber(transaction.transactionUnits),
           totalValueAfterFees: convertStringToNumber(
@@ -490,6 +499,7 @@ export function parseTransactions(data: FpmsData, dailyPrices: any) {
         });
         // Reset total units and value after fees if balance units goes to 0.
         if (convertStringToNumber(transaction.balanceUnits) === 0) {
+          allocatedFunds[allocatedFunds.length - 1].totalValueBeforeFees = 0;
           allocatedFunds[allocatedFunds.length - 1].totalUnitsAfterFees = 0;
           allocatedFunds[allocatedFunds.length - 1].totalValueAfterFees = 0;
         }
@@ -519,9 +529,13 @@ export function parseTransactions(data: FpmsData, dailyPrices: any) {
 
         // Reset total units and value after fees if balance units goes to 0.
         if (convertStringToNumber(transaction.balanceUnits) === 0) {
+          allocatedFunds[index].totalValueBeforeFees = 0;
           allocatedFunds[index].totalUnitsAfterFees = 0;
           allocatedFunds[index].totalValueAfterFees = 0;
         } else {
+          allocatedFunds[index].totalValueBeforeFees += convertStringToNumber(
+            transaction.transactionAmount
+          );
           allocatedFunds[index].totalUnitsAfterFees +=
             -1 * convertStringToNumber(transaction.transactionUnits);
           allocatedFunds[index].totalValueAfterFees += convertStringToNumber(
@@ -542,6 +556,7 @@ export function parseTransactions(data: FpmsData, dailyPrices: any) {
         allocatedFunds.push({
           code: transaction.code,
           transactions: [],
+          totalValueBeforeFees: 0,
           totalUnitsAfterFees:
             -1 * convertStringToNumber(transaction.transactionUnits),
           totalValueAfterFees:
@@ -571,6 +586,7 @@ export function parseTransactions(data: FpmsData, dailyPrices: any) {
               balanceUnits: convertStringToNumber(transaction.balanceUnits),
             },
           ],
+          totalValueBeforeFees: 0,
           totalUnitsAfterFees:
             -1 * convertStringToNumber(transaction.transactionUnits),
           totalValueAfterFees:
@@ -578,6 +594,7 @@ export function parseTransactions(data: FpmsData, dailyPrices: any) {
         });
         // Reset total units and value after fees if balance units goes to 0.
         if (convertStringToNumber(transaction.balanceUnits) === 0) {
+          allocatedFunds[allocatedFunds.length - 1].totalValueBeforeFees = 0;
           allocatedFunds[allocatedFunds.length - 1].totalUnitsAfterFees = 0;
           allocatedFunds[allocatedFunds.length - 1].totalValueAfterFees = 0;
         }
@@ -592,9 +609,12 @@ export function parseTransactions(data: FpmsData, dailyPrices: any) {
         });
         // Reset total units and value after fees if balance units goes to 0.
         if (convertStringToNumber(transaction.balanceUnits) === 0) {
+          allocatedFunds[index].totalValueBeforeFees = 0;
           allocatedFunds[index].totalUnitsAfterFees = 0;
           allocatedFunds[index].totalValueAfterFees = 0;
         } else {
+          allocatedFunds[index].totalValueBeforeFees +=
+            -1 * convertStringToNumber(transaction.transactionAmount);
           allocatedFunds[index].totalUnitsAfterFees +=
             -1 * convertStringToNumber(transaction.transactionUnits);
           allocatedFunds[index].totalValueAfterFees +=
@@ -607,14 +627,14 @@ export function parseTransactions(data: FpmsData, dailyPrices: any) {
   allocatedFunds.forEach((fund) => {
     fund.averagePrice =
       fund.totalUnitsAfterFees > 0.1
-        ? fund.totalValueAfterFees / fund.totalUnitsAfterFees
+        ? fund.totalValueBeforeFees / fund.totalUnitsAfterFees
         : 0;
 
-    fund.totalValueAfterFees =
-      fund.totalUnitsAfterFees *
-      +dailyPrices.funds.find(
-        (dp: { fundCode: string }) => dp.fundCode === fund.code
-      )!.fundBidPrice;
+    // fund.totalValueAfterFees =
+    //   fund.totalUnitsAfterFees *
+    //   +dailyPrices.funds.find(
+    //     (dp: { fundCode: string }) => dp.fundCode === fund.code
+    //   )!.fundBidPrice;
 
     if (fund.totalUnitsAfterFees <= 0.1) {
       fund.totalValueAfterFees = 0;

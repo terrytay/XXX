@@ -276,23 +276,23 @@ export default async function Page({
                   </TableCell>
                   <TableCell>
                     {format2dp(
-                      allocatedFunds!
-                        .find((aF) => aF.code === fund.name.split(":")[0])
-                        ?.transactions.reduce(
-                          (accum, cv) => (accum += cv.value),
-                          0
-                        )!
+                      allocatedFunds!.find(
+                        (aF) => aF.code === fund.name.split(":")[0]
+                      )!.totalUnitsAfterFees *
+                        allocatedFunds.find(
+                          (aF) => aF.code === fund.name.split(":")[0]
+                        )?.averagePrice!
                     )}
                   </TableCell>
                   <TableCell
                     className={
                       +fund.totalFundValue.split(",").join("") -
-                        allocatedFunds!
-                          .find((aF) => aF.code === fund.name.split(":")[0])
-                          ?.transactions.reduce(
-                            (accum, cv) => (accum += cv.value),
-                            0
-                          )! >
+                        allocatedFunds!.find(
+                          (aF) => aF.code === fund.name.split(":")[0]
+                        )!.totalUnitsAfterFees *
+                          allocatedFunds.find(
+                            (aF) => aF.code === fund.name.split(":")[0]
+                          )?.averagePrice! >
                       0
                         ? "text-green-500"
                         : "text-red-500"
@@ -300,28 +300,28 @@ export default async function Page({
                   >
                     {format2dp(
                       +fund.totalFundValue.split(",").join("") -
-                        allocatedFunds!
-                          .find((aF) => aF.code === fund.name.split(":")[0])
-                          ?.transactions.reduce(
-                            (accum, cv) => (accum += cv.value),
-                            0
-                          )!
+                        allocatedFunds!.find(
+                          (aF) => aF.code === fund.name.split(":")[0]
+                        )!.totalUnitsAfterFees *
+                          allocatedFunds.find(
+                            (aF) => aF.code === fund.name.split(":")[0]
+                          )?.averagePrice!
                     )}
                     &nbsp;(
                     {formatPercent(
                       (+fund.totalFundValue.split(",").join("") -
-                        allocatedFunds!
-                          .find((aF) => aF.code === fund.name.split(":")[0])
-                          ?.transactions.reduce(
-                            (accum, cv) => (accum += cv.value),
-                            0
-                          )!) /
-                        allocatedFunds!
-                          .find((aF) => aF.code === fund.name.split(":")[0])
-                          ?.transactions.reduce(
-                            (accum, cv) => (accum += cv.value),
-                            0
-                          )!
+                        allocatedFunds!.find(
+                          (aF) => aF.code === fund.name.split(":")[0]
+                        )!.totalUnitsAfterFees *
+                          allocatedFunds.find(
+                            (aF) => aF.code === fund.name.split(":")[0]
+                          )?.averagePrice!) /
+                        (allocatedFunds!.find(
+                          (aF) => aF.code === fund.name.split(":")[0]
+                        )!.totalUnitsAfterFees *
+                          allocatedFunds.find(
+                            (aF) => aF.code === fund.name.split(":")[0]
+                          )?.averagePrice!)
                     )}
                     )
                   </TableCell>
@@ -536,13 +536,9 @@ export default async function Page({
                           <TableCell>
                             {format2dp(
                               fund.transactions.reduce(
-                                (prev, cur) => prev + cur.units,
+                                (prev, cur) => prev + cur.value,
                                 0
-                              ) *
-                                +dailyPrices.funds.find(
-                                  (dp: { fundCode: string }) =>
-                                    dp.fundCode === fund.code
-                                )!.fundBidPrice
+                              )
                             )}
                           </TableCell>
                         </TableRow>
