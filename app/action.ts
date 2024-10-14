@@ -81,3 +81,23 @@ export const toggleBeta = async (formData: FormData) => {
     revalidatePath("/");
   }
 };
+
+export const toggleXirr = async (formData: FormData) => {
+  "use server";
+
+  const supabase = createClient();
+
+  const toSet = formData.get("switch") === "on" ? false : true;
+  const id = formData.get("id");
+
+  if (id != "") {
+    await supabase
+      .from("agents")
+      .update({
+        xirr: toSet,
+      })
+      .eq("agent_id", id);
+
+    revalidatePath("/");
+  }
+};

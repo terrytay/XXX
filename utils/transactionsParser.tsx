@@ -1,5 +1,6 @@
 import { getPrices } from "@/app/prices/action";
-import { FpmsData } from "./types/fpms";
+import { DividendData, FpmsData } from "./types/fpms";
+var xirr = require("xirr");
 
 export enum ApplicationType {
   Fee = "Policy Fee",
@@ -13,6 +14,7 @@ export enum ApplicationType {
   CampaignBonus = "Campaign Bonus",
   SurrenderWithdrawal = "Surrender Withdrawal",
   RiderPremium = "Rider Premium",
+  SPTopUp = "Single Top Up Net Investment Premium",
 }
 
 type AllocatedTransaction = {
@@ -56,6 +58,58 @@ export type FundSwitch = {
 
 function convertStringToNumber(str: string) {
   return +str.trim().split(",").join("");
+}
+
+export function xirrCalculator(data: FpmsData, dividend?: DividendData) {
+  const transactions = data.transactions.slice().reverse();
+  const dividends = dividend?.dividends || [];
+
+  const records: { when: Date; amount: number }[] = [];
+  transactions.forEach((trx) => {
+    const [day, month, year] = trx.runDate.trim().split("/");
+    switch (trx.type.split("-")[1]) {
+      case ApplicationType.Inflow:
+      case ApplicationType.CampaignBonus:
+      case ApplicationType.WelcomeBonus:
+      case ApplicationType.Conversion:
+      case ApplicationType.SPTopUp:
+        records.push({
+          when: new Date(+year, +month - 1, +day),
+          amount: -1 * convertStringToNumber(trx.transactionAmount),
+        });
+
+        break;
+      case ApplicationType.SurrenderWithdrawal:
+        records.push({
+          when: new Date(+year, +month - 1, +day),
+          amount: convertStringToNumber(trx.transactionAmount),
+        });
+        break;
+    }
+  });
+  if (dividend?.dividends) {
+    records.push({
+      when: new Date(Date.now()),
+      amount:
+        convertStringToNumber(data.policyDetails.tiv) +
+        dividend?.dividends.reduce(
+          (accum, cv) => (accum += convertStringToNumber(cv.amount)),
+          0
+        )!,
+    });
+  } else {
+    records.push({
+      when: new Date(Date.now()),
+      amount: convertStringToNumber(data.policyDetails.tiv),
+    });
+  }
+
+  // GIA 3% fee
+  if (data.policyDetails.productName.includes("GREAT Invest Advantage")) {
+    records[0].amount /= 0.97;
+  }
+
+  return xirr(records);
 }
 
 export function getWelcomeBonus(data: FpmsData) {
@@ -408,7 +462,8 @@ export function parseTransactions(data: FpmsData, dailyPrices: any) {
       transaction.type.includes(ApplicationType.CampaignBonus) ||
       transaction.type.includes(ApplicationType.Inflow) ||
       transaction.type.includes(ApplicationType.Conversion) ||
-      transaction.type.includes(ApplicationType.Reinvest)
+      transaction.type.includes(ApplicationType.Reinvest) ||
+      transaction.type.includes(ApplicationType.SPTopUp)
     ) {
       const index = allocatedFunds.findIndex(
         (value) => value.code === transaction.code

@@ -19,6 +19,7 @@ import {
   getFundSwitches,
   getWelcomeBonus,
   parseTransactions,
+  xirrCalculator,
 } from "@/utils/transactionsParser";
 import { getPrices } from "@/app/prices/action";
 import PolicyChart from "@/components/FundHoldingChart";
@@ -136,6 +137,9 @@ export default async function Page({
   tia -= withdrawedAmount;
 
   const fundswitches = getFundSwitches(data!);
+
+  const showXirr = preferences.data!.at(0).xirr;
+  const xirr = xirrCalculator(data!, dividends);
 
   return (
     <section className="grid grid-cols-3 gap-4 mx-2 print:mt-10">
@@ -367,6 +371,14 @@ export default async function Page({
                 {formatPercent((tiv + totalDividendsPaidout - tia) / tia)}
               </TableCell>
             </TableRow>
+            {showXirr && (
+              <TableRow>
+                <TableCell className="font-medium">XIRR:</TableCell>
+                <TableCell className="text-right" colSpan={8}>
+                  {formatPercent(xirr)}
+                </TableCell>
+              </TableRow>
+            )}
           </TableFooter>
         </Table>
       </Card>

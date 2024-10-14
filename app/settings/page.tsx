@@ -8,10 +8,12 @@ import {
   toggleBeta,
   toggleBonus,
   toggleTheme,
+  toggleXirr,
 } from "../action";
 import ToggleWelcomeBonusComponent from "@/components/ui/toggleWelcomeBonusComponent";
 import ToggleAdminViewComponent from "@/components/ui/toggleAdminViewComponent";
 import ToggleBetaComponent from "@/components/ui/toggleBetaComponent";
+import ToggleXirrComponent from "@/components/ui/toggleXirrComponent";
 
 export default async function Page({
   params,
@@ -33,6 +35,7 @@ export default async function Page({
   const dark: boolean = data?.at(0).dark || false;
   const include: boolean = data?.at(0).include || false;
   const beta: boolean = data?.at(0).beta || false;
+  const xirr: boolean = data?.at(0).xirr || false;
 
   // admin
   const admin: boolean = data?.at(0).admin || false;
@@ -67,6 +70,14 @@ export default async function Page({
               beta={beta}
               id={user?.data.user.id || ""}
               toggleBeta={toggleBeta}
+            />
+          </div>
+          <div className="flex">
+            <div>Use XIRR:</div>
+            <ToggleXirrComponent
+              xirr={xirr}
+              id={user?.data.user.id || ""}
+              toggleXirr={toggleXirr}
             />
           </div>
           {admin && (

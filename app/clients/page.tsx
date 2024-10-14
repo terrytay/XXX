@@ -9,6 +9,7 @@ import {
   ApplicationType,
   getWelcomeBonus,
   parseTransactions,
+  xirrCalculator,
 } from "@/utils/transactionsParser";
 import {
   Table,
@@ -155,6 +156,8 @@ export default async function ClientList() {
         )
       );
 
+      const xirr = xirrCalculator(policy!, dividends);
+      d.xirr = formatPercent(xirr);
       res.push(d);
     }
   });

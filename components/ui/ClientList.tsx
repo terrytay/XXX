@@ -86,6 +86,7 @@ export type Client = {
   dividendsPaidout: number;
   cash?: number;
   funds: string;
+  xirr: string;
 };
 
 interface DataTableProps<TData, TValue> {
@@ -347,6 +348,33 @@ export const columns: ColumnDef<Client>[] = [
           }`}
         >
           {row.getValue<string>("grossProfit").split("%")[0]}
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "xirr",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          XIRR (%)
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => {
+      return (
+        <div
+          className={`${
+            +row.getValue<string>("xirr").split("%")[0] > 0
+              ? "text-green-500"
+              : "text-red-500"
+          }`}
+        >
+          {row.getValue<string>("xirr").split("%")[0]}
         </div>
       );
     },
