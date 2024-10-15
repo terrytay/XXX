@@ -157,7 +157,11 @@ export default async function ClientList() {
       );
 
       const xirr = xirrCalculator(policy!, dividends);
-      d.xirr = formatPercent(xirr);
+      if (!xirr.includes("N/A")) {
+        d.xirr = formatPercent(+xirr);
+      } else {
+        d.xirr = xirr;
+      }
       res.push(d);
     }
   });

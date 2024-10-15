@@ -65,51 +65,72 @@ export function xirrCalculator(data: FpmsData, dividend?: DividendData) {
   const dividends = dividend?.dividends || [];
 
   const records: { when: Date; amount: number }[] = [];
-  transactions.forEach((trx) => {
-    const [day, month, year] = trx.runDate.trim().split("/");
-    switch (trx.type.split("-")[1]) {
-      case ApplicationType.Inflow:
-      case ApplicationType.CampaignBonus:
-      case ApplicationType.WelcomeBonus:
-      case ApplicationType.Conversion:
-      case ApplicationType.SPTopUp:
-        records.push({
-          when: new Date(+year, +month - 1, +day),
-          amount: -1 * convertStringToNumber(trx.transactionAmount),
-        });
+  const todayDate = new Date();
+  try {
+    transactions.forEach((trx) => {
+      const [day, month, year] = trx.runDate.trim().split("/");
+      const existingDateIndex = records.findIndex(
+        (record) =>
+          record.when.getMonth() + 1 === +month &&
+          record.when.getFullYear() === +year &&
+          record.when.getDate() === +day
+      );
 
-        break;
-      case ApplicationType.SurrenderWithdrawal:
-        records.push({
-          when: new Date(+year, +month - 1, +day),
-          amount: convertStringToNumber(trx.transactionAmount),
-        });
-        break;
+      switch (trx.type.split("-")[1]) {
+        case ApplicationType.Inflow:
+        case ApplicationType.CampaignBonus:
+        case ApplicationType.WelcomeBonus:
+        case ApplicationType.Conversion:
+        case ApplicationType.SPTopUp:
+          if (existingDateIndex != -1) {
+            records[existingDateIndex].amount +=
+              -1 * convertStringToNumber(trx.transactionAmount);
+          } else {
+            records.push({
+              when: new Date(+year, +month - 1, +day),
+              amount: -1 * convertStringToNumber(trx.transactionAmount),
+            });
+          }
+          break;
+        case ApplicationType.SurrenderWithdrawal:
+          if (existingDateIndex != -1) {
+            records[existingDateIndex].amount += convertStringToNumber(
+              trx.transactionAmount
+            );
+          } else {
+            records.push({
+              when: new Date(+year, +month - 1, +day),
+              amount: convertStringToNumber(trx.transactionAmount),
+            });
+          }
+          break;
+      }
+    });
+    if (dividend?.dividends) {
+      records.push({
+        when: todayDate,
+        amount:
+          convertStringToNumber(data.policyDetails.tiv) +
+          dividend?.dividends.reduce(
+            (accum, cv) => (accum += convertStringToNumber(cv.amount)),
+            0
+          )!,
+      });
+    } else {
+      records.push({
+        when: todayDate,
+        amount: convertStringToNumber(data.policyDetails.tiv),
+      });
     }
-  });
-  if (dividend?.dividends) {
-    records.push({
-      when: new Date(Date.now()),
-      amount:
-        convertStringToNumber(data.policyDetails.tiv) +
-        dividend?.dividends.reduce(
-          (accum, cv) => (accum += convertStringToNumber(cv.amount)),
-          0
-        )!,
-    });
-  } else {
-    records.push({
-      when: new Date(Date.now()),
-      amount: convertStringToNumber(data.policyDetails.tiv),
-    });
-  }
 
-  // GIA 3% fee
-  if (data.policyDetails.productName.includes("GREAT Invest Advantage")) {
-    records[0].amount /= 0.97;
+    // GIA 3% fee
+    if (data.policyDetails.productName.includes("GREAT Invest Advantage")) {
+      records[0].amount /= 0.97;
+    }
+    return xirr(records).toString();
+  } catch (error) {
+    return "N/A";
   }
-
-  return xirr(records);
 }
 
 export function getWelcomeBonus(data: FpmsData) {

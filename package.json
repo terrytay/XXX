@@ -24,6 +24,7 @@
     "@supabase/ssr": "latest",
     "@supabase/supabase-js": "latest",
     "@tanstack/react-table": "^8.19.1",
+    "@webcarrot/xirr": "^3.0.1",
     "add": "^2.0.6",
     "autoprefixer": "10.4.17",
     "chart.js": "^4.4.3",

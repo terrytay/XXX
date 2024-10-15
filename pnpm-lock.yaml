@@ -62,6 +62,9 @@ importers:
       '@tanstack/react-table':
         specifier: ^8.19.1
         version: 8.20.1(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+      '@webcarrot/xirr':
+        specifier: ^3.0.1
+        version: 3.0.1
       add:
         specifier: ^2.0.6
         version: 2.0.6
@@ -1020,6 +1023,9 @@ packages:
 
   '@types/ws@8.5.12':
     resolution: {integrity: sha512-3tPRkv1EtkDpzlgyKyI8pGsGZAGPEaXeu0DOj5DI25Ja91bdAYddYHbADRYVrZMRbfW+1l5YwXVDKohDJNQxkQ==}
+
+  '@webcarrot/xirr@3.0.1':
+    resolution: {integrity: sha512-7g8sl+sLfFnCK0nlaMDUD4/ZClmRZIWgMX1aKtGsa4yxABlzAFORSEq5f+Fl0XNEIjdVVlEiHW1EEWCS/0zjGw==}
 
   add@2.0.6:
     resolution: {integrity: sha512-j5QzrmsokwWWp6kUcJQySpbG+xfOBqqKnup3OIk1pz+kB/80SLorZ9V8zHFLO92Lcd+hbvq8bT+zOGoPkmBV0Q==}
@@ -3220,6 +3226,8 @@ snapshots:
   '@types/ws@8.5.12':
     dependencies:
       '@types/node': 20.11.5
+
+  '@webcarrot/xirr@3.0.1': {}
 
   add@2.0.6: {}
 

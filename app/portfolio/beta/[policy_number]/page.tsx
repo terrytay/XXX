@@ -371,11 +371,11 @@ export default async function Page({
                 {formatPercent((tiv + totalDividendsPaidout - tia) / tia)}
               </TableCell>
             </TableRow>
-            {showXirr && (
+            {showXirr && !xirr.includes("N/A") && (
               <TableRow>
                 <TableCell className="font-medium">XIRR:</TableCell>
                 <TableCell className="text-right" colSpan={8}>
-                  {formatPercent(xirr)}
+                  {formatPercent(+xirr)}
                 </TableCell>
               </TableRow>
             )}
