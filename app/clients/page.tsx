@@ -221,7 +221,12 @@ export default async function ClientList() {
           </TableBody>
         </Table>
       )} */}
-      <DataTable columns={columns} data={res} aggregatedData={aggregatedData} />
+      <DataTable
+        columns={columns}
+        data={res}
+        aggregatedData={aggregatedData}
+        showXirr={preferences.data?.at(0).xirr || false}
+      />
     </div>
   );
 }

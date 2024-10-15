@@ -64,14 +64,14 @@ export default async function Page({
               toggleBonus={toggleBonus}
             />
           </div>
-          <div className="flex">
+          {/* <div className="flex">
             <div>Use beta:</div>
             <ToggleBetaComponent
               beta={beta}
               id={user?.data.user.id || ""}
               toggleBeta={toggleBeta}
             />
-          </div>
+          </div> */}
           <div className="flex">
             <div>Use XIRR:</div>
             <ToggleXirrComponent

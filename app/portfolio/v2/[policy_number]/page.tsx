@@ -31,6 +31,7 @@ import SnapshotChart from "@/components/SnapshotChart";
 import { dateDiff } from "@/utils/date";
 import { Metadata, ResolvingMetadata } from "next";
 import { AllocationTimelineBeta } from "@/components/AllocationTimelineBeta";
+import AllocationWrapper from "@/components/ui/AllocationWrapper";
 
 type Props = {
   params: { policy_number: string };
@@ -382,14 +383,15 @@ export default async function Page({
           </TableFooter>
         </Table>
       </Card>
-      <Card className="py-2 col-span-3">
-        <AllocationTimelineBeta
-          data={JSON.stringify(fundswitches)}
-          commencementMonth={data!.profile.commencementDate.split("/")[1]}
-          premiumFreq={data!.profile.premiumFreq}
-          dailyPricesJSON={JSON.stringify(dailyPrices)}
-        />
-      </Card>
+      <AllocationWrapper
+        allocationDataJSON={JSON.stringify(
+          allocationData || templateAllocationData
+        )}
+        templateAllocationDataJSON={JSON.stringify(templateAllocationData)}
+        dataJSON={JSON.stringify(data!)}
+        dailyPricesJSON={JSON.stringify(dailyPrices)}
+        fundswitchesJSON={JSON.stringify(fundswitches)}
+      />
       {dividends && (
         <Card className="py-2 col-span-3">
           <Table>

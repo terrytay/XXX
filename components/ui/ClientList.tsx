@@ -97,6 +97,7 @@ interface DataTableProps<TData, TValue> {
     totalPremium: number;
     totalRoi: string;
   };
+  showXirr: boolean;
 }
 
 export const columns: ColumnDef<Client>[] = [
@@ -136,7 +137,7 @@ export const columns: ColumnDef<Client>[] = [
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger>
-                <Link href={`portfolio/${row.getValue("policy_number")}`}>
+                <Link href={`portfolio/v2/${row.getValue("policy_number")}`}>
                   {row.getValue("policy_number")}
                 </Link>
               </TooltipTrigger>
@@ -552,9 +553,11 @@ export default function DataTable<TData, TValue>({
   columns,
   data,
   aggregatedData,
+  showXirr,
 }: DataTableProps<TData, TValue>) {
   const [columnVisibility, setColumnVisibility] = useState({
     funds: false,
+    xirr: showXirr,
   });
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [sorting, setSorting] = useState<SortingState>([
