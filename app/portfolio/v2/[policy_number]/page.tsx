@@ -118,15 +118,17 @@ export default async function Page({
     .replace("1 Days", "1 Day");
 
   // START OF BETA
-  const tiv = allocatedFunds.reduce((accum, fund) => {
-    return (accum +=
-      fund.totalUnitsAfterFees *
-      +dailyPrices.funds
-        .find((dpFund) => dpFund.fundCode === fund.code)
-        ?.fundBidPrice.trim()
-        .split(",")
-        .join("")!);
-  }, 0);
+  // const tiv = allocatedFunds.reduce((accum, fund) => {
+  //   return (accum +=
+  //     fund.totalUnitsAfterFees *
+  //     +dailyPrices.funds
+  //       .find((dpFund) => dpFund.fundCode === fund.code)
+  //       ?.fundBidPrice.trim()
+  //       .split(",")
+  //       .join("")!);
+  // }, 0);
+
+  const tiv = +data?.policyDetails.tiv.trim().split(",").join("")!;
 
   let tia = data?.policyDetails.tia! + welcomeBonusToAdd;
   let withdrawedAmount = 0;
@@ -233,20 +235,7 @@ export default async function Page({
                 <TableRow>
                   <TableCell className="font-medium">{fund.name}</TableCell>
                   <TableCell>{fund.totalFundUnits}</TableCell>
-                  <TableCell>
-                    {
-                      +formatUnits(
-                        +dailyPrices.funds
-                          .find(
-                            (dp: { fundCode: string }) =>
-                              dp.fundCode === fund.name.split(":")[0]
-                          )!
-                          .fundBidPrice.trim()
-                          .split(",")
-                          .join("")
-                      )
-                    }
-                  </TableCell>
+                  <TableCell>{+formatUnits(fund.unitPrice)}</TableCell>
                   <TableCell>{fund.totalFundValue}</TableCell>
                   <TableCell>
                     {formatUnits(
@@ -257,16 +246,7 @@ export default async function Page({
                   </TableCell>
                   <TableCell>
                     {formatPercent(
-                      (+formatUnits(
-                        +dailyPrices.funds
-                          .find(
-                            (dp: { fundCode: string }) =>
-                              dp.fundCode === fund.name.split(":")[0]
-                          )!
-                          .fundBidPrice.trim()
-                          .split(",")
-                          .join("")
-                      ) -
+                      (+formatUnits(fund.unitPrice) -
                         +formatUnits(
                           allocatedFunds.find(
                             (aF) => aF.code === fund.name.split(":")[0]
@@ -283,10 +263,7 @@ export default async function Page({
                     {format2dp(
                       allocatedFunds!.find(
                         (aF) => aF.code === fund.name.split(":")[0]
-                      )!.totalUnitsAfterFees *
-                        allocatedFunds.find(
-                          (aF) => aF.code === fund.name.split(":")[0]
-                        )?.averagePrice!
+                      )!.totalValueBeforeFees
                     )}
                   </TableCell>
                   <TableCell
@@ -294,10 +271,7 @@ export default async function Page({
                       +fund.totalFundValue.split(",").join("") -
                         allocatedFunds!.find(
                           (aF) => aF.code === fund.name.split(":")[0]
-                        )!.totalUnitsAfterFees *
-                          allocatedFunds.find(
-                            (aF) => aF.code === fund.name.split(":")[0]
-                          )?.averagePrice! >
+                        )!.totalValueBeforeFees >
                       0
                         ? "text-green-500"
                         : "text-red-500"
@@ -307,26 +281,17 @@ export default async function Page({
                       +fund.totalFundValue.split(",").join("") -
                         allocatedFunds!.find(
                           (aF) => aF.code === fund.name.split(":")[0]
-                        )!.totalUnitsAfterFees *
-                          allocatedFunds.find(
-                            (aF) => aF.code === fund.name.split(":")[0]
-                          )?.averagePrice!
+                        )!.totalValueBeforeFees
                     )}
                     &nbsp;(
                     {formatPercent(
                       (+fund.totalFundValue.split(",").join("") -
                         allocatedFunds!.find(
                           (aF) => aF.code === fund.name.split(":")[0]
-                        )!.totalUnitsAfterFees *
-                          allocatedFunds.find(
-                            (aF) => aF.code === fund.name.split(":")[0]
-                          )?.averagePrice!) /
-                        (allocatedFunds!.find(
+                        )!.totalValueBeforeFees) /
+                        allocatedFunds!.find(
                           (aF) => aF.code === fund.name.split(":")[0]
-                        )!.totalUnitsAfterFees *
-                          allocatedFunds.find(
-                            (aF) => aF.code === fund.name.split(":")[0]
-                          )?.averagePrice!)
+                        )!.totalValueBeforeFees
                     )}
                     )
                   </TableCell>

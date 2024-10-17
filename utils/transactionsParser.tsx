@@ -15,6 +15,7 @@ export enum ApplicationType {
   SurrenderWithdrawal = "Surrender Withdrawal",
   RiderPremium = "Rider Premium",
   SPTopUp = "Single Top Up Net Investment Premium",
+  PremiumHolidayCharge = "Premium Holiday Charge",
 }
 
 type AllocatedTransaction = {
@@ -324,6 +325,21 @@ export function getTransactionsSnapshotByMonth(
           tia: 0,
           tiv: 0,
         });
+      } else if (
+        transaction.type.includes(ApplicationType.PremiumHolidayCharge)
+      ) {
+        result.push({
+          date: runDate,
+          funds: [
+            {
+              code: transaction.code,
+              units: transaction.balanceUnits,
+              price: transaction.transactionPrice,
+            },
+          ],
+          tia: 0,
+          tiv: -1 * +transaction.transactionAmount.trim().split(",").join(""),
+        });
       }
     } else {
       if (
@@ -456,17 +472,15 @@ export function getTransactionsSnapshotByMonth(
     }
   });
 
-  let lastPositionTiv = 0;
-  finalResult[finalResult.length - 1].funds.forEach((fund) => {
-    lastPositionTiv +=
-      +fund.units.trim().split(",").join("") *
-      +dailyPrices.funds
-        .find((dp: { fundCode: string }) => dp.fundCode === fund.code)!
-        .fundBidPrice.trim()
-        .split(",")
-        .join("");
-  });
-  finalResult[finalResult.length - 1].tiv = lastPositionTiv;
+  // let lastPositionTiv = 0;
+  // finalResult[finalResult.length - 1].funds.forEach((fund) => {
+  //   lastPositionTiv +=
+  //     +fund.units.trim().split(",").join("") *
+  //     convertStringToNumber(fund.price);
+  // });
+  finalResult[finalResult.length - 1].tiv = convertStringToNumber(
+    data.policyDetails.tiv
+  );
 
   return finalResult;
 }
@@ -622,7 +636,8 @@ export function parseTransactions(data: FpmsData, dailyPrices: any) {
     } else if (
       transaction.type.includes(ApplicationType.Fee) ||
       transaction.type.includes(ApplicationType.RiskCharge) ||
-      transaction.type.includes(ApplicationType.RiderPremium)
+      transaction.type.includes(ApplicationType.RiderPremium) ||
+      transaction.type.includes(ApplicationType.PremiumHolidayCharge)
     ) {
       const index = allocatedFunds.findIndex(
         (value) => value.code === transaction.code
