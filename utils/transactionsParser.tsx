@@ -194,6 +194,21 @@ export function getFundSwitches(data: FpmsData): FundSwitch[] {
   return fundsSwitch;
 }
 
+export function calculateCharges(data: FpmsData) {
+  let charges = 0;
+  data.transactions.forEach((transaction) => {
+    if (
+      transaction.type.includes(ApplicationType.Fee) ||
+      transaction.type.includes(ApplicationType.RiskCharge) ||
+      transaction.type.includes(ApplicationType.RiderPremium) ||
+      transaction.type.includes(ApplicationType.PremiumHolidayCharge)
+    ) {
+      charges += convertStringToNumber(transaction.transactionAmount);
+    }
+  });
+  return charges;
+}
+
 export function getTransactionsSnapshotByMonth(
   data: FpmsData,
   welcomeBonusAsPremium: boolean,

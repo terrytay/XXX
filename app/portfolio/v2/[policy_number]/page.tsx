@@ -16,6 +16,7 @@ import { bounceOut } from "@/app/auth/action";
 import { redirect } from "next/navigation";
 import {
   ApplicationType,
+  calculateCharges,
   getFundSwitches,
   getWelcomeBonus,
   parseTransactions,
@@ -144,6 +145,8 @@ export default async function Page({
   const showXirr = preferences.data!.at(0).xirr;
   const xirr = xirrCalculator(data!, dividends);
 
+  const charges = calculateCharges(data!);
+  console.log(charges);
   return (
     <section className="grid grid-cols-3 gap-4 mx-2 print:mt-10">
       <Card className="flex flex-col col-span-3 md:col-span-1">
@@ -310,6 +313,18 @@ export default async function Page({
                 {format2dp(tiv)}
               </TableCell>
             </TableRow>
+            {data?.policyDetails.productName
+              .toLowerCase()
+              .includes("great life advantage") && (
+              <TableRow>
+                <TableCell className="font-medium">
+                  Total Insurance Charges:
+                </TableCell>
+                <TableCell className="text-right" colSpan={8}>
+                  {format2dp(charges)}
+                </TableCell>
+              </TableRow>
+            )}
             {totalDividendsPaidout > 0 && (
               <TableRow>
                 <TableCell className="font-medium">
