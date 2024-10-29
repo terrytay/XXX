@@ -26,7 +26,7 @@ const AllocationWrapper = ({
   const [toggleView, setToggleView] = useState<boolean | null>(null);
 
   useEffect(() => {
-    localStorageValue = localStorage.getItem("view") === "true";
+    localStorageValue = localStorage.getItem("view") === "true" || false;
     setToggleView(localStorageValue);
   }, []);
 
