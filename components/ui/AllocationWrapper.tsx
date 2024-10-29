@@ -22,7 +22,7 @@ const AllocationWrapper = ({
   fundswitchesJSON: string;
   dailyPricesJSON: string;
 }) => {
-  let localStorageValue = false;
+  let localStorageValue = true;
   const [toggleView, setToggleView] = useState<boolean | null>(null);
 
   useEffect(() => {
