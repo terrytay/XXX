@@ -118,7 +118,12 @@ export default async function ClientList() {
 
       let withdrawedAmount = 0;
       transactions.forEach((trx) => {
-        if (trx.type.includes(ApplicationType.SurrenderWithdrawal)) {
+        if (
+          trx.type.includes(ApplicationType.SurrenderWithdrawal) ||
+          trx.type.includes(ApplicationType.PremiumHolidayCharge) ||
+          trx.type.includes(ApplicationType.RiderPremium) ||
+          trx.type.includes(ApplicationType.RiskCharge)
+        ) {
           withdrawedAmount += +trx.transactionAmount.trim().split(",").join("");
         }
       });

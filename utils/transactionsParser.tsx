@@ -94,6 +94,9 @@ export function xirrCalculator(data: FpmsData, dividend?: DividendData) {
           }
           break;
         case ApplicationType.SurrenderWithdrawal:
+        case ApplicationType.RiskCharge:
+        case ApplicationType.PremiumHolidayCharge:
+        case ApplicationType.RiderPremium:
           if (existingDateIndex != -1) {
             records[existingDateIndex].amount += convertStringToNumber(
               trx.transactionAmount
@@ -198,7 +201,6 @@ export function calculateCharges(data: FpmsData) {
   let charges = 0;
   data.transactions.forEach((transaction) => {
     if (
-      transaction.type.includes(ApplicationType.Fee) ||
       transaction.type.includes(ApplicationType.RiskCharge) ||
       transaction.type.includes(ApplicationType.RiderPremium) ||
       transaction.type.includes(ApplicationType.PremiumHolidayCharge)

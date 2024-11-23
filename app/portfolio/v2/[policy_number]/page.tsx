@@ -341,7 +341,12 @@ export default async function Page({
                 Total Investment Amount:
               </TableCell>
               <TableCell className="text-right" colSpan={8}>
-                {format2dp(tia)}
+                {data?.profile.name.toLowerCase().includes("gla") ||
+                data?.policyDetails.productName
+                  .toLowerCase()
+                  .includes("great life advantage")
+                  ? format2dp(tia - calculateCharges(data))
+                  : format2dp(tia)}
               </TableCell>
             </TableRow>
             <TableRow>
@@ -349,7 +354,17 @@ export default async function Page({
                 Return on Investment (ROI):
               </TableCell>
               <TableCell className="text-right" colSpan={8}>
-                {formatPercent((tiv + totalDividendsPaidout - tia) / tia)}
+                {data?.profile.name.toLowerCase().includes("gla") ||
+                data?.policyDetails.productName
+                  .toLowerCase()
+                  .includes("great life advantage")
+                  ? formatPercent(
+                      (tiv +
+                        totalDividendsPaidout -
+                        (tia - calculateCharges(data))) /
+                        (tia - calculateCharges(data))
+                    )
+                  : formatPercent((tiv + totalDividendsPaidout - tia) / tia)}
               </TableCell>
             </TableRow>
             {showXirr && !xirr.includes("N/A") && (
