@@ -280,7 +280,10 @@ export function AllocationTimelineBeta({
               </TableCell>
 
               {allocation[key].map((record, indexTwo) => (
-                <TableCell className="p-0 m-0 text-wrap" key={indexTwo}>
+                <TableCell
+                  className="p-0 m-0 text-wrap align-baseline"
+                  key={indexTwo}
+                >
                   {record.items.length != 0 && (
                     <Table className="text-wrap">
                       <TableBody className="m-0 p-0 text-center">
