@@ -514,7 +514,7 @@ export function parseTransactions(data: FpmsData, dailyPrices: any) {
       transaction.type.includes(ApplicationType.CampaignBonus) ||
       transaction.type.includes(ApplicationType.Inflow) ||
       transaction.type.includes(ApplicationType.Conversion) ||
-      transaction.type.includes(ApplicationType.Reinvest) ||
+      // transaction.type.includes(ApplicationType.Reinvest) ||
       transaction.type.includes(ApplicationType.SPTopUp)
     ) {
       const index = allocatedFunds.findIndex(
@@ -573,6 +573,65 @@ export function parseTransactions(data: FpmsData, dailyPrices: any) {
           (allocatedFunds[index].totalUnitsAfterFees += convertStringToNumber(
             transaction.transactionUnits
           ));
+        allocatedFunds[index].totalValueAfterFees += convertStringToNumber(
+          transaction.transactionAmount
+        );
+      }
+    } else if (transaction.type.includes(ApplicationType.Reinvest)) {
+      const index = allocatedFunds.findIndex(
+        (value) => value.code === transaction.code
+      );
+
+      if (index === -1) {
+        allocatedFunds.push({
+          code: transaction.code,
+          transactions: [
+            {
+              units: convertStringToNumber(transaction.transactionUnits),
+              date: transaction.runDate,
+              price: convertStringToNumber(transaction.transactionPrice),
+              value: convertStringToNumber(transaction.transactionAmount),
+              description: transaction.type,
+              balanceUnits: convertStringToNumber(transaction.balanceUnits),
+            },
+          ],
+          totalValueBeforeFees: 0,
+          totalUnitsAfterFees: convertStringToNumber(
+            transaction.transactionUnits
+          ),
+          totalValueAfterFees: convertStringToNumber(
+            transaction.transactionAmount
+          ),
+        });
+      } else {
+        const dateIndex = allocatedFunds[index].transactions.findIndex(
+          (trx) =>
+            trx.date === transaction.runDate &&
+            trx.description === transaction.type
+        );
+        if (dateIndex === -1) {
+          allocatedFunds[index].transactions.push({
+            units: convertStringToNumber(transaction.transactionUnits),
+            date: transaction.runDate,
+            price: convertStringToNumber(transaction.transactionPrice),
+            value: convertStringToNumber(transaction.transactionAmount),
+            description: transaction.type,
+            balanceUnits: convertStringToNumber(transaction.balanceUnits),
+          });
+        } else {
+          allocatedFunds[index].transactions[dateIndex].value +=
+            convertStringToNumber(transaction.transactionAmount);
+          allocatedFunds[index].transactions[dateIndex].units +=
+            convertStringToNumber(transaction.transactionUnits);
+          allocatedFunds[index].transactions[dateIndex].balanceUnits =
+            convertStringToNumber(transaction.balanceUnits);
+        }
+        // (allocatedFunds[index].totalValueBeforeFees += convertStringToNumber(
+        //   transaction.transactionAmount
+        // )),
+        allocatedFunds[index].totalUnitsAfterFees += convertStringToNumber(
+          transaction.transactionUnits
+        );
         allocatedFunds[index].totalValueAfterFees += convertStringToNumber(
           transaction.transactionAmount
         );
@@ -652,8 +711,6 @@ export function parseTransactions(data: FpmsData, dailyPrices: any) {
       }
     } else if (
       transaction.type.includes(ApplicationType.Fee) ||
-      transaction.type.includes(ApplicationType.RiskCharge) ||
-      transaction.type.includes(ApplicationType.RiderPremium) ||
       transaction.type.includes(ApplicationType.PremiumHolidayCharge)
     ) {
       const index = allocatedFunds.findIndex(
@@ -671,6 +728,33 @@ export function parseTransactions(data: FpmsData, dailyPrices: any) {
             -1 * convertStringToNumber(transaction.transactionAmount),
         });
       } else {
+        allocatedFunds[index].totalUnitsAfterFees +=
+          -1 * convertStringToNumber(transaction.transactionUnits);
+        allocatedFunds[index].totalValueAfterFees +=
+          -1 * convertStringToNumber(transaction.transactionAmount);
+      }
+    } else if (
+      transaction.type.includes(ApplicationType.RiskCharge) ||
+      transaction.type.includes(ApplicationType.RiderPremium)
+    ) {
+      const index = allocatedFunds.findIndex(
+        (value) => value.code === transaction.code
+      );
+
+      if (index === -1) {
+        allocatedFunds.push({
+          code: transaction.code,
+          transactions: [],
+          totalValueBeforeFees:
+            -1 * convertStringToNumber(transaction.transactionAmount),
+          totalUnitsAfterFees:
+            -1 * convertStringToNumber(transaction.transactionUnits),
+          totalValueAfterFees:
+            -1 * convertStringToNumber(transaction.transactionAmount),
+        });
+      } else {
+        allocatedFunds[index].totalValueBeforeFees +=
+          -1 * convertStringToNumber(transaction.transactionAmount);
         allocatedFunds[index].totalUnitsAfterFees +=
           -1 * convertStringToNumber(transaction.transactionUnits);
         allocatedFunds[index].totalValueAfterFees +=
@@ -744,9 +828,9 @@ export function parseTransactions(data: FpmsData, dailyPrices: any) {
     //     (dp: { fundCode: string }) => dp.fundCode === fund.code
     //   )!.fundBidPrice;
 
-    if (fund.totalUnitsAfterFees <= 0.1) {
-      fund.totalValueAfterFees = 0;
-    }
+    // if (fund.totalUnitsAfterFees <= 0.1) {
+    //   fund.totalValueAfterFees = 0;
+    // }
   });
 
   return allocatedFunds;
