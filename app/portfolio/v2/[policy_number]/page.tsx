@@ -248,19 +248,25 @@ export default async function Page({
                     )}
                   </TableCell>
                   <TableCell>
-                    {formatPercent(
-                      (+formatUnits(fund.unitPrice) -
-                        +formatUnits(
-                          allocatedFunds.find(
-                            (aF) => aF.code === fund.name.split(":")[0]
-                          )?.averagePrice!
-                        )) /
-                        +formatUnits(
-                          allocatedFunds.find(
-                            (aF) => aF.code === fund.name.split(":")[0]
-                          )?.averagePrice!
+                    {+formatUnits(
+                      allocatedFunds.find(
+                        (aF) => aF.code === fund.name.split(":")[0]
+                      )?.averagePrice!
+                    ) > 0
+                      ? formatPercent(
+                          (+formatUnits(fund.unitPrice) -
+                            +formatUnits(
+                              allocatedFunds.find(
+                                (aF) => aF.code === fund.name.split(":")[0]
+                              )?.averagePrice!
+                            )) /
+                            +formatUnits(
+                              allocatedFunds.find(
+                                (aF) => aF.code === fund.name.split(":")[0]
+                              )?.averagePrice!
+                            )
                         )
-                    )}
+                      : `N/A`}
                   </TableCell>
                   <TableCell>
                     {format2dp(
@@ -287,15 +293,19 @@ export default async function Page({
                         )!.totalValueBeforeFees
                     )}
                     &nbsp;(
-                    {formatPercent(
-                      (+fund.totalFundValue.split(",").join("") -
-                        allocatedFunds!.find(
-                          (aF) => aF.code === fund.name.split(":")[0]
-                        )!.totalValueBeforeFees) /
-                        allocatedFunds!.find(
-                          (aF) => aF.code === fund.name.split(":")[0]
-                        )!.totalValueBeforeFees
-                    )}
+                    {allocatedFunds!.find(
+                      (aF) => aF.code === fund.name.split(":")[0]
+                    )!.totalValueBeforeFees > 0
+                      ? formatPercent(
+                          (+fund.totalFundValue.split(",").join("") -
+                            allocatedFunds!.find(
+                              (aF) => aF.code === fund.name.split(":")[0]
+                            )!.totalValueBeforeFees) /
+                            allocatedFunds!.find(
+                              (aF) => aF.code === fund.name.split(":")[0]
+                            )!.totalValueBeforeFees
+                        )
+                      : "N/A"}
                     )
                   </TableCell>
                   <TableCell className="text-right">
