@@ -64,6 +64,17 @@ export default async function Page({
   // Get policy details
   const data = await getClient(params.policy_number);
 
+  // insurance bool
+  const isInsurance =
+    data?.policyDetails.productName
+      .toLowerCase()
+      .includes("great life advantage") ||
+    data?.policyDetails.productName
+      .toLowerCase()
+      .includes("smart life advantage") ||
+    data?.profile.name.includes("GLA") ||
+    data?.policyDetails.productName.toLowerCase().includes("insurance");
+
   // Get welcome bonus
   let isWelcomeBonusPremium = false;
   const preferences = await supabase
@@ -323,9 +334,7 @@ export default async function Page({
                 {format2dp(tiv)}
               </TableCell>
             </TableRow>
-            {data?.policyDetails.productName
-              .toLowerCase()
-              .includes("great life advantage") && (
+            {isInsurance && (
               <TableRow>
                 <TableCell className="font-medium">
                   Total Insurance Charges:
@@ -351,11 +360,8 @@ export default async function Page({
                 Total Investment Amount:
               </TableCell>
               <TableCell className="text-right" colSpan={8}>
-                {data?.profile.name.toLowerCase().includes("gla") ||
-                data?.policyDetails.productName
-                  .toLowerCase()
-                  .includes("great life advantage")
-                  ? format2dp(tia - calculateCharges(data))
+                {isInsurance
+                  ? format2dp(tia - calculateCharges(data!))
                   : format2dp(tia)}
               </TableCell>
             </TableRow>
@@ -364,15 +370,12 @@ export default async function Page({
                 Return on Investment (ROI):
               </TableCell>
               <TableCell className="text-right" colSpan={8}>
-                {data?.profile.name.toLowerCase().includes("gla") ||
-                data?.policyDetails.productName
-                  .toLowerCase()
-                  .includes("great life advantage")
+                {isInsurance
                   ? formatPercent(
                       (tiv +
                         totalDividendsPaidout -
-                        (tia - calculateCharges(data))) /
-                        (tia - calculateCharges(data))
+                        (tia - calculateCharges(data!))) /
+                        (tia - calculateCharges(data!))
                     )
                   : formatPercent((tiv + totalDividendsPaidout - tia) / tia)}
               </TableCell>
