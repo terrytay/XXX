@@ -14,6 +14,7 @@ export default async function AuthButton() {
     <div className="flex items-center gap-2 md:gap-4">
       <Link href="/">Clients</Link>
       <Link href="/screener">Fund Screener</Link>
+      <Link href="/chart">Charts</Link>
       <Link href={`/guide/${user?.id}`}>Guide</Link>
       <Link href="/settings">Settings</Link>
 
