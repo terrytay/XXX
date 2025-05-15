@@ -37,7 +37,7 @@ export default async function Page({
             1. Click&nbsp;
             <Link
               className="text-blue-500"
-              href="https://fzqltlsfconsjwlyooio.supabase.co/storage/v1/object/public/downloads/extension.zip"
+              href="https://fzqltlsfconsjwlyooio.supabase.co/storage/v1/object/public/downloads/extension(15052025).zip"
             >
               here
             </Link>
