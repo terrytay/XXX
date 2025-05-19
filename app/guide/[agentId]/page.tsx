@@ -37,7 +37,7 @@ export default async function Page({
             1. Click&nbsp;
             <Link
               className="text-blue-500"
-              href="https://fzqltlsfconsjwlyooio.supabase.co/storage/v1/object/public/downloads/extension(15052025).zip"
+              href="https://fzqltlsfconsjwlyooio.supabase.co/storage/v1/object/public/downloads/extension-beta.zip"
             >
               here
             </Link>
@@ -50,7 +50,7 @@ export default async function Page({
             </code>
           </p>
 
-          <h1>Watch this video for full tutorial:</h1>
+          {/* <h1>Watch this video for full tutorial:</h1>
           <iframe
             width="560"
             height="315"
@@ -59,7 +59,7 @@ export default async function Page({
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             referrerPolicy="strict-origin-when-cross-origin"
             allowFullScreen
-          ></iframe>
+          ></iframe> */}
 
           <h2 className="font-bold">Tips:</h2>
           <p>
