@@ -1,7 +1,13 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -120,13 +126,19 @@ interface Props {
 
 const formSchema = z.object({
   nickname: z.string().min(2, "Nickname must be at least 2 characters"),
-  policy_number: z.string().min(5, "Policy number must be at least 5 characters"),
+  policy_number: z
+    .string()
+    .min(5, "Policy number must be at least 5 characters"),
   policy_link: z.string().url("Must be a valid URL").or(z.literal("")),
 });
 
 type FormData = z.infer<typeof formSchema>;
 
-export default function ClientManagement({ clients, showPrivateInfo, onRefresh }: Props) {
+export default function ClientManagement({
+  clients,
+  showPrivateInfo,
+  onRefresh,
+}: Props) {
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
@@ -134,9 +146,11 @@ export default function ClientManagement({ clients, showPrivateInfo, onRefresh }
   const [sortField, setSortField] = useState<keyof Client>("tiv");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState<"all" | "action-required" | "healthy">("all");
+  const [statusFilter, setStatusFilter] = useState<
+    "all" | "action-required" | "healthy"
+  >("all");
   const [showRenewalAlerts, setShowRenewalAlerts] = useState(true);
-  
+
   const router = useRouter();
 
   // Forms
@@ -161,27 +175,29 @@ export default function ClientManagement({ clients, showPrivateInfo, onRefresh }
   // Enhanced client analysis
   const clientAnalysis = useMemo(() => {
     const now = moment();
-    
-    const analysisData = clients.map(client => {
+
+    const analysisData = clients.map((client) => {
       const commencementMoment = moment(client.commencementDate);
-      const monthsSinceCommencement = now.diff(commencementMoment, 'months');
+      const monthsSinceCommencement = now.diff(commencementMoment, "months");
       const nextRenewalMonth = Math.ceil(monthsSinceCommencement / 12) * 12;
-      const nextRenewalDate = commencementMoment.clone().add(nextRenewalMonth, 'months');
-      const monthsToRenewal = nextRenewalDate.diff(now, 'months');
-      
+      const nextRenewalDate = commencementMoment
+        .clone()
+        .add(nextRenewalMonth, "months");
+      const monthsToRenewal = nextRenewalDate.diff(now, "months");
+
       // Determine if cash reserves will be needed soon
       const willNeedCashSoon = monthsToRenewal <= 3 && monthsToRenewal >= 0;
-      const performance = parseFloat(client.grossProfit.replace('%', ''));
-      
+      const performance = parseFloat(client.grossProfit.replace("%", ""));
+
       // Status calculation
       let status: "healthy" | "warning" | "critical" = "healthy";
       const issues: string[] = [];
-      
+
       if (client.cash > client.tiv * 0.1) {
         status = "warning";
         issues.push("High cash allocation");
       }
-      
+
       if (performance < -5) {
         status = "critical";
         issues.push("Poor performance");
@@ -189,12 +205,12 @@ export default function ClientManagement({ clients, showPrivateInfo, onRefresh }
         status = "warning";
         issues.push("Below average performance");
       }
-      
+
       if (willNeedCashSoon && client.cash < 5000) {
         status = "warning";
         issues.push("May need cash reserves soon");
       }
-      
+
       if (client.duration > 5 && client.xirr === "N/A") {
         status = "warning";
         issues.push("Missing performance data");
@@ -203,46 +219,54 @@ export default function ClientManagement({ clients, showPrivateInfo, onRefresh }
       return {
         ...client,
         monthsToRenewal,
-        nextRenewalDate: nextRenewalDate.format('YYYY-MM-DD'),
+        nextRenewalDate: nextRenewalDate.format("YYYY-MM-DD"),
         willNeedCashSoon,
         status,
         issues,
         performance,
-        urgencyScore: 
+        urgencyScore:
           (status === "critical" ? 3 : status === "warning" ? 2 : 1) +
           (willNeedCashSoon ? 2 : 0) +
-          (client.cash > client.tiv * 0.15 ? 1 : 0)
+          (client.cash > client.tiv * 0.15 ? 1 : 0),
       };
     });
 
     // Sort by urgency by default, then by selected field
     return analysisData.sort((a, b) => {
-      if (sortField === 'urgencyScore') {
-        return sortOrder === 'desc' ? b.urgencyScore - a.urgencyScore : a.urgencyScore - b.urgencyScore;
+      // @ts-ignore
+      if (sortField === "urgencyScore") {
+        return sortOrder === "desc"
+          ? b.urgencyScore - a.urgencyScore
+          : a.urgencyScore - b.urgencyScore;
       }
-      
+
       const aVal = a[sortField];
       const bVal = b[sortField];
-      
-      if (typeof aVal === 'string' && typeof bVal === 'string') {
-        return sortOrder === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+
+      if (typeof aVal === "string" && typeof bVal === "string") {
+        return sortOrder === "asc"
+          ? aVal.localeCompare(bVal)
+          : bVal.localeCompare(aVal);
       }
-      
-      return sortOrder === 'asc' ? 
-        (aVal as number) - (bVal as number) : 
-        (bVal as number) - (aVal as number);
+
+      return sortOrder === "asc"
+        ? (aVal as number) - (bVal as number)
+        : (bVal as number) - (aVal as number);
     });
   }, [clients, sortField, sortOrder]);
 
   // Filtered clients
   const filteredClients = useMemo(() => {
-    return clientAnalysis.filter(client => {
-      const matchesSearch = client.nickname.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    return clientAnalysis.filter((client) => {
+      const matchesSearch =
+        client.nickname.toLowerCase().includes(searchTerm.toLowerCase()) ||
         client.policy_number.includes(searchTerm) ||
         client.productName.toLowerCase().includes(searchTerm.toLowerCase());
 
-      const matchesStatus = statusFilter === "all" ||
-        (statusFilter === "action-required" && (client.status === "warning" || client.status === "critical")) ||
+      const matchesStatus =
+        statusFilter === "all" ||
+        (statusFilter === "action-required" &&
+          (client.status === "warning" || client.status === "critical")) ||
         (statusFilter === "healthy" && client.status === "healthy");
 
       return matchesSearch && matchesStatus;
@@ -252,12 +276,22 @@ export default function ClientManagement({ clients, showPrivateInfo, onRefresh }
   // Summary statistics
   const summaryStats = useMemo(() => {
     const totalClients = clientAnalysis.length;
-    const criticalClients = clientAnalysis.filter(c => c.status === "critical").length;
-    const warningClients = clientAnalysis.filter(c => c.status === "warning").length;
-    const cashReserveClients = clientAnalysis.filter(c => c.cash > 0).length;
-    const renewalSoonClients = clientAnalysis.filter(c => c.willNeedCashSoon).length;
-    const totalCashReserves = clientAnalysis.reduce((sum, c) => sum + c.cash, 0);
-    const averagePerformance = clientAnalysis.reduce((sum, c) => sum + c.performance, 0) / totalClients;
+    const criticalClients = clientAnalysis.filter(
+      (c) => c.status === "critical"
+    ).length;
+    const warningClients = clientAnalysis.filter(
+      (c) => c.status === "warning"
+    ).length;
+    const cashReserveClients = clientAnalysis.filter((c) => c.cash > 0).length;
+    const renewalSoonClients = clientAnalysis.filter(
+      (c) => c.willNeedCashSoon
+    ).length;
+    const totalCashReserves = clientAnalysis.reduce(
+      (sum, c) => sum + c.cash,
+      0
+    );
+    const averagePerformance =
+      clientAnalysis.reduce((sum, c) => sum + c.performance, 0) / totalClients;
 
     return {
       totalClients,
@@ -270,12 +304,12 @@ export default function ClientManagement({ clients, showPrivateInfo, onRefresh }
     };
   }, [clientAnalysis]);
 
-  const handleSort = (field: keyof Client | 'urgencyScore') => {
+  const handleSort = (field: keyof Client | "urgencyScore") => {
     if (sortField === field) {
-      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
     } else {
       setSortField(field as keyof Client);
-      setSortOrder('desc');
+      setSortOrder("desc");
     }
   };
 
@@ -293,7 +327,7 @@ export default function ClientManagement({ clients, showPrivateInfo, onRefresh }
 
   const handleEditClient = async (data: FormData) => {
     if (!selectedClient) return;
-    
+
     try {
       await updateClient({
         id: selectedClient.id,
@@ -311,7 +345,7 @@ export default function ClientManagement({ clients, showPrivateInfo, onRefresh }
 
   const handleDeleteClient = async () => {
     if (!selectedClient) return;
-    
+
     try {
       await deleteClient(selectedClient.policy_number);
       setIsDeleteDialogOpen(false);
@@ -344,10 +378,14 @@ export default function ClientManagement({ clients, showPrivateInfo, onRefresh }
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-blue-800">Total Clients</CardTitle>
+            <CardTitle className="text-sm font-medium text-blue-800">
+              Total Clients
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-blue-900">{summaryStats.totalClients}</div>
+            <div className="text-2xl font-bold text-blue-900">
+              {summaryStats.totalClients}
+            </div>
             <p className="text-xs text-blue-700 mt-1">
               {summaryStats.averagePerformance.toFixed(1)}% avg performance
             </p>
@@ -356,36 +394,45 @@ export default function ClientManagement({ clients, showPrivateInfo, onRefresh }
 
         <Card className="bg-gradient-to-br from-red-50 to-red-100 border-red-200">
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-red-800">Action Required</CardTitle>
+            <CardTitle className="text-sm font-medium text-red-800">
+              Action Required
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-red-900">
               {summaryStats.criticalClients + summaryStats.warningClients}
             </div>
             <p className="text-xs text-red-700 mt-1">
-              {summaryStats.criticalClients} critical, {summaryStats.warningClients} warning
+              {summaryStats.criticalClients} critical,{" "}
+              {summaryStats.warningClients} warning
             </p>
           </CardContent>
         </Card>
 
         <Card className="bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200">
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-orange-800">Renewal Soon</CardTitle>
+            <CardTitle className="text-sm font-medium text-orange-800">
+              Renewal Soon
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-orange-900">{summaryStats.renewalSoonClients}</div>
-            <p className="text-xs text-orange-700 mt-1">
-              Next 3 months
-            </p>
+            <div className="text-2xl font-bold text-orange-900">
+              {summaryStats.renewalSoonClients}
+            </div>
+            <p className="text-xs text-orange-700 mt-1">Next 3 months</p>
           </CardContent>
         </Card>
 
         <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-green-800">Cash Reserves</CardTitle>
+            <CardTitle className="text-sm font-medium text-green-800">
+              Cash Reserves
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-900">${format2dp(summaryStats.totalCashReserves)}</div>
+            <div className="text-2xl font-bold text-green-900">
+              ${format2dp(summaryStats.totalCashReserves)}
+            </div>
             <p className="text-xs text-green-700 mt-1">
               {summaryStats.cashReserveClients} policies with cash
             </p>
@@ -400,7 +447,8 @@ export default function ClientManagement({ clients, showPrivateInfo, onRefresh }
             <div>
               <CardTitle>Client Management</CardTitle>
               <CardDescription>
-                Comprehensive policy management with renewal tracking and performance monitoring
+                Comprehensive policy management with renewal tracking and
+                performance monitoring
               </CardDescription>
             </div>
             <div className="flex items-center gap-2">
@@ -415,7 +463,7 @@ export default function ClientManagement({ clients, showPrivateInfo, onRefresh }
                 <RefreshCw className="w-4 h-4 mr-2" />
                 Refresh
               </Button>
-              
+
               <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
                 <DialogTrigger asChild>
                   <Button size="sm">
@@ -425,7 +473,10 @@ export default function ClientManagement({ clients, showPrivateInfo, onRefresh }
                 </DialogTrigger>
                 <DialogContent>
                   <Form {...addForm}>
-                    <form onSubmit={addForm.handleSubmit(handleAddClient)} className="space-y-4">
+                    <form
+                      onSubmit={addForm.handleSubmit(handleAddClient)}
+                      className="space-y-4"
+                    >
                       <DialogHeader>
                         <DialogTitle>Add New Client</DialogTitle>
                         <DialogDescription>
@@ -468,7 +519,10 @@ export default function ClientManagement({ clients, showPrivateInfo, onRefresh }
                           <FormItem>
                             <FormLabel>Policy Link (Optional)</FormLabel>
                             <FormControl>
-                              <Input placeholder="https://fpms.greateasternlife.com/..." {...field} />
+                              <Input
+                                placeholder="https://fpms.greateasternlife.com/..."
+                                {...field}
+                              />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -477,7 +531,9 @@ export default function ClientManagement({ clients, showPrivateInfo, onRefresh }
 
                       <DialogFooter>
                         <DialogClose asChild>
-                          <Button type="button" variant="outline">Cancel</Button>
+                          <Button type="button" variant="outline">
+                            Cancel
+                          </Button>
                         </DialogClose>
                         <Button type="submit">Add Client</Button>
                       </DialogFooter>
@@ -500,7 +556,9 @@ export default function ClientManagement({ clients, showPrivateInfo, onRefresh }
               />
             </div>
             <div className="flex items-center gap-2">
-              <Label htmlFor="status-filter" className="text-sm">Status:</Label>
+              <Label htmlFor="status-filter" className="text-sm">
+                Status:
+              </Label>
               <select
                 id="status-filter"
                 value={statusFilter}
@@ -518,7 +576,9 @@ export default function ClientManagement({ clients, showPrivateInfo, onRefresh }
                 checked={showRenewalAlerts}
                 onCheckedChange={setShowRenewalAlerts}
               />
-              <Label htmlFor="renewal-alerts" className="text-sm">Renewal Alerts</Label>
+              <Label htmlFor="renewal-alerts" className="text-sm">
+                Renewal Alerts
+              </Label>
             </div>
           </div>
 
@@ -527,19 +587,31 @@ export default function ClientManagement({ clients, showPrivateInfo, onRefresh }
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="cursor-pointer" onClick={() => handleSort('urgencyScore')}>
+                  <TableHead
+                    className="cursor-pointer"
+                    onClick={() => handleSort("urgencyScore")}
+                  >
                     <div className="flex items-center gap-1">
                       Status
                       <AlertCircle className="w-4 h-4" />
                     </div>
                   </TableHead>
-                  <TableHead className="cursor-pointer" onClick={() => handleSort('policy_number')}>
+                  <TableHead
+                    className="cursor-pointer"
+                    onClick={() => handleSort("policy_number")}
+                  >
                     Policy Details
                   </TableHead>
-                  <TableHead className="cursor-pointer" onClick={() => handleSort('tiv')}>
+                  <TableHead
+                    className="cursor-pointer"
+                    onClick={() => handleSort("tiv")}
+                  >
                     Portfolio Value
                   </TableHead>
-                  <TableHead className="cursor-pointer" onClick={() => handleSort('cash')}>
+                  <TableHead
+                    className="cursor-pointer"
+                    onClick={() => handleSort("cash")}
+                  >
                     Cash Position
                   </TableHead>
                   <TableHead>Performance</TableHead>
@@ -564,8 +636,11 @@ export default function ClientManagement({ clients, showPrivateInfo, onRefresh }
                           )}
                           <Badge
                             variant={
-                              client.status === "critical" ? "destructive" :
-                              client.status === "warning" ? "default" : "secondary"
+                              client.status === "critical"
+                                ? "destructive"
+                                : client.status === "warning"
+                                ? "default"
+                                : "secondary"
                             }
                           >
                             {client.status}
@@ -578,11 +653,11 @@ export default function ClientManagement({ clients, showPrivateInfo, onRefresh }
                         )}
                       </div>
                     </TableCell>
-                    
+
                     <TableCell>
                       <div className="space-y-1">
                         <div className="flex items-center gap-2">
-                          <Link 
+                          <Link
                             href={`/portfolio/v2/${client.policy_number}`}
                             className="font-medium text-blue-600 hover:underline"
                           >
@@ -600,7 +675,7 @@ export default function ClientManagement({ clients, showPrivateInfo, onRefresh }
                           )}
                         </div>
                         <div className="text-sm">
-                          {showPrivateInfo ? client.nickname : '***'}
+                          {showPrivateInfo ? client.nickname : "***"}
                         </div>
                         <div className="text-xs text-muted-foreground truncate max-w-40">
                           {client.productName}
@@ -610,13 +685,16 @@ export default function ClientManagement({ clients, showPrivateInfo, onRefresh }
 
                     <TableCell>
                       <div className="space-y-1">
-                        <div className="font-medium">${format2dp(client.tiv)}</div>
+                        <div className="font-medium">
+                          ${format2dp(client.tiv)}
+                        </div>
                         <div className="text-xs text-muted-foreground">
                           Invested: ${format2dp(client.tia)}
                         </div>
                         {client.totalDividendsPaidout > 0 && (
                           <div className="text-xs text-green-600">
-                            Dividends: ${format2dp(client.totalDividendsPaidout)}
+                            Dividends: $
+                            {format2dp(client.totalDividendsPaidout)}
                           </div>
                         )}
                       </div>
@@ -625,14 +703,17 @@ export default function ClientManagement({ clients, showPrivateInfo, onRefresh }
                     <TableCell>
                       <div className="space-y-1">
                         <div className="flex items-center gap-2">
-                          <span className="font-medium">${format2dp(client.cash)}</span>
+                          <span className="font-medium">
+                            ${format2dp(client.cash)}
+                          </span>
                           {client.cash > client.tiv * 0.1 && (
                             <AlertTriangle className="w-4 h-4 text-orange-500" />
                           )}
                         </div>
                         {client.cash > 0 && (
                           <div className="text-xs text-muted-foreground">
-                            {((client.cash / client.tiv) * 100).toFixed(1)}% of portfolio
+                            {((client.cash / client.tiv) * 100).toFixed(1)}% of
+                            portfolio
                           </div>
                         )}
                       </div>
@@ -641,9 +722,13 @@ export default function ClientManagement({ clients, showPrivateInfo, onRefresh }
                     <TableCell>
                       <div className="space-y-1">
                         <div className="flex items-center gap-2">
-                          <span className={`font-medium ${
-                            client.performance > 0 ? 'text-green-600' : 'text-red-500'
-                          }`}>
+                          <span
+                            className={`font-medium ${
+                              client.performance > 0
+                                ? "text-green-600"
+                                : "text-red-500"
+                            }`}
+                          >
                             {client.grossProfit}
                           </span>
                           {client.performance > 0 ? (
@@ -657,12 +742,21 @@ export default function ClientManagement({ clients, showPrivateInfo, onRefresh }
                             XIRR: {client.xirr}
                           </div>
                         )}
-                        <Badge variant={
-                          client.riskScore < 0.3 ? "secondary" :
-                          client.riskScore <= 0.7 ? "default" : "destructive"
-                        } className="text-xs">
-                          {client.riskScore < 0.3 ? "Low Risk" :
-                           client.riskScore <= 0.7 ? "Med Risk" : "High Risk"}
+                        <Badge
+                          variant={
+                            client.riskScore < 0.3
+                              ? "secondary"
+                              : client.riskScore <= 0.7
+                              ? "default"
+                              : "destructive"
+                          }
+                          className="text-xs"
+                        >
+                          {client.riskScore < 0.3
+                            ? "Low Risk"
+                            : client.riskScore <= 0.7
+                            ? "Med Risk"
+                            : "High Risk"}
                         </Badge>
                       </div>
                     </TableCell>
@@ -670,12 +764,12 @@ export default function ClientManagement({ clients, showPrivateInfo, onRefresh }
                     <TableCell>
                       <div className="space-y-1">
                         <div className="text-sm">
-                          {moment(client.nextRenewalDate).format('MMM YYYY')}
+                          {moment(client.nextRenewalDate).format("MMM YYYY")}
                         </div>
                         <div className="text-xs text-muted-foreground">
-                          {client.monthsToRenewal > 0 ? 
-                            `${client.monthsToRenewal} months` : 
-                            'Overdue'}
+                          {client.monthsToRenewal > 0
+                            ? `${client.monthsToRenewal} months`
+                            : "Overdue"}
                         </div>
                         {client.willNeedCashSoon && (
                           <Badge variant="default" className="text-xs">
@@ -695,11 +789,15 @@ export default function ClientManagement({ clients, showPrivateInfo, onRefresh }
                         <DropdownMenuContent align="end">
                           <DropdownMenuLabel>Actions</DropdownMenuLabel>
                           <DropdownMenuItem asChild>
-                            <Link href={`/portfolio/v2/${client.policy_number}`}>
+                            <Link
+                              href={`/portfolio/v2/${client.policy_number}`}
+                            >
                               View Details
                             </Link>
                           </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => openEditDialog(client)}>
+                          <DropdownMenuItem
+                            onClick={() => openEditDialog(client)}
+                          >
                             <Edit className="w-4 h-4 mr-2" />
                             Edit Client
                           </DropdownMenuItem>
@@ -713,7 +811,7 @@ export default function ClientManagement({ clients, showPrivateInfo, onRefresh }
                             Generate Report
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
-                          <DropdownMenuItem 
+                          <DropdownMenuItem
                             onClick={() => openDeleteDialog(client)}
                             className="text-red-600"
                           >
@@ -741,12 +839,13 @@ export default function ClientManagement({ clients, showPrivateInfo, onRefresh }
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
         <DialogContent>
           <Form {...editForm}>
-            <form onSubmit={editForm.handleSubmit(handleEditClient)} className="space-y-4">
+            <form
+              onSubmit={editForm.handleSubmit(handleEditClient)}
+              className="space-y-4"
+            >
               <DialogHeader>
                 <DialogTitle>Edit Client</DialogTitle>
-                <DialogDescription>
-                  Update client information
-                </DialogDescription>
+                <DialogDescription>Update client information</DialogDescription>
               </DialogHeader>
 
               <FormField
@@ -793,7 +892,9 @@ export default function ClientManagement({ clients, showPrivateInfo, onRefresh }
 
               <DialogFooter>
                 <DialogClose asChild>
-                  <Button type="button" variant="outline">Cancel</Button>
+                  <Button type="button" variant="outline">
+                    Cancel
+                  </Button>
                 </DialogClose>
                 <Button type="submit">Update Client</Button>
               </DialogFooter>
@@ -803,13 +904,17 @@ export default function ClientManagement({ clients, showPrivateInfo, onRefresh }
       </Dialog>
 
       {/* Delete Confirmation Dialog */}
-      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+      <AlertDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Client</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete {selectedClient?.nickname}? 
-              This action cannot be undone and will remove all tracking for policy {selectedClient?.policy_number}.
+              Are you sure you want to delete {selectedClient?.nickname}? This
+              action cannot be undone and will remove all tracking for policy{" "}
+              {selectedClient?.policy_number}.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
