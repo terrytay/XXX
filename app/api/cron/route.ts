@@ -37,7 +37,7 @@ export async function GET(request: Request) {
     );
     return Response.json({ ok: true, results: results });
   } catch (error) {
-    return Response.json({ ok: false });
+    return Response.json({ ok: false, error });
   }
 }
 
